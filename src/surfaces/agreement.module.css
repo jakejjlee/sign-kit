@@ -1,0 +1,290 @@
+/**
+ * The letter and the file.
+ *
+ * Two layers, and the split is the whole design. Above: a named person saying
+ * what this is, what it costs and who to call, set in the interface face at
+ * reading size. Below: the instrument, set in the document face, quieter and
+ * denser, looking like the legal thing it is.
+ *
+ * The layers are typographically distinct on purpose. A signer must never be
+ * unsure whether they are reading our words or the contract's, because the two
+ * carry different weight and only one of them binds them.
+ *
+ * Every color is a token with a fallback, so a consuming site that already has
+ * a palette wears its own and a site that does not still renders correctly.
+ */
+
+.shell {
+  --sk-ground: var(--sign-ground, #f3ede1);
+  --sk-paper: var(--sign-paper, #fbf8f1);
+  --sk-ink: var(--sign-ink, #221f18);
+  --sk-body: var(--sign-body, #3d382e);
+  --sk-muted: var(--sign-muted, #7a7466);
+  --sk-rule: var(--sign-rule, #e0d6c2);
+  --sk-rule-soft: var(--sign-rule-soft, #e6dcc8);
+  --sk-accent: var(--sign-accent, #7a4a22);
+  --sk-accent-text: var(--sign-accent-text, #8a5a2b);
+  --sk-quiet: var(--sign-quiet, #efe6d3);
+
+  --sk-doc: var(--font-display, "Newsreader", Georgia, serif);
+  --sk-ui: var(--font-schibsted, "Schibsted Grotesk", system-ui, sans-serif);
+  --sk-mono: var(--font-mono, ui-monospace, SFMono-Regular, monospace);
+
+  background: var(--sk-ground);
+  color: var(--sk-ink);
+  font-family: var(--sk-ui);
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-bottom: 5rem;
+}
+
+.wrap { max-width: 46rem; margin: 0 auto; padding: 0 1.25rem; }
+
+/* ------------------------------------------------------------- the letter -- */
+
+.letter {
+  background: var(--sk-paper);
+  border-bottom: 1px solid var(--sk-rule);
+  padding: 2rem 0 2.25rem;
+}
+
+.from { display: flex; align-items: center; gap: .7rem; margin-bottom: 1.35rem; }
+
+.mark {
+  width: 2.6rem; height: 2.6rem; flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--sk-accent);
+  color: var(--sk-paper);
+  display: grid; place-items: center;
+  font-size: .82rem; font-weight: 600; letter-spacing: .02em;
+}
+
+.fromName { font-size: .9rem; font-weight: 600; line-height: 1.3; }
+.fromRole { font-size: .8rem; color: var(--sk-muted); line-height: 1.4; }
+
+.headline {
+  font-family: var(--sk-doc);
+  font-size: clamp(1.5rem, 4.4vw, 1.85rem);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -.01em;
+  margin: 0 0 .85rem;
+}
+
+.para { font-size: .95rem; line-height: 1.66; color: var(--sk-body); margin: 0 0 .75rem; }
+
+/* The six things. A table, because a signer compares figures down a column. */
+.summary {
+  background: var(--sk-ground);
+  border: 1px solid var(--sk-rule);
+  border-radius: 6px;
+  padding: .2rem 1rem;
+  margin: 1.1rem 0 .4rem;
+}
+
+.sumRow {
+  display: flex; justify-content: space-between; gap: 1rem;
+  padding: .62rem 0;
+  border-bottom: 1px solid var(--sk-rule-soft);
+  font-size: .92rem;
+}
+.sumRow:last-child { border-bottom: 0; }
+.sumKey { color: var(--sk-muted); }
+/* No tabular figures here. This column is prose, not an aligned ledger, and
+   tabular punctuation puts a visible gap either side of every comma and
+   decimal point, so "$3,695.00 rent, $300.00 parking" reads spaced out. */
+.sumVal { font-weight: 600; text-align: right; }
+
+/* Persistent, thumb-reachable, and it says what calling is for. */
+.callout {
+  display: flex; gap: .7rem; align-items: center; flex-wrap: wrap;
+  background: var(--sk-quiet);
+  border: 1px solid var(--sk-rule);
+  border-radius: 6px;
+  padding: .8rem .9rem;
+  margin-top: 1rem;
+  font-size: .87rem; line-height: 1.55; color: var(--sk-body);
+}
+.callLink {
+  font-weight: 600; color: var(--sk-accent-text); white-space: nowrap;
+  text-decoration: none; border-bottom: 1px solid currentColor;
+  padding: .35rem 0; /* a real touch target without a button that looks like a form */
+}
+
+/* --------------------------------------------------------------- the file -- */
+
+.fileHead {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 1rem; flex-wrap: wrap;
+  padding: 1.9rem 0 .7rem;
+}
+.fileTitle { font-family: var(--sk-doc); font-size: 1.12rem; font-weight: 500; }
+.fileMeta { font-size: .78rem; color: var(--sk-muted); font-variant-numeric: tabular-nums; }
+
+.file {
+  background: var(--sk-paper);
+  border: 1px solid var(--sk-rule);
+  border-radius: 6px;
+  padding: 1.3rem 1.35rem 1.5rem;
+  font-family: var(--sk-doc);
+}
+
+/* The clause number sits on the title line, the way the instrument prints it. */
+.secNum {
+  color: var(--sk-accent-text);
+  font-variant-numeric: tabular-nums;
+  margin-right: .55rem;
+}
+.secTitle { font-size: 1.05rem; font-weight: 500; margin: 0 0 .45rem; }
+.section + .section { margin-top: 1.15rem; padding-top: 1.15rem; border-top: 1px solid var(--sk-rule-soft); }
+
+.clause { font-size: .94rem; line-height: 1.64; color: var(--sk-body); margin: 0 0 .6rem; }
+.clause:last-child { margin-bottom: 0; }
+
+.bullets { margin: 0 0 .6rem; padding-left: 1.1rem; }
+.bullets li { font-size: .92rem; line-height: 1.6; color: var(--sk-body); margin-bottom: .3rem; }
+
+.rows { margin: .2rem 0 .7rem; }
+.row {
+  display: flex; justify-content: space-between; gap: 1rem;
+  font-size: .92rem; padding: .42rem 0;
+  border-bottom: 1px solid var(--sk-rule-soft);
+  color: var(--sk-body);
+}
+.rowVal { font-variant-numeric: tabular-nums; text-align: right; }
+.rowTotal { font-weight: 600; color: var(--sk-ink); border-bottom: 0; }
+
+.caps {
+  font-family: var(--sk-ui);
+  font-size: .78rem; letter-spacing: .04em; line-height: 1.6;
+  text-transform: uppercase;
+  color: var(--sk-ink);
+  background: var(--sk-quiet);
+  border-left: 2px solid var(--sk-accent);
+  padding: .7rem .85rem;
+  margin: .5rem 0 .7rem;
+}
+
+/* ------------------------------------------------------- what the state adds */
+
+/**
+ * The statutory mass, named rather than hidden.
+ *
+ * It is never behind a "show more". A signer should not have to expand
+ * something to learn it exists, and twelve pages of state-required disclosure
+ * bound into a rental of one apartment is a fact about the document, not a
+ * detail.
+ */
+.attached {
+  background: var(--sk-quiet);
+  border: 1px dashed var(--sk-rule);
+  border-radius: 6px;
+  padding: 1rem 1.05rem;
+  margin-top: 1.1rem;
+  font-family: var(--sk-ui);
+}
+.attachedNote { font-size: .86rem; line-height: 1.6; color: var(--sk-body); margin: 0 0 .8rem; }
+.attachRow {
+  display: flex; justify-content: space-between; gap: .8rem; align-items: baseline;
+  padding: .48rem 0;
+  border-bottom: 1px solid var(--sk-rule-soft);
+  font-size: .87rem;
+}
+.attachRow:last-child { border-bottom: 0; }
+.attachAuth { font-family: var(--sk-mono); font-size: .72rem; color: var(--sk-muted); white-space: nowrap; }
+.required { font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--sk-accent-text); }
+
+/* --------------------------------------------------------- where you sign -- */
+
+.points { margin-top: 1.1rem; }
+.pointsTitle {
+  font-family: var(--sk-ui);
+  font-size: .68rem; letter-spacing: .13em; text-transform: uppercase;
+  color: var(--sk-muted); margin-bottom: .5rem;
+}
+.pointRow {
+  display: flex; justify-content: space-between; gap: .8rem;
+  font-family: var(--sk-ui); font-size: .87rem;
+  padding: .45rem 0; border-bottom: 1px solid var(--sk-rule-soft);
+}
+.pointRow:last-child { border-bottom: 0; }
+.pointState { color: var(--sk-muted); font-size: .8rem; }
+.pointDone { color: #2f6d4f; }
+
+/* ------------------------------------------------------------- signatures -- */
+
+.sigs { margin-top: 1.6rem; padding-top: 1.2rem; border-top: 2px solid var(--sk-ink); }
+.sigsTitle {
+  font-family: var(--sk-ui);
+  font-size: .68rem; letter-spacing: .13em; text-transform: uppercase;
+  color: var(--sk-muted); margin-bottom: 1rem;
+}
+.sigGrid { display: grid; gap: 1.15rem; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); }
+.sigRole { font-family: var(--sk-ui); font-size: .66rem; letter-spacing: .13em; text-transform: uppercase; color: var(--sk-muted); }
+.sigMark { height: 2.1rem; border-bottom: 1px solid var(--sk-ink); margin: .35rem 0 .3rem; display: flex; align-items: flex-end; }
+.sigScript { font-family: var(--sk-doc); font-style: italic; font-size: 1.32rem; color: var(--sk-ink); line-height: 1.05; }
+.sigName { font-family: var(--sk-doc); font-size: .95rem; }
+.sigUnnamed { color: var(--sk-muted); font-style: italic; }
+/* A rule invites a name. No name yet, no rule. */
+.sigMarkEmpty { border-bottom-style: dashed; border-bottom-color: var(--sk-rule); }
+.sigStamp { font-family: var(--sk-ui); font-size: .76rem; color: var(--sk-muted); margin-top: .15rem; line-height: 1.45; }
+.sigPending { color: var(--sk-accent-text); }
+
+/* --------------------------------------------------------------- evidence -- */
+
+.fingerprint {
+  font-family: var(--sk-mono);
+  font-size: .72rem; letter-spacing: .02em; color: var(--sk-muted);
+  margin-top: 1rem; line-height: 1.6;
+}
+
+/* ------------------------------------------------------------------ panel -- */
+
+.panel {
+  background: var(--sk-paper);
+  border: 1px solid var(--sk-rule);
+  border-radius: 6px;
+  padding: 1.4rem 1.35rem 1.5rem;
+  margin-top: 1.6rem;
+}
+.panelTitle { font-family: var(--sk-doc); font-size: 1.25rem; font-weight: 500; margin: 0 0 .5rem; }
+.panelIntro { font-size: .92rem; line-height: 1.62; color: var(--sk-body); margin: 0 0 .9rem; }
+
+.btn {
+  display: inline-block;
+  font-family: var(--sk-ui); font-size: .92rem; font-weight: 500;
+  padding: .82rem 1.35rem;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+  min-height: 2.75rem;
+}
+.btnPrimary { background: var(--sk-accent); color: var(--sk-paper); }
+.btnQuiet { background: transparent; color: var(--sk-ink); border-color: var(--sk-rule); }
+.actions { display: flex; gap: .65rem; flex-wrap: wrap; margin-top: 1rem; }
+
+.closed {
+  background: var(--sk-quiet);
+  border: 1px solid var(--sk-rule);
+  border-radius: 6px;
+  padding: 1.2rem 1.25rem;
+  margin-top: 1.6rem;
+}
+.closedTitle { font-family: var(--sk-doc); font-size: 1.15rem; font-weight: 500; margin: 0 0 .45rem; }
+.closedBody { font-size: .92rem; line-height: 1.62; color: var(--sk-body); margin: 0; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .callLink, .btn { transition: opacity .15s ease; }
+}
+.btn:active { opacity: .82; }
+
+/* The phone is a composition, not a consequence. */
+@media (max-width: 30rem) {
+  .letter { padding: 1.5rem 0 1.75rem; }
+  .file { padding: 1.05rem 1rem 1.2rem; border-radius: 5px; }
+  .sumRow { font-size: .88rem; }
+  .callout { padding: .75rem .8rem; }
+  .sigGrid { grid-template-columns: 1fr; gap: 1rem; }
+  .fileHead { padding: 1.5rem 0 .6rem; }
+}

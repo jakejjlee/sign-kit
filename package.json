@@ -1,0 +1,52 @@
+{
+  "name": "@iserlabs/sign-kit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "One signing system, many agreements. The document is data; the machinery is here.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./content/types": {
+      "types": "./src/content/types.ts",
+      "import": "./src/content/types.ts",
+      "default": "./src/content/types.ts"
+    },
+    "./lib/money": {
+      "types": "./src/lib/money.ts",
+      "import": "./src/lib/money.ts",
+      "default": "./src/lib/money.ts"
+    },
+    "./lib/dates": {
+      "types": "./src/lib/dates.ts",
+      "import": "./src/lib/dates.ts",
+      "default": "./src/lib/dates.ts"
+    },
+    "./surfaces": {
+      "types": "./src/surfaces/index.ts",
+      "import": "./src/surfaces/index.ts",
+      "default": "./src/surfaces/index.ts"
+    },
+    "./surfaces/agreement.module.css": {
+      "default": "./src/surfaces/agreement.module.css"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "next": "^16",
+    "react": "^19"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "typescript": "^5.9.3"
+  }
+}

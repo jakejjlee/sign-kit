@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Signing product, direction board, round 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Cormorant:wght@300;400;500;600&family=Instrument+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=Schibsted+Grotesk:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+  :root{
+    --shell:#15171a; --shell2:#1d2024; --edge:#2c3036; --dim:#8b9199; --bright:#eef1f4;
+  }
+  html,body{margin:0;padding:0}
+  body{background:var(--shell);color:var(--bright);font-family:"Instrument Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+
+  .head{padding:34px 30px 18px;max-width:1500px;margin:0 auto}
+  .head h1{font-size:19px;font-weight:600;margin:0 0 6px;letter-spacing:-.01em}
+  .head p{margin:0;color:var(--dim);font-size:14px;line-height:1.55;max-width:62ch}
+  .round{display:inline-block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#c8a04a;margin-bottom:10px}
+
+  .board{max-width:1500px;margin:0 auto;padding:10px 30px 120px}
+  .opt{margin:0 0 46px;border:1px solid var(--edge);border-radius:12px;background:var(--shell2);overflow:hidden}
+  .opt.sel{border-color:#c8a04a;box-shadow:0 0 0 1px #c8a04a}
+  .optbar{display:flex;align-items:baseline;gap:14px;padding:15px 20px;border-bottom:1px solid var(--edge);cursor:pointer;flex-wrap:wrap}
+  .tag{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#0f1114;background:#c8a04a;padding:4px 9px;border-radius:4px}
+  .tag.live{background:#3f4a54;color:#dfe6ec}
+  .optbar h2{font-size:17px;font-weight:600;margin:0;letter-spacing:-.01em}
+  .optbar .axis{font-size:13px;color:var(--dim);margin-left:auto}
+  .frames{display:flex;gap:22px;padding:24px 20px 28px;overflow-x:auto;align-items:flex-start;background:#0f1114}
+  .fr{flex:0 0 auto}
+  .frlab{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#6d747c;margin:0 0 8px 2px}
+  .desk{width:720px}
+  .phone{width:390px}
+  .paper{border-radius:3px;overflow:hidden;height:660px;overflow-y:auto;position:relative}
+  .paper::-webkit-scrollbar{width:8px}
+  .paper::-webkit-scrollbar-thumb{background:#00000022;border-radius:8px}
+
+  /* ---------------------------------------------------------------- shared doc bits */
+  .doc{line-height:1.55}
+  .doc h3,.doc h4,.doc p,.doc ul,.doc ol{margin:0}
+  .rule{height:1px;width:100%}
+
+  /* =========================================================== OPTION 0, what is live */
+  .o0{background:#efe6d6;color:#15211d;font-family:"Newsreader",Georgia,serif}
+  .o0 .mast{background:#efe6d6;padding:26px 30px 20px}
+  .o0 .sender{font-family:"Schibsted Grotesk",system-ui,sans-serif;font-size:11.5px;line-height:1.6;color:#55605a;border-bottom:1px solid #d9cbb1;padding-bottom:14px;margin-bottom:16px}
+  .o0 .eyebrow{font-family:"Schibsted Grotesk",system-ui,sans-serif;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#266857;display:block;margin-bottom:8px}
+  .o0 .title{font-size:34px;font-weight:400;line-height:1.06;letter-spacing:-.015em;margin-bottom:6px}
+  .o0 .sub{font-size:14px;color:#55605a}
+  .o0 .facts{display:flex;gap:26px;margin-top:20px;flex-wrap:wrap}
+  .o0 .fk{font-family:"Schibsted Grotesk",system-ui,sans-serif;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:#7b857e;display:block}
+  .o0 .fv{font-size:15px;margin-top:3px}
+  .o0 .statusbar{background:#e3efe8;border-top:1px solid #cddfd4;border-bottom:1px solid #cddfd4;padding:12px 30px;font-family:"Schibsted Grotesk",system-ui,sans-serif;font-size:11.5px;line-height:1.55;color:#2b3a33}
+  .o0 .statusbar b{color:#1d4c3f;letter-spacing:.06em;text-transform:uppercase;font-size:10px}
+  .o0 .body{padding:22px 30px 30px;background:#fdfaf4}
+  .o0 .card{border:1px solid #e0d4bb;background:#fbf7ee;padding:16px 18px;margin-bottom:18px}
+  .o0 .cardt{font-family:"Schibsted Grotesk",system-ui,sans-serif;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:#55605a;margin-bottom:12px}
+  .o0 .row{display:flex;justify-content:space-between;font-size:14px;padding:7px 0;border-bottom:1px solid #ece2cf}
+  .o0 .secn{font-family:"Schibsted Grotesk",system-ui,sans-serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#266857}
+  .o0 .sech{font-size:19px;margin:18px 0 8px}
+  .o0 .p{font-size:14.5px;color:#2c3830;margin-bottom:10px}
+  .o0 .sigg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:22px;padding-top:18px;border-top:1px solid #d9cbb1}
+  .o0 .sigr{font-family:"Schibsted Grotesk",system-ui,sans-serif;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:#7b857e}
+  .o0 .sigl{border-bottom:1px solid #c9b998;height:32px;margin:6px 0 5px}
+  .o0 .sign{font-size:14px}
+  .o0 .sigs{font-family:"Schibsted Grotesk",system-ui,sans-serif;font-size:10.5px;color:#96622a}
+  .o0 .btn{display:inline-block;background:#266857;color:#fdfaf4;font-family:"Schibsted Grotesk",system-ui,sans-serif;font-size:13px;padding:11px 18px;margin-top:14px;border-radius:2px}
+
+  /* ============================================================ OPTION A, the instrument */
+  .oa{background:#fcfcfa;color:#111;font-family:"EB Garamond",Georgia,serif}
+  .oa .plate{padding:30px 34px 18px;border-bottom:2px solid #111}
+  .oa .kicker{font-family:"Instrument Sans",sans-serif;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:#33566f}
+  .oa .t{font-family:"Cormorant",Georgia,serif;font-size:33px;font-weight:400;line-height:1.05;margin:10px 0 4px;letter-spacing:-.005em}
+  .oa .t2{font-family:"Cormorant",Georgia,serif;font-size:18px;font-weight:400;color:#3d4348;font-style:italic}
+  .oa .basic{margin:0;padding:20px 34px 8px}
+  .oa .bt{font-family:"Instrument Sans",sans-serif;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:#6b7076;margin-bottom:10px}
+  .oa table{width:100%;border-collapse:collapse;font-size:15px}
+  .oa td{padding:6px 0;border-bottom:1px solid #e6e4dd;vertical-align:baseline}
+  .oa td:first-child{color:#4a5057;width:44%}
+  .oa td:last-child{text-align:right;font-variant-numeric:tabular-nums}
+  .oa .clauses{padding:14px 34px 0;position:relative}
+  .oa .cl{display:grid;grid-template-columns:40px 1fr;gap:12px;margin-bottom:13px;font-size:14.5px;line-height:1.6}
+  .oa .cn{font-family:"Instrument Sans",sans-serif;font-size:11px;color:#33566f;padding-top:3px;letter-spacing:.04em}
+  .oa .sc{font-variant:small-caps;letter-spacing:.05em;font-size:16px;color:#111}
+  .oa .backm{margin:20px 34px 0;border:1px solid #d8d5cc;background:#f6f5f0}
+  .oa .backh{padding:13px 16px;border-bottom:1px solid #e2dfd6;font-family:"Instrument Sans",sans-serif;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#33566f}
+  .oa .backl{display:flex;justify-content:space-between;padding:8px 16px;font-size:13.5px;border-bottom:1px solid #eae7de}
+  .oa .backl span:last-child{font-family:"Instrument Sans",sans-serif;font-size:11px;color:#767b81}
+  .oa .exec{margin:22px 34px 30px;border-top:2px solid #111;padding-top:16px}
+  .oa .exl{font-family:"Instrument Sans",sans-serif;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:#6b7076;margin-bottom:16px}
+  .oa .exrow{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+  .oa .exline{border-bottom:1px solid #111;height:34px}
+  .oa .exname{font-size:14px;margin-top:5px}
+  .oa .exmeta{font-family:"Instrument Sans",sans-serif;font-size:10.5px;color:#767b81;margin-top:2px}
+  .oa .initrail{position:absolute;right:6px;top:0;font-family:"Instrument Sans",sans-serif;font-size:9px;color:#b9b5aa;letter-spacing:.1em}
+  .oa .abtn{display:inline-block;border:1px solid #111;background:#111;color:#fcfcfa;font-family:"Instrument Sans",sans-serif;font-size:12.5px;padding:11px 20px;margin-top:16px}
+
+  /* ======================================================= OPTION B, the letter and the file */
+  .ob{background:#f3ede1;color:#221f18;font-family:"Instrument Sans",system-ui,sans-serif}
+  .ob .letter{background:#fbf8f1;margin:0;padding:28px 32px 26px;border-bottom:1px solid #e0d6c2}
+  .ob .from{display:flex;align-items:center;gap:11px;margin-bottom:18px}
+  .ob .avat{width:38px;height:38px;border-radius:50%;background:#7a6a4f;color:#fbf8f1;display:grid;place-items:center;font-size:13px;font-weight:600;letter-spacing:.02em}
+  .ob .fromn{font-size:13.5px;font-weight:600;line-height:1.3}
+  .ob .fromr{font-size:12px;color:#7a7466}
+  .ob .lh{font-family:"EB Garamond",Georgia,serif;font-size:25px;line-height:1.2;font-weight:500;margin-bottom:12px;letter-spacing:-.01em}
+  .ob .lp{font-size:14px;line-height:1.65;color:#3d382e;margin-bottom:12px}
+  .ob .six{background:#f3ede1;border:1px solid #e0d6c2;border-radius:6px;padding:4px 16px;margin:16px 0 6px}
+  .ob .sr{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #e6dcc8;font-size:13.5px}
+  .ob .sr:last-child{border-bottom:0}
+  .ob .sr b{font-weight:600;font-variant-numeric:tabular-nums}
+  .ob .sk{color:#7a7466}
+  .ob .call{display:flex;gap:10px;align-items:center;background:#efe6d3;border:1px solid #ddd0b4;border-radius:6px;padding:12px 14px;margin-top:14px;font-size:13px;color:#4a4438}
+  .ob .callno{font-weight:600;color:#8a5a2b;white-space:nowrap}
+  .ob .filehdr{padding:22px 32px 12px;display:flex;align-items:baseline;justify-content:space-between}
+  .ob .filet{font-family:"EB Garamond",Georgia,serif;font-size:17px;font-weight:500}
+  .ob .filem{font-size:11.5px;color:#7a7466}
+  .ob .file{margin:0 32px 22px;background:#fbf8f1;border:1px solid #e0d6c2;border-radius:6px;padding:18px 20px;font-family:"EB Garamond",Georgia,serif}
+  .ob .fcl{font-size:14px;line-height:1.62;color:#332f27;margin-bottom:11px}
+  .ob .fcn{font-family:"Instrument Sans",sans-serif;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:#8a7a58;display:block;margin-bottom:3px}
+  .ob .stat{background:#efe6d3;border:1px dashed #cdbc99;border-radius:6px;padding:13px 15px;font-family:"Instrument Sans",sans-serif;font-size:12.5px;line-height:1.6;color:#5b5445;margin-top:6px}
+  .ob .bbtn{display:inline-block;background:#7a4a22;color:#fbf8f1;font-size:13.5px;font-weight:500;padding:13px 22px;border-radius:5px;margin-top:16px}
+  .ob .fpr{font-family:"Geist Mono",ui-monospace,monospace;font-size:10.5px;color:#8a8272;margin-top:12px;letter-spacing:.02em}
+
+  /* ================================================================ OPTION C, the register */
+  .oc{background:#f7f8f9;color:#1b2126;font-family:"Instrument Sans",system-ui,sans-serif}
+  .oc .spine{background:#1b2126;color:#e8edf1;padding:16px 22px}
+  .oc .sptop{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+  .oc .spid{font-family:"Geist Mono",ui-monospace,monospace;font-size:11px;color:#8fa3b3;letter-spacing:.04em}
+  .oc .spstate{font-family:"Geist Mono",ui-monospace,monospace;font-size:10.5px;background:#2a3b48;color:#7fd0b0;padding:4px 8px;border-radius:3px;letter-spacing:.06em}
+  .oc .spgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .oc .spk{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#7d8f9d;display:block;margin-bottom:4px}
+  .oc .spv{font-size:14px;font-variant-numeric:tabular-nums}
+  .oc .spv.mono{font-family:"Geist Mono",ui-monospace,monospace;font-size:13px}
+  .oc .cbody{padding:20px 22px 0}
+  .oc .ch{font-family:"Newsreader",Georgia,serif;font-size:18px;font-weight:400;margin-bottom:10px}
+  .oc .cp{font-family:"Newsreader",Georgia,serif;font-size:14.5px;line-height:1.62;color:#333c43;margin-bottom:10px}
+  .oc .docket{margin:16px 22px 0;border:1px solid #dde3e8;border-radius:5px;background:#fff}
+  .oc .dh{display:flex;justify-content:space-between;padding:11px 14px;border-bottom:1px solid #e6ebef;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#66757f}
+  .oc .dr{display:grid;grid-template-columns:34px 1fr auto;gap:10px;padding:9px 14px;border-bottom:1px solid #eef2f5;font-size:13px;align-items:baseline}
+  .oc .dr:last-child{border-bottom:0}
+  .oc .dn{font-family:"Geist Mono",ui-monospace,monospace;font-size:11px;color:#8b99a3}
+  .oc .dc{font-family:"Geist Mono",ui-monospace,monospace;font-size:10.5px;color:#7f8d97}
+  .oc .evid{margin:18px 22px 0;background:#eef2f5;border:1px solid #dde3e8;border-radius:5px;padding:14px}
+  .oc .evt{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#66757f;margin-bottom:10px}
+  .oc .evr{display:flex;justify-content:space-between;font-family:"Geist Mono",ui-monospace,monospace;font-size:11px;padding:5px 0;color:#3c464e;border-bottom:1px solid #e2e8ed}
+  .oc .evr:last-child{border-bottom:0}
+  .oc .sigp{margin:18px 22px 26px;border-top:2px solid #1b2126;padding-top:14px}
+  .oc .sgl{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#66757f;margin-bottom:12px}
+  .oc .sgrow{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #e2e8ed;font-size:13.5px}
+  .oc .pend{font-family:"Geist Mono",ui-monospace,monospace;font-size:11px;color:#a0693a}
+  .oc .done{font-family:"Geist Mono",ui-monospace,monospace;font-size:11px;color:#2f7d5f}
+  .oc .cbtn{display:inline-block;background:#1b2126;color:#f7f8f9;font-size:13px;padding:12px 20px;border-radius:4px;margin-top:14px;font-variant-numeric:tabular-nums}
+
+  /* picker */
+  .picker{position:fixed;right:18px;bottom:18px;background:#1d2024;border:1px solid var(--edge);border-radius:10px;padding:14px 16px;width:250px;box-shadow:0 14px 40px #0009;z-index:50}
+  .picker h3{margin:0 0 4px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:600}
+  .picker .cur{font-size:15px;margin:6px 0 12px;color:#c8a04a;min-height:20px}
+  .picker button{width:100%;background:#c8a04a;color:#15171a;border:0;border-radius:6px;padding:10px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+  .picker .min{position:absolute;top:8px;right:10px;background:none;border:0;color:var(--dim);width:auto;font-size:16px;cursor:pointer;padding:0}
+  .picker.small .body{display:none}
+  .picker.small{width:auto;padding:9px 13px}
+  .picker.small h3{margin:0}
+</style>
+</head>
+<body>
+
+<div class="head">
+  <span class="round">Round 1 &middot; direction board &middot; signing product</span>
+  <h1>Four ways the same lease can look</h1>
+  <p>Every option below is the real 243 Lincoln Avenue, Unit 2 lease: $3,695 base rent plus $300 parking, $3,695 deposit, rent to the landlord on the 1st, and the twelve pages of disclosure New Jersey requires. Tenant left unnamed. The axis these differ on is what kind of object the signer thinks they are holding.</p>
+</div>
+
+<div class="board">
+
+  <!-- ============================================================ OPTION 0 -->
+  <section class="opt" data-choice="0">
+    <div class="optbar">
+      <span class="tag live">Option 0 &middot; live now</span>
+      <h2>The page about the agreement</h2>
+      <span class="axis">Bluebill, shipped and signed against</span>
+    </div>
+    <div class="frames">
+      <div class="fr desk">
+        <p class="frlab">Desktop</p>
+        <div class="paper o0 doc">
+          <div class="mast">
+            <p class="sender">Sent to you by <b>Palisade Stays</b>, managing the rental on the owner's behalf. If you were not expecting this, or anything here looks wrong, call or text <b>201 321 5446</b> before you sign anything.</p>
+            <span class="eyebrow">Furnished residential lease</span>
+            <div class="title">243 Lincoln Avenue,<br>Unit 2</div>
+            <div class="sub">Cliffside Park, New Jersey 07010.</div>
+            <div class="facts">
+              <div><span class="fk">Monthly rent</span><span class="fv">$3,995.00</span></div>
+              <div><span class="fk">Due</span><span class="fv">1st of the month</span></div>
+              <div><span class="fk">Deposit</span><span class="fv">$3,695.00</span></div>
+              <div><span class="fk">Term</span><span class="fv">Twelve months</span></div>
+            </div>
+          </div>
+          <div class="statusbar"><b>Awaiting tenant signature.</b> &nbsp;The landlord has signed. Nothing is owed until you sign and the start date arrives.</div>
+          <div class="body">
+            <div class="card">
+              <div class="cardt">What you pay, and when</div>
+              <div class="row"><span>Base rent</span><span>$3,695.00</span></div>
+              <div class="row"><span>Parking, one car</span><span>$300.00</span></div>
+              <div class="row"><span>Security deposit, refundable</span><span>$3,695.00</span></div>
+            </div>
+            <span class="secn">Section 1</span>
+            <div class="sech">Basic terms</div>
+            <p class="p">Landlord rents to Tenant the apartment known as 243 Lincoln Avenue, Unit 2, Cliffside Park, New Jersey 07010, a unit in a multifamily residence, together with the refrigerator, oven and range, microwave, clothes washer, clothes dryer and window air conditioning installed as of the start date.</p>
+            <span class="secn">Section 2</span>
+            <div class="sech">Rent</div>
+            <p class="p">Monthly Rent of $3,995.00 is due on the 1st day of each month, paid to Landlord by Zelle or by ACH. The Late Fee is $250.00.</p>
+            <div class="sigg">
+              <div><span class="sigr">Landlord</span><div class="sigl"></div><div class="sign">Jamarber Dobrushi</div><div class="sigs">Signed</div></div>
+              <div><span class="sigr">Tenant</span><div class="sigl"></div><div class="sign">&nbsp;</div><div class="sigs">Awaiting signature</div></div>
+              <div><span class="sigr">Co-tenant</span><div class="sigl"></div><div class="sign">&nbsp;</div><div class="sigs">Awaiting signature</div></div>
+            </div>
+            <span class="btn">Sign the lease</span>
+          </div>
+        </div>
+      </div>
+      <div class="fr phone">
+        <p class="frlab">390px</p>
+        <div class="paper o0 doc">
+          <div class="mast" style="padding:20px 18px 16px">
+            <p class="sender">Sent to you by <b>Palisade Stays</b>. If anything here looks wrong, call or text <b>201 321 5446</b> before you sign.</p>
+            <span class="eyebrow">Furnished residential lease</span>
+            <div class="title" style="font-size:27px">243 Lincoln Avenue, Unit 2</div>
+            <div class="sub">Cliffside Park, New Jersey 07010.</div>
+            <div class="facts" style="gap:16px">
+              <div><span class="fk">Rent</span><span class="fv">$3,995.00</span></div>
+              <div><span class="fk">Due</span><span class="fv">The 1st</span></div>
+              <div><span class="fk">Deposit</span><span class="fv">$3,695.00</span></div>
+            </div>
+          </div>
+          <div class="statusbar" style="padding:11px 18px"><b>Awaiting tenant signature.</b> The landlord has signed.</div>
+          <div class="body" style="padding:18px">
+            <div class="card">
+              <div class="cardt">What you pay</div>
+              <div class="row"><span>Base rent</span><span>$3,695.00</span></div>
+              <div class="row"><span>Parking</span><span>$300.00</span></div>
+              <div class="row"><span>Deposit</span><span>$3,695.00</span></div>
+            </div>
+            <span class="secn">Section 1</span>
+            <div class="sech">Basic terms</div>
+            <p class="p">Landlord rents to Tenant the apartment known as 243 Lincoln Avenue, Unit 2, together with the appliances installed as of the start date.</p>
+            <span class="secn">Section 2</span>
+            <div class="sech">Rent</div>
+            <p class="p">Monthly Rent of $3,995.00 is due on the 1st of each month, by Zelle or ACH.</p>
+            <span class="btn">Sign the lease</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ OPTION A -->
+  <section class="opt" data-choice="A">
+    <div class="optbar">
+      <span class="tag">Option A</span>
+      <h2>The instrument</h2>
+      <span class="axis">A printed legal document, set properly</span>
+    </div>
+    <div class="frames">
+      <div class="fr desk">
+        <p class="frlab">Desktop</p>
+        <div class="paper oa doc">
+          <div class="plate">
+            <span class="kicker">Residential lease &middot; New Jersey</span>
+            <div class="t">243 Lincoln Avenue, Unit 2</div>
+            <div class="t2">Cliffside Park, New Jersey 07010</div>
+          </div>
+          <div class="basic">
+            <div class="bt">Section 1 &middot; Basic terms</div>
+            <table>
+              <tr><td>Landlord</td><td>Jamarber Dobrushi</td></tr>
+              <tr><td>Managed by</td><td>Palisade Stays, 201 321 5446</td></tr>
+              <tr><td>Tenant</td><td>To be named</td></tr>
+              <tr><td>Base Rent, monthly</td><td>$3,695.00</td></tr>
+              <tr><td>Parking, one car</td><td>$300.00</td></tr>
+              <tr><td>Monthly Rent, total</td><td>$3,995.00</td></tr>
+              <tr><td>Due</td><td>1st of each month</td></tr>
+              <tr><td>Security Deposit</td><td>$3,695.00</td></tr>
+              <tr><td>Late Fee</td><td>$250.00</td></tr>
+            </table>
+          </div>
+          <div class="clauses">
+            <span class="initrail">initial<br>&mdash;&mdash;</span>
+            <div class="cl"><span class="cn">1.3</span><div><span class="sc">Property.</span> The Property is a unit in a multifamily residence at 243 Lincoln Avenue, Cliffside Park, New Jersey, and includes the refrigerator, oven and range, microwave, clothes washer, clothes dryer and window air conditioning installed as of the Start Date.</div></div>
+            <div class="cl"><span class="cn">1.5.3</span><div><span class="sc">Manner of payment.</span> All Rent payable to Landlord must be paid electronically by Zelle, or by ACH or direct deposit. Landlord will provide account information to Tenant directly.</div></div>
+            <div class="cl"><span class="cn">2.3.2</span><div><span class="sc">Late payment.</span> Where Rent is not received when due, Tenant shall pay the Late Fee stated in Section 1.5.2 as Additional Rent.</div></div>
+          </div>
+          <div class="backm">
+            <div class="backh">Attachments required by New Jersey law &middot; pages 12 to 24</div>
+            <div class="backl"><span>Truth in Renting statement</span><span>N.J.S.A. 46:8-45</span></div>
+            <div class="backl"><span>Late fees and dishonored payments</span><span>N.J.S.A. 2A:42-6.1</span></div>
+            <div class="backl"><span>Domestic violence termination</span><span>N.J.S.A. 46:8-9.6</span></div>
+            <div class="backl"><span>Habitability, repair and deduct</span><span>Marini v. Ireland</span></div>
+            <div class="backl"><span>Window guard notice</span><span>N.J.A.C. 5:10-27.1</span></div>
+          </div>
+          <div class="exec">
+            <div class="exl">In witness whereof</div>
+            <div class="exrow">
+              <div><div class="exline"></div><div class="exname">Jamarber Dobrushi, Landlord</div><div class="exmeta">Executed 22 April 2026</div></div>
+              <div><div class="exline"></div><div class="exname">Tenant</div><div class="exmeta">Not yet executed</div></div>
+            </div>
+            <span class="abtn">Execute as Tenant</span>
+          </div>
+        </div>
+      </div>
+      <div class="fr phone">
+        <p class="frlab">390px</p>
+        <div class="paper oa doc">
+          <div class="plate" style="padding:22px 20px 14px">
+            <span class="kicker">Residential lease &middot; New Jersey</span>
+            <div class="t" style="font-size:26px">243 Lincoln Avenue, Unit 2</div>
+            <div class="t2" style="font-size:16px">Cliffside Park, New Jersey 07010</div>
+          </div>
+          <div class="basic" style="padding:16px 20px 6px">
+            <div class="bt">Section 1 &middot; Basic terms</div>
+            <table>
+              <tr><td>Landlord</td><td>J. Dobrushi</td></tr>
+              <tr><td>Base Rent</td><td>$3,695.00</td></tr>
+              <tr><td>Parking</td><td>$300.00</td></tr>
+              <tr><td>Monthly Rent</td><td>$3,995.00</td></tr>
+              <tr><td>Due</td><td>The 1st</td></tr>
+              <tr><td>Deposit</td><td>$3,695.00</td></tr>
+            </table>
+          </div>
+          <div class="clauses" style="padding:12px 20px 0">
+            <div class="cl" style="grid-template-columns:34px 1fr"><span class="cn">1.3</span><div><span class="sc">Property.</span> A unit in a multifamily residence at 243 Lincoln Avenue, including the appliances installed as of the Start Date.</div></div>
+            <div class="cl" style="grid-template-columns:34px 1fr"><span class="cn">1.5.3</span><div><span class="sc">Manner of payment.</span> Rent is paid to Landlord by Zelle, or by ACH or direct deposit.</div></div>
+          </div>
+          <div class="backm" style="margin:16px 20px 0">
+            <div class="backh">New Jersey attachments &middot; pp 12&ndash;24</div>
+            <div class="backl"><span>Truth in Renting</span><span>46:8-45</span></div>
+            <div class="backl"><span>Late fees</span><span>2A:42-6.1</span></div>
+            <div class="backl"><span>Window guard notice</span><span>5:10-27.1</span></div>
+          </div>
+          <div class="exec" style="margin:18px 20px 24px">
+            <div class="exl">In witness whereof</div>
+            <div class="exrow" style="grid-template-columns:1fr;gap:16px">
+              <div><div class="exline"></div><div class="exname">Jamarber Dobrushi, Landlord</div><div class="exmeta">Executed 22 April 2026</div></div>
+              <div><div class="exline"></div><div class="exname">Tenant</div><div class="exmeta">Not yet executed</div></div>
+            </div>
+            <span class="abtn">Execute as Tenant</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ OPTION B -->
+  <section class="opt" data-choice="B">
+    <div class="optbar">
+      <span class="tag">Option B</span>
+      <h2>The letter and the file</h2>
+      <span class="axis">A person explaining it, with the lease attached</span>
+    </div>
+    <div class="frames">
+      <div class="fr desk">
+        <p class="frlab">Desktop</p>
+        <div class="paper ob doc">
+          <div class="letter">
+            <div class="from">
+              <div class="avat">PS</div>
+              <div><div class="fromn">Jake Lee, Palisade Stays</div><div class="fromr">Managing 243 Lincoln for the owner</div></div>
+            </div>
+            <div class="lh">Here is the lease for Unit 2, and what it actually commits you to.</div>
+            <p class="lp">The owner is Jamarber Dobrushi. We manage the building for him. Rent goes to him directly by Zelle or ACH, never to us, so nobody should ever ask you to send rent anywhere else.</p>
+            <div class="six">
+              <div class="sr"><span class="sk">The apartment</span><b>243 Lincoln Avenue, Unit 2</b></div>
+              <div class="sr"><span class="sk">Rent, all in</span><b>$3,995.00 a month</b></div>
+              <div class="sr"><span class="sk">Made up of</span><b>$3,695 rent, $300 parking</b></div>
+              <div class="sr"><span class="sk">Due</span><b>The 1st of each month</b></div>
+              <div class="sr"><span class="sk">Deposit, refundable</span><b>$3,695.00 at signing</b></div>
+              <div class="sr"><span class="sk">Late after the 1st</span><b>$250.00</b></div>
+            </div>
+            <p class="lp">Furnished with the refrigerator, oven and range, microwave, washer, dryer and window air conditioning. One parking space for one car.</p>
+            <div class="call"><span>Anything here that is not what we discussed, call before you sign. It is easier to change now than after.</span><span class="callno">201 321 5446</span></div>
+          </div>
+          <div class="filehdr"><span class="filet">The lease itself</span><span class="filem">24 pages &middot; version of 27 August 2026</span></div>
+          <div class="file">
+            <div class="fcl"><span class="fcn">1.3 Property</span>The Property is a unit in a multifamily residence at 243 Lincoln Avenue, Cliffside Park, New Jersey, and includes the appliances installed as of the Start Date.</div>
+            <div class="fcl"><span class="fcn">1.5.3 Manner of payment</span>All Rent payable to Landlord must be paid electronically by Zelle, or by ACH or direct deposit.</div>
+            <div class="stat">Pages 12 to 24 are the disclosures New Jersey requires a landlord to give you, including the Truth in Renting statement. They are here in full and they are part of what you sign. Most people do not read them and that is fine, but we are not going to pretend they are not in the document.</div>
+            <div class="fpr">version fingerprint 4f2a91c7e0b3d85a</div>
+          </div>
+          <div style="padding:0 32px 30px"><span class="bbtn">Read it, then sign</span></div>
+        </div>
+      </div>
+      <div class="fr phone">
+        <p class="frlab">390px</p>
+        <div class="paper ob doc">
+          <div class="letter" style="padding:22px 20px">
+            <div class="from">
+              <div class="avat">PS</div>
+              <div><div class="fromn">Jake Lee, Palisade Stays</div><div class="fromr">Managing 243 Lincoln for the owner</div></div>
+            </div>
+            <div class="lh" style="font-size:22px">Here is the lease for Unit 2, and what it commits you to.</div>
+            <p class="lp">The owner is Jamarber Dobrushi. Rent goes to him directly by Zelle or ACH, never to us.</p>
+            <div class="six">
+              <div class="sr"><span class="sk">Rent, all in</span><b>$3,995.00</b></div>
+              <div class="sr"><span class="sk">Due</span><b>The 1st</b></div>
+              <div class="sr"><span class="sk">Deposit</span><b>$3,695.00</b></div>
+              <div class="sr"><span class="sk">Late fee</span><b>$250.00</b></div>
+            </div>
+            <div class="call"><span>Not what we discussed? Call first.</span><span class="callno">201 321 5446</span></div>
+          </div>
+          <div class="filehdr" style="padding:18px 20px 10px"><span class="filet">The lease itself</span><span class="filem">24 pages</span></div>
+          <div class="file" style="margin:0 20px 18px">
+            <div class="fcl"><span class="fcn">1.3 Property</span>A unit in a multifamily residence at 243 Lincoln Avenue, including the appliances installed as of the Start Date.</div>
+            <div class="stat">Pages 12 to 24 are the disclosures New Jersey requires. They are here in full and they are part of what you sign.</div>
+            <div class="fpr">fingerprint 4f2a91c7e0b3d85a</div>
+          </div>
+          <div style="padding:0 20px 26px"><span class="bbtn">Read it, then sign</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ OPTION C -->
+  <section class="opt" data-choice="C">
+    <div class="optbar">
+      <span class="tag">Option C</span>
+      <h2>The register</h2>
+      <span class="axis">A dated record, with the evidence in view</span>
+    </div>
+    <div class="frames">
+      <div class="fr desk">
+        <p class="frlab">Desktop</p>
+        <div class="paper oc doc">
+          <div class="spine">
+            <div class="sptop">
+              <span class="spid">LER-U2 &middot; lease &middot; 243 Lincoln Ave</span>
+              <span class="spstate">AWAITING TENANT</span>
+            </div>
+            <div class="spgrid">
+              <div><span class="spk">Unit</span><span class="spv">243 Lincoln, Unit 2</span></div>
+              <div><span class="spk">Monthly rent</span><span class="spv mono">$3,995.00</span></div>
+              <div><span class="spk">Due</span><span class="spv">1st</span></div>
+              <div><span class="spk">Deposit</span><span class="spv mono">$3,695.00</span></div>
+            </div>
+          </div>
+          <div class="cbody">
+            <div class="ch">1.3 &nbsp;Property</div>
+            <p class="cp">The Property is a unit in a multifamily residence at 243 Lincoln Avenue, Cliffside Park, New Jersey, and includes the refrigerator, oven and range, microwave, clothes washer, clothes dryer and window air conditioning installed as of the Start Date.</p>
+            <div class="ch">1.5.3 &nbsp;Manner of payment</div>
+            <p class="cp">All Rent payable to Landlord must be paid electronically by Zelle, or by ACH or direct deposit. Landlord will provide account information directly.</p>
+          </div>
+          <div class="docket">
+            <div class="dh"><span>Attachments on the record</span><span>13 items</span></div>
+            <div class="dr"><span class="dn">A1</span><span>Truth in Renting statement</span><span class="dc">46:8-45</span></div>
+            <div class="dr"><span class="dn">A2</span><span>Late fees and dishonored payments</span><span class="dc">2A:42-6.1</span></div>
+            <div class="dr"><span class="dn">A3</span><span>Domestic violence termination policy</span><span class="dc">46:8-9.6</span></div>
+            <div class="dr"><span class="dn">A4</span><span>Habitability, repair and deduct</span><span class="dc">Marini</span></div>
+            <div class="dr"><span class="dn">A5</span><span>Window guard notice</span><span class="dc">5:10-27.1</span></div>
+          </div>
+          <div class="evid">
+            <div class="evt">What this version is</div>
+            <div class="evr"><span>version</span><span>2026-08-27</span></div>
+            <div class="evr"><span>fingerprint</span><span>4f2a91c7e0b3d85a</span></div>
+            <div class="evr"><span>landlord executed</span><span>2026-04-22 &middot; on file</span></div>
+            <div class="evr"><span>changed since you last opened</span><span>no</span></div>
+          </div>
+          <div class="sigp">
+            <div class="sgl">Signatures on the record</div>
+            <div class="sgrow"><span>Jamarber Dobrushi &middot; Landlord</span><span class="done">signed 2026-04-22</span></div>
+            <div class="sgrow"><span>Tenant</span><span class="pend">awaiting</span></div>
+            <span class="cbtn">Add my signature to the record</span>
+          </div>
+        </div>
+      </div>
+      <div class="fr phone">
+        <p class="frlab">390px</p>
+        <div class="paper oc doc">
+          <div class="spine" style="padding:14px 18px">
+            <div class="sptop">
+              <span class="spid">LER-U2 &middot; lease</span>
+              <span class="spstate">AWAITING TENANT</span>
+            </div>
+            <div class="spgrid" style="grid-template-columns:1fr 1fr;gap:12px">
+              <div><span class="spk">Monthly rent</span><span class="spv mono">$3,995.00</span></div>
+              <div><span class="spk">Due</span><span class="spv">1st</span></div>
+              <div><span class="spk">Deposit</span><span class="spv mono">$3,695.00</span></div>
+              <div><span class="spk">Late fee</span><span class="spv mono">$250.00</span></div>
+            </div>
+          </div>
+          <div class="cbody" style="padding:16px 18px 0">
+            <div class="ch">1.3 &nbsp;Property</div>
+            <p class="cp">A unit in a multifamily residence at 243 Lincoln Avenue, including the appliances installed as of the Start Date.</p>
+          </div>
+          <div class="docket" style="margin:14px 18px 0">
+            <div class="dh"><span>Attachments</span><span>13</span></div>
+            <div class="dr"><span class="dn">A1</span><span>Truth in Renting</span><span class="dc">46:8-45</span></div>
+            <div class="dr"><span class="dn">A2</span><span>Late fees</span><span class="dc">2A:42-6.1</span></div>
+            <div class="dr"><span class="dn">A3</span><span>Domestic violence</span><span class="dc">46:8-9.6</span></div>
+          </div>
+          <div class="evid" style="margin:16px 18px 0">
+            <div class="evt">What this version is</div>
+            <div class="evr"><span>fingerprint</span><span>4f2a91c7</span></div>
+            <div class="evr"><span>landlord executed</span><span>2026-04-22</span></div>
+          </div>
+          <div class="sigp" style="margin:16px 18px 24px">
+            <div class="sgl">Signatures</div>
+            <div class="sgrow"><span>J. Dobrushi &middot; Landlord</span><span class="done">signed</span></div>
+            <div class="sgrow"><span>Tenant</span><span class="pend">awaiting</span></div>
+            <span class="cbtn">Add my signature</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="picker" id="picker">
+  <button class="min" onclick="document.getElementById('picker').classList.toggle('small')">&minus;</button>
+  <h3>Your pick</h3>
+  <div class="body">
+    <div class="cur" id="cur">nothing selected</div>
+    <button onclick="(function(b){var s=document.querySelector('.opt.sel');var v=s?s.getAttribute('data-choice'):'';if(v&&navigator.clipboard)navigator.clipboard.writeText('Option '+v);b.textContent=v?('Copied: Option '+v):'Click an option first';setTimeout(function(){b.textContent='Copy my pick'},2200);})(this)">Copy my pick</button>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.opt').forEach(function(o){
+    o.querySelector('.optbar').addEventListener('click', function(){
+      document.querySelectorAll('.opt').forEach(function(x){x.classList.remove('sel')});
+      o.classList.add('sel');
+      document.getElementById('cur').textContent = 'Option ' + o.getAttribute('data-choice') + ', ' + o.querySelector('h2').textContent;
+    });
+  });
+</script>
+</body>
+</html>

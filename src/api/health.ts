@@ -35,7 +35,9 @@ export function createHealthHandler(opts: { agreement: Agreement; fallbackKey: s
       readOk = false;
     }
 
-    const gate = readOk ? signingGate(agreement, ex) : { open: false as const, reason: "The store could not be read." };
+    const gate = readOk
+      ? signingGate(agreement, ex, undefined, storeKind() !== "none")
+      : { open: false as const, reason: "The store could not be read." };
     const current = currentSignatures(agreement, ex);
 
     return new Response(

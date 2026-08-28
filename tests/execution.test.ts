@@ -294,3 +294,23 @@ describe("the party who signs first", () => {
     expect(signingGate(a, { signatures: {} }, "owner").open).toBe(false);
   });
 });
+
+describe("when there is nowhere to file a signature", () => {
+  it("closes the gate rather than showing a form that will fail on submit", () => {
+    // The standard: an unset key must look different on screen from a working
+    // page. Before this, a missing store rendered a complete, inviting form and
+    // the only place the truth appeared was a health probe.
+    const a = fixture({
+      parties: [
+        { id: "owner", legalName: "Jamarber Dobrushi", role: "Landlord" },
+        { id: "tenant", legalName: "Susan Berman", role: "Tenant" },
+      ],
+    });
+    expect(signingGate(a, { signatures: {} }, undefined, true).open).toBe(true);
+
+    const noStore = signingGate(a, { signatures: {} }, undefined, false);
+    expect(noStore.open).toBe(false);
+    // It never blames the signer for our configuration.
+    if (!noStore.open) expect(noStore.reason).toMatch(/on our side/);
+  });
+});

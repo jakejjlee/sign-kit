@@ -205,7 +205,32 @@ export type Gate =
  * 2) A party who signs first has not. On the Bluebill lease the owner had to
  *    affirm a revision before the tenants could be bound to it.
  */
-export function signingGate(agreement: Agreement, ex: Execution, forParty?: string): Gate {
+export function signingGate(
+  agreement: Agreement,
+  ex: Execution,
+  forParty?: string,
+  /**
+   * Whether a signature written right now would actually be stored.
+   *
+   * Passed in rather than read here, so this stays a pure function the tests
+   * can drive without a store.
+   */
+  storeReady: boolean = true
+): Gate {
+  // No store, no signing. Without this the page renders a complete, inviting
+  // form that fails on submit, and the only place the truth appeared was a
+  // health probe nobody was going to check first. An unset key has to look
+  // different on screen from a working one, and the person it must look
+  // different to is whoever is about to ask somebody to sign.
+  if (!storeReady) {
+    return {
+      open: false,
+      reason:
+        "This agreement is not open for signature yet. It is a setup problem on our side, not " +
+        "anything to do with you, and nothing you do here would be recorded until it is fixed.",
+    };
+  }
+
   const unnamed = agreement.parties.filter((p) => !p.legalName.trim());
   if (unnamed.length > 0) {
     const roles = unnamed.map((p) => p.role.toLowerCase()).join(" and ");

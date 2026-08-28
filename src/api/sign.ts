@@ -6,7 +6,7 @@ import {
   type Execution,
   type SignInput,
 } from "../lib/execution";
-import { readExecution, writeSignature } from "../lib/store";
+import { readExecution, storeKind, writeSignature } from "../lib/store";
 import { agreementFingerprint } from "../lib/fingerprint";
 
 /**
@@ -75,7 +75,7 @@ export function createSignHandler(opts: {
       );
     }
 
-    const gate = signingGate(agreement, ex, signingAs ?? body.party);
+    const gate = signingGate(agreement, ex, signingAs ?? body.party, storeKind() !== "none");
     if (!gate.open) {
       return json({ error: gate.reason, field: "form" }, 409);
     }

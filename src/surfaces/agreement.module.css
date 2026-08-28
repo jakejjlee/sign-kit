@@ -288,3 +288,54 @@
   .sigGrid { grid-template-columns: 1fr; gap: 1rem; }
   .fileHead { padding: 1.5rem 0 .6rem; }
 }
+
+/* ---------------------------------------------------------------- the form -- */
+
+.fieldset { border: 0; padding: 0; margin: 0 0 1.1rem; }
+.label {
+  display: block;
+  font-family: var(--sk-ui);
+  font-size: .8rem; font-weight: 600; color: var(--sk-ink);
+  margin-bottom: .4rem;
+}
+.who { display: grid; gap: .5rem; }
+.whoOption {
+  display: flex; align-items: center; gap: .6rem;
+  border: 1px solid var(--sk-rule);
+  border-radius: 5px;
+  padding: .7rem .8rem;
+  font-size: .92rem;
+  cursor: pointer;
+  min-height: 2.75rem;
+  background: var(--sk-ground);
+}
+.whoSelected { border-color: var(--sk-accent); background: var(--sk-quiet); }
+.field { margin-bottom: 1.1rem; }
+.input, .inputPlain {
+  width: 100%;
+  border: 1px solid var(--sk-rule);
+  border-radius: 5px;
+  background: var(--sk-ground);
+  color: var(--sk-ink);
+  padding: .72rem .8rem;
+  font: inherit;
+  font-size: 1rem; /* never below 16px, or iOS zooms the whole page on focus */
+  min-height: 2.75rem;
+}
+.input { font-family: var(--sk-doc); font-size: 1.12rem; }
+.inputError { border-color: #9d3b2f; }
+.hint { display: block; font-size: .78rem; color: var(--sk-muted); margin-top: .35rem; line-height: 1.5; }
+.check {
+  display: flex; gap: .6rem; align-items: flex-start;
+  font-size: .86rem; line-height: 1.55; color: var(--sk-body);
+  margin-bottom: .85rem; cursor: pointer;
+}
+.check input { margin-top: .2rem; width: 1.05rem; height: 1.05rem; flex: 0 0 auto; }
+.error {
+  background: #fbecea; border: 1px solid #e3b7b0; color: #7d2c22;
+  border-radius: 5px; padding: .7rem .8rem; font-size: .87rem; line-height: 1.55;
+  margin: 0 0 .9rem;
+}
+.outstanding, .ready { font-size: .8rem; color: var(--sk-muted); margin: .7rem 0 0; }
+.ready { color: #2f6d4f; }
+.btn:disabled { opacity: .6; cursor: default; }

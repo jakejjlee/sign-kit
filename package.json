@@ -32,6 +32,36 @@
     },
     "./surfaces/agreement.module.css": {
       "default": "./src/surfaces/agreement.module.css"
+    },
+    "./api/sign": {
+      "types": "./src/api/sign.ts",
+      "import": "./src/api/sign.ts",
+      "default": "./src/api/sign.ts"
+    },
+    "./lib/execution": {
+      "types": "./src/lib/execution.ts",
+      "import": "./src/lib/execution.ts",
+      "default": "./src/lib/execution.ts"
+    },
+    "./lib/store": {
+      "types": "./src/lib/store.ts",
+      "import": "./src/lib/store.ts",
+      "default": "./src/lib/store.ts"
+    },
+    "./lib/fingerprint": {
+      "types": "./src/lib/fingerprint.ts",
+      "import": "./src/lib/fingerprint.ts",
+      "default": "./src/lib/fingerprint.ts"
+    },
+    "./lib/pdf": {
+      "types": "./src/lib/pdf.ts",
+      "import": "./src/lib/pdf.ts",
+      "default": "./src/lib/pdf.ts"
+    },
+    "./api/health": {
+      "types": "./src/api/health.ts",
+      "import": "./src/api/health.ts",
+      "default": "./src/api/health.ts"
     }
   },
   "scripts": {
@@ -39,14 +69,39 @@
     "test": "vitest run"
   },
   "peerDependencies": {
+    "@pdf-lib/fontkit": "^1.1",
+    "googleapis": "^176",
     "next": "^16",
-    "react": "^19"
+    "pdf-lib": "^1.17",
+    "react": "^19",
+    "resend": "^4.6"
   },
   "devDependencies": {
+    "@pdf-lib/fontkit": "^1.1.1",
+    "@types/node": "^22.20.1",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.5",
+    "googleapis": "^176.0.0",
+    "next": "^16.3.3",
+    "pdf-lib": "^1.17.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "typescript": "^5.9.3"
+    "resend": "^4.8.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.11"
+  },
+  "peerDependenciesMeta": {
+    "googleapis": {
+      "optional": true
+    },
+    "resend": {
+      "optional": true
+    },
+    "pdf-lib": {
+      "optional": true
+    },
+    "@pdf-lib/fontkit": {
+      "optional": true
+    }
   }
 }

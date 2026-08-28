@@ -1,6 +1,7 @@
 import type { Agreement } from "../content/types";
 import { currentSignatures, isFullyExecuted, signingGate } from "../lib/execution";
 import { probeStore, readExecution, storeKind } from "../lib/store";
+import { deliveryConfig } from "../lib/notify";
 
 /**
  * Is this agreement actually ready to be signed?
@@ -47,6 +48,7 @@ export function createHealthHandler(opts: { agreement: Agreement; fallbackKey: s
           gate: gate.open ? "open" : gate.reason,
           canBeRead: readOk,
           store: storeKind(),
+          delivery: deliveryConfig(),
           detail: probe.detail,
           version: agreement.version,
           parties: agreement.parties.map((p) => ({

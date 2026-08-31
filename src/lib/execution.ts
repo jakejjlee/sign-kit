@@ -48,6 +48,16 @@ export type SignatureRecord = {
 
 export type Execution = {
   signatures: Record<string, SignatureRecord | undefined>;
+  /**
+   * Set when the store could not be read, carrying why.
+   *
+   * An empty `signatures` then means "unknown", never "nobody has signed", and
+   * the two must never be shown the same way. Before this existed a Drive
+   * timeout threw out of readExecution and took the whole agreement page down
+   * with a 500, so a store hiccup made the document unreadable to a party who
+   * only wanted to read it.
+   */
+  unavailable?: string;
 };
 
 export type SignInput = {
@@ -202,6 +212,7 @@ export type Gate =
  *
  * 1) A party has not been named. A lease with no tenant binds nobody, and a
  *    blank rule under a role invites a name that means nothing.
+ * 1b) The store could not be read, so the current state is unknown.
  * 2) A party who signs first has not. On the Bluebill lease the owner had to
  *    affirm a revision before the tenants could be bound to it.
  */
@@ -228,6 +239,20 @@ export function signingGate(
       reason:
         "This agreement is not open for signature yet. It is a setup problem on our side, not " +
         "anything to do with you, and nothing you do here would be recorded until it is fixed.",
+    };
+  }
+
+  // The record exists but could not be read. Signing has to be refused rather
+  // than allowed against an unknown state: a write-once store plus a page that
+  // believes nobody has signed is precisely how one party signs twice, or how a
+  // second signature is refused with no explanation anybody can act on.
+  if (ex.unavailable) {
+    return {
+      open: false,
+      reason:
+        "The signature record cannot be read right now, so signing is held rather than risked " +
+        "against a state we cannot see. The agreement itself is unaffected and is readable " +
+        "below. Try again shortly.",
     };
   }
 

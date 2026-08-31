@@ -242,8 +242,22 @@ export async function probeStore(agreement: Agreement): Promise<{
 
 export async function readExecution(agreement: Agreement): Promise<Execution> {
   const kind = storeKind();
-  if (kind === "drive") return driveRead(agreement);
-  if (kind === "local") return localRead(agreement);
+  // Reading must never take the document down. Drive timed out on a burst of
+  // page loads, driveRead threw, and every route that reads the record, the
+  // agreement page and the PDF both, answered 500. A party who only wants to
+  // read what they are being asked to sign should not be stopped by the store
+  // being slow, so a read failure degrades to "unknown" and the gate refuses on
+  // it rather than the page dying.
+  try {
+    if (kind === "drive") return await driveRead(agreement);
+    if (kind === "local") return await localRead(agreement);
+  } catch (err) {
+    console.error("[sign-kit] could not read the signature store:", err);
+    return {
+      signatures: {},
+      unavailable: err instanceof Error ? err.message : String(err),
+    };
+  }
   // Production with no store configured. Report nothing signed rather than
   // inventing a state, and let the write path refuse loudly.
   return { signatures: {} };

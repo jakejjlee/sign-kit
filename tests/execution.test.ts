@@ -113,6 +113,22 @@ describe("the signing gate", () => {
     expect(open.open).toBe(true);
   });
 
+  it("refuses to sign against a record it could not read", () => {
+    // A Drive timeout used to throw out of readExecution and 500 the page. It
+    // now degrades to unknown, and unknown must never be treated as unsigned:
+    // a write-once store plus a page believing nobody has signed is how one
+    // party signs twice.
+    const a = fixture({ parties: [{ id: "owner", legalName: "A Owner", role: "Owner" }] });
+    const gate = signingGate(a, { signatures: {}, unavailable: "The operation was aborted." });
+    expect(gate.open).toBe(false);
+    if (!gate.open) expect(gate.reason).toMatch(/cannot be read right now/);
+  });
+
+  it("still opens when the record read cleanly and is simply empty", () => {
+    const a = fixture({ parties: [{ id: "owner", legalName: "A Owner", role: "Owner" }] });
+    expect(signingGate(a, { signatures: {} }).open).toBe(true);
+  });
+
   it("closes again when the agreement is re-issued", () => {
     // The rule the Bluebill lease was built around. A signature is against a
     // text. Re-issuing a version leaves the earlier signature covering the

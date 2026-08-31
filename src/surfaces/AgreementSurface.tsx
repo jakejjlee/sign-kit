@@ -33,6 +33,11 @@ export type SurfaceState = {
   signingOpen: boolean;
   /** Why, in the signer's words, when it is closed. */
   closedReason?: string;
+  /**
+   * Set when the store could not be read. An empty signature set then means
+   * "unknown", and a surface must not render it as "nobody has signed".
+   */
+  unavailable?: boolean;
   /** Hash of the exact text on screen, so a later edit is provable. */
   fingerprint: string;
 };
@@ -172,9 +177,11 @@ export function AgreementSurface({
                     <div className={`${s.sigStamp} ${sig || !named ? "" : s.sigPending}`}>
                       {sig
                         ? `Signed electronically ${sig.signedAtLocal ?? longDate(sig.signedOn)}`
-                        : named
-                          ? "Awaiting signature"
-                          : "No tenant named yet"}
+                        : state.unavailable
+                          ? "Record unreadable right now"
+                          : named
+                            ? "Awaiting signature"
+                            : "No tenant named yet"}
                     </div>
                   </div>
                 );

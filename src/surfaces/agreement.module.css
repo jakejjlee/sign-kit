@@ -331,6 +331,16 @@
   margin-bottom: .85rem; cursor: pointer;
 }
 .check input { margin-top: .2rem; width: 1.05rem; height: 1.05rem; flex: 0 0 auto; }
+/*
+ * The label is the activation area, so the label is the target. On a two-line
+ * consent it came to 43px, one under the bar, on the control that carries the
+ * electronic-signature consent itself. Measured across thirteen geometries;
+ * it fails on tablet and landscape phone, where the text happens to fit on two
+ * lines rather than three.
+ */
+@media (pointer: coarse) {
+  .check { min-height: 44px; align-items: center; }
+}
 .error {
   background: #fbecea; border: 1px solid #e3b7b0; color: #7d2c22;
   border-radius: 5px; padding: .7rem .8rem; font-size: .87rem; line-height: 1.55;

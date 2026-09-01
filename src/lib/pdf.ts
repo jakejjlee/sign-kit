@@ -2,7 +2,7 @@ import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf
 
 import type { Agreement, Block, Section } from "../content/types";
 import { longDate } from "./dates";
-import { currentSignatures, isFullyExecuted, type Execution } from "./execution";
+import { currentSignatures, isFullyExecuted, type ClauseInitial, type Execution } from "./execution";
 import { shortFingerprint } from "./fingerprint";
 
 /**
@@ -147,10 +147,28 @@ function drawBlock(d: Draw, f: Fonts, b: Block) {
   d.gap(4);
 }
 
-function drawSection(d: Draw, f: Fonts, sec: Section) {
+function drawSection(d: Draw, f: Fonts, sec: Section, initials?: ClauseInitial[]) {
+  if (sec.group) {
+    d.need(46);
+    d.gap(10);
+    d.rule();
+    d.gap(2);
+    d.text(sec.group.toUpperCase(), { font: f.bold, size: 8.5, color: MUTED });
+    d.gap(2);
+  }
   d.need(40);
   d.gap(6);
+  const mark = (initials ?? [])
+    .filter((i) => i.clause === sec.n)
+    .map((i) => i.initials)
+    .join(" ");
   d.text(`${sec.n}  ${sec.title}`, { font: f.bold, size: 11.5 });
+  if (mark) {
+    // In the margin beside the clause, which is where a paper lease puts it.
+    d.page.drawText(mark, {
+      x: Math.max(6, MARGIN_X - 34), y: d.y + 11, size: 8.5, font: f.bold, color: INK,
+    });
+  }
   d.gap(3);
   for (const b of sec.blocks) drawBlock(d, f, b);
 }
@@ -210,7 +228,8 @@ export async function renderAgreementPdf(a: Agreement, ex: Execution): Promise<U
   }
 
   /* ---- body ---- */
-  for (const sec of a.body) drawSection(d, f, sec);
+  const allInitials = Object.values(ex.signatures).flatMap((s) => s?.initials ?? []);
+  for (const sec of a.body) drawSection(d, f, sec, allInitials);
 
   /* ---- attachments ---- */
   if (a.attachments.length > 0) {
@@ -224,6 +243,27 @@ export async function renderAgreementPdf(a: Agreement, ex: Execution): Promise<U
       const auth = x.authority ? `  (${x.authority})` : "";
       const req = x.required ? "  Required by law." : "";
       d.text(`•  ${x.title}${auth}${req}`, { size: 10, indent: 8, color: MUTED });
+      d.gap(1);
+    }
+    d.gap(8);
+  }
+
+  /* ---- initials schedule ---- */
+  const initialed = a.parties.flatMap((p) => {
+    const sig = ex.signatures[p.id];
+    return (sig?.initials ?? []).map((i) => ({ role: p.role, ...i }));
+  });
+  if (initialed.length > 0) {
+    d.need(60);
+    d.gap(8);
+    d.rule();
+    d.gap(8);
+    d.text("Clauses initialed separately", { font: f.bold, size: 11.5 });
+    d.gap(4);
+    for (const i of initialed) {
+      d.text(`\u2022  Section ${i.clause}, ${i.initials}, ${i.role}, ${i.at}`, {
+        size: 10, indent: 8, color: MUTED,
+      });
       d.gap(1);
     }
     d.gap(8);

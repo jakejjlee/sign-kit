@@ -12,6 +12,9 @@
 import type { Agreement, Party } from "../content/types";
 import { dayIn, stampIn } from "./dates";
 
+/** One clause, initialed deliberately, with its own moment. */
+export type ClauseInitial = { clause: string; initials: string; at: string };
+
 export type SignatureRecord = {
   agreementId: string;
   party: string;
@@ -41,6 +44,10 @@ export type SignatureRecord = {
   fingerprint?: string;
   /** The address this signer asked their copy to go to. */
   email?: string;
+  /** Clauses this party initialed separately from signing. Absent on every
+   *  record written before 2026-09-01, which stays valid: isValidRecord does
+   *  not require it and must never start to. */
+  initials?: ClauseInitial[];
   /** Audit trail. Absent rather than faked when the platform does not supply it. */
   ip: string | null;
   userAgent: string | null;
@@ -66,10 +73,21 @@ export type SignInput = {
   email: string;
   acceptedAttachments: boolean;
   consentedToElectronicSignature: boolean;
+  /** Clauses initialed before signing. The kit carries them onto the record and
+   *  onto the paper; WHICH clauses an agreement requires is the consuming
+   *  repo's business, and its route is where a bad one gets refused. */
+  initials?: ClauseInitial[];
 };
 
 export type SignValidation =
-  | { ok: true; party: string; legalName: string; typed: string; email: string }
+  | {
+      ok: true;
+      party: string;
+      legalName: string;
+      typed: string;
+      email: string;
+      initials?: ClauseInitial[];
+    }
   | { ok: false; field: keyof SignInput | "form"; message: string };
 
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
@@ -147,7 +165,24 @@ export function validateSignature(
     };
   }
 
-  return { ok: true, party: party.id, legalName: party.legalName, typed, email };
+  // Only well-formed entries survive validation. Which clauses an agreement
+  // requires is not the kit's business, but a malformed entry reaching the
+  // store would be permanent, and the store cannot delete.
+  const initials = (input.initials ?? []).filter(
+    (i) =>
+      i &&
+      typeof i.clause === "string" && i.clause.trim().length > 0 &&
+      typeof i.initials === "string" && i.initials.trim().length > 0 &&
+      typeof i.at === "string" && i.at.trim().length > 0
+  );
+  return {
+    ok: true,
+    party: party.id,
+    legalName: party.legalName,
+    typed,
+    email,
+    ...(initials.length > 0 ? { initials } : {}),
+  };
 }
 
 /**
@@ -292,7 +327,10 @@ export function signingGate(
 /** Build the record. The only place a signature is constructed. */
 export function makeRecord(
   agreement: Agreement,
-  checked: { party: string; legalName: string; typed: string; email: string },
+  checked: {
+    party: string; legalName: string; typed: string; email: string;
+    initials?: ClauseInitial[];
+  },
   meta: { fingerprint: string; ip: string | null; userAgent: string | null },
   now: Date
 ): SignatureRecord {
@@ -309,6 +347,11 @@ export function makeRecord(
     consentedToElectronicSignature: true,
     fingerprint: meta.fingerprint,
     email: checked.email,
+    // Absent rather than an empty array when none were given, so a record from
+    // an agreement that asks for no initials looks exactly as it always did.
+    ...(checked.initials && checked.initials.length > 0
+      ? { initials: checked.initials }
+      : {}),
     ip: meta.ip,
     userAgent: meta.userAgent,
   };

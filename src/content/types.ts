@@ -93,6 +93,10 @@ export type Section = {
   /** Number as printed. Held rather than derived, because a real lease numbers
    *  1.5.3 and array position cannot produce that. */
   n: string;
+  /** Optional heading printed above this section, opening a run of clauses.
+   *  Only the first section of a run carries it. Twenty-one clauses arriving
+   *  as one undifferentiated wall is the thing this exists to break. */
+  group?: string;
   title: string;
   blocks: Block[];
 };

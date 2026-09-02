@@ -67,6 +67,14 @@
       "types": "./src/lib/notify.ts",
       "import": "./src/lib/notify.ts",
       "default": "./src/lib/notify.ts"
+    },
+    "./surfaces/lease": {
+      "types": "./src/surfaces/lease/index.ts",
+      "import": "./src/surfaces/lease/index.ts",
+      "default": "./src/surfaces/lease/index.ts"
+    },
+    "./surfaces/lease/layout.module.css": {
+      "default": "./src/surfaces/lease/layout.module.css"
     }
   },
   "scripts": {

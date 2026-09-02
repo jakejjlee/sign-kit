@@ -1,0 +1,72 @@
+/* The rail beside the sheet.
+ *
+ * Screen only. In print this collapses to nothing and the sheet is the same
+ * document it has always been, which is the rule the whole surface is built on.
+ */
+.shell {
+  /* The lease palette, declared on the element that wraps everything this
+   * surface renders, so both the sheet and the rail resolve it and a consuming
+   * repo does not have to know the token names.
+   *
+   * These were on `.page` in the originating repo, which was the whole surface
+   * until the rail became a sibling of it, at which point every token inside
+   * the rail resolved to nothing. A token used by more than one element belongs
+   * above both of them.
+   *
+   * To retheme, override these on `.shell` or on a wrapping element with equal
+   * or greater specificity. `brand.tokens` on the agreement still carries an
+   * accent for the letter surface; this document is deliberately near-monochrome.
+   */
+  --ink: #15171b;
+  --body: #32363d;
+  --muted: #62676f;
+  --rule: #c6c9ce;
+  --rule-hair: #e3e5e8;
+  --paper: #fcfcfb;
+  --ground: #dedfe1;
+  /* Pen on a signed page. The only non-neutral, and it appears on exactly two
+     things: the executed signature, and the ring marking where you can act. */
+  --sig: #1d2c4f;
+  --focus: #1d2c4f;
+
+  background: var(--ground);
+  display: grid;
+  grid-template-columns: 15rem minmax(0, 1fr);
+  gap: 1.6rem;
+  align-items: start;
+  max-width: 68rem;
+  margin: 0 auto;
+  padding: 1.2rem;
+}
+
+.shell > aside {
+  position: sticky;
+  top: 1rem;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+}
+
+@media (max-width: 62rem) {
+  .shell {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding: 0;
+    max-width: none;
+  }
+
+  .shell > aside {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    max-height: 70vh;
+  }
+}
+
+@media print {
+  .shell {
+    display: block;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+}

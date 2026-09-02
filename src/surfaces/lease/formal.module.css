@@ -1,0 +1,1021 @@
+/*
+ * A rental agreement, set as a rental agreement.
+ *
+ * sign-kit's own surface is the letter and the file: a named person speaks in
+ * plain words and the instrument appears underneath. That direction answers a
+ * stranger's belief problem, and it is the right default for the kit. It is the
+ * wrong register here. This document is read by two people who know each other,
+ * and by whatever attorney either of them shows it to, so it is set as the
+ * instrument alone: one measure, one face, numbered clauses, ruled schedules,
+ * and a page that prints.
+ */
+
+/* The tokens moved to :root in app/globals.css on 2026-09-01, because the
+   reading rail is a sibling of this element and every one of them resolved to
+   nothing inside it. */
+.page {
+  background: var(--ground);
+  color: var(--body);
+  font-family: var(--font-display), Georgia, "Times New Roman", serif;
+  padding: clamp(1rem, 4vw, 3.5rem) clamp(0.75rem, 3vw, 2rem) 6rem;
+}
+
+.sheet {
+  max-width: 47rem;
+  margin: 0 auto;
+  background: var(--paper);
+  /* The left side carries the initial boxes, which hang outside the measure
+     the way a paper lease sets them. Under 34rem the gutter collapses and they
+     come back inside. */
+  padding: clamp(1.75rem, 5vw, 4.5rem) clamp(1.25rem, 5vw, 4.5rem)
+    clamp(1.75rem, 5vw, 4.5rem) clamp(1.25rem, 5vw, 4.5rem);
+  border: 1px solid var(--rule-hair);
+}
+
+/* ------------------------------------------------------------------ head -- */
+
+.docHead {
+  text-align: center;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  text-wrap: balance;
+  line-height: 1.15;
+  margin: 0 0 0.5rem;
+  color: var(--ink);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--body);
+}
+
+
+.preamble {
+  font-size: 1.02rem;
+  line-height: 1.65;
+  margin: 0 0 2.25rem;
+  color: var(--ink);
+  text-wrap: pretty;
+  max-width: 68ch;
+}
+
+/* --------------------------------------------------------------- schedule -- */
+
+.blockLabel {
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.065em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 0.4rem;
+  margin: 0 0 0.9rem;
+}
+
+.schedule {
+  margin: 0 0 2.5rem;
+}
+
+.schedRow {
+  display: grid;
+  grid-template-columns: 12.5rem 1fr;
+  gap: 0.5rem 1.25rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--rule-hair);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.schedKey {
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-top: 0.14rem;
+}
+
+.schedVal {
+  color: var(--ink);
+}
+
+/* ---------------------------------------------------------------- parties -- */
+
+.parties {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1.5rem;
+  margin: 0 0 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.partyRole {
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.065em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.partyName {
+  font-size: 1.02rem;
+  color: var(--ink);
+}
+
+.partyOpen {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.partyMeta {
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.2rem;
+}
+
+/* ---------------------------------------------------------------- clauses -- */
+
+.section {
+  margin: 0 0 1.9rem;
+}
+
+.secTitle {
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0 0 0.6rem;
+  line-height: 1.3;
+}
+
+.secNum {
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  min-width: 2.1rem;
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.secBody {
+  padding-left: 2.85rem;
+}
+
+@media (max-width: 34rem) {
+  .secBody { padding-left: 0; }
+  .schedRow { grid-template-columns: 1fr; gap: 0.1rem; }
+}
+
+.clause {
+  font-size: 1.03rem;
+  line-height: 1.72;
+  margin: 0 0 0.95rem;
+  text-wrap: pretty;
+  orphans: 2;
+  widows: 2;
+}
+
+.caps {
+  font-size: 0.85rem;
+  line-height: 1.62;
+  letter-spacing: 0.015em;
+  margin: 0.35rem 0 1.1rem;
+  padding: 0.85rem 0;
+  border-top: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+  color: var(--ink);
+  text-wrap: pretty;
+}
+
+.bullets {
+  margin: 0 0 0.85rem;
+  padding-left: 1.1rem;
+  font-size: 0.97rem;
+  line-height: 1.68;
+}
+
+.bullets li { margin-bottom: 0.4rem; }
+
+/* Money and utility tables inside a clause. */
+.rows {
+  margin: 0 0 1rem;
+  border-top: 1px solid var(--ink);
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.42rem 0;
+  border-bottom: 1px solid var(--rule-hair);
+  font-size: 0.93rem;
+  line-height: 1.45;
+}
+
+.rowVal {
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.rowTotal {
+  border-bottom: 2px solid var(--ink);
+  border-top: 1px solid var(--rule);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* ------------------------------------------------------------- schedules -- */
+
+.exhibits { margin: 2.75rem 0 0; }
+
+.exhibitRow {
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--rule-hair);
+}
+
+.exhibitTitle {
+  font-size: 0.97rem;
+  color: var(--ink);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+
+.required {
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--body);
+  padding: 0.12rem 0.4rem;
+}
+
+.exhibitNote {
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: var(--muted);
+  margin: 0.25rem 0 0;
+}
+
+.exhibitAuth {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+/* ------------------------------------------------------------- execution -- */
+
+.execution { margin: 2.75rem 0 0; }
+
+.sigGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 2rem 2.5rem;
+  margin-top: 1.25rem;
+}
+
+.sigRule {
+  border-bottom: 1px solid var(--ink);
+  height: 2.6rem;
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 0.25rem;
+}
+
+.sigRuleOpen { border-bottom-style: dashed; border-bottom-color: var(--rule); }
+
+.sigScript {
+  font-family: var(--font-display), Georgia, serif;
+  font-style: italic;
+  font-size: 1.3rem;
+  color: var(--sig);
+}
+
+.sigName { font-size: 0.95rem; color: var(--ink); }
+.sigUnnamed { color: var(--muted); font-style: italic; }
+
+.sigStamp {
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  font-size: 0.74rem;
+  color: var(--muted);
+  margin-top: 0.15rem;
+}
+
+.attest {
+  max-width: 62ch;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  font-size: 0.76rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.attest code {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+}
+
+.actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+
+.btn {
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  text-decoration: none;
+  border: 1px solid var(--ink);
+  padding: 0.6rem 1.05rem;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn {
+  transition: background-color 160ms cubic-bezier(0.22, 1, 0.36, 1),
+              color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.btn:hover { background: var(--ink); color: var(--paper); }
+
+.btn:active {
+  background: var(--sig);
+  color: var(--paper);
+  transform: translateY(1px);
+}
+
+.page :focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+.page ::selection {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn { transition: none; }
+  .btn:active { transform: none; }
+}
+
+/* ------------------------------------------------------------- signature -- */
+
+/*
+ * The last clause of the instrument, not a form under it. Opens the way every
+ * other region opens, a full-measure rule and a tracked label, sits on the one
+ * measure with no inset, and carries exactly one filled control: the act of
+ * signing, in the pen ink reserved for it.
+ */
+.signBlock {
+  margin: 2.75rem 0 0;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--ink);
+}
+
+.signFields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1.25rem 2rem;
+  margin: 1.25rem 0 1.5rem;
+}
+
+.signField { display: block; }
+
+.signLabel {
+  display: block;
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+
+.signInput {
+  display: block;
+  width: 100%;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.05rem;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--ink);
+  border-radius: 0;
+  padding: 0.35rem 0 0.45rem;
+  min-height: 44px;
+}
+
+.signInput::placeholder { color: var(--rule); }
+
+.signHint {
+  display: block;
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: var(--muted);
+  margin-top: 0.4rem;
+  /* In ch, not rem. The harness measures rendered characters against a 78ch
+     ceiling, and this sits in the apparatus face where a rem measure that is
+     right for the document face runs long. */
+  max-width: 68ch;
+}
+
+.signAck {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 0.97rem;
+  line-height: 1.62;
+  color: var(--body);
+  margin: 0;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--rule-hair);
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.signAck:first-of-type { border-top: 1px solid var(--rule-hair); }
+
+.signAck input {
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-top: 0.5rem;
+  flex: 0 0 auto;
+  accent-color: var(--sig);
+}
+
+.signError {
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: #7d2c22;
+  border-left: 0;
+  border-top: 1px solid #b8574a;
+  border-bottom: 1px solid #b8574a;
+  padding: 0.7rem 0;
+  margin: 1rem 0;
+}
+
+.signActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+/* The one filled object on the sheet. Signing is the act, so it wears the ink. */
+.signGo {
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--sig);
+  border: 1px solid var(--sig);
+  border-radius: 0;
+  padding: 0.75rem 2rem;
+  min-height: 44px;
+  cursor: pointer;
+  transition: background-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.signGo:hover { background: var(--ink); border-color: var(--ink); }
+.signGo:active { transform: translateY(1px); }
+.signGo[disabled] { opacity: 0.55; cursor: default; }
+
+/* Secondary, and it reads secondary. It used to be the only boxed control on
+   the sheet while the act of signing was unboxed serif text, so on a phone the
+   download was the thing a thumb found. */
+.signPdf {
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  font-size: 0.82rem;
+  color: var(--body);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--rule);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.signPdf:hover { color: var(--ink); text-decoration-color: var(--ink); }
+
+.signDone { margin-top: 1.1rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .signGo { transition: none; }
+  .signGo:active { transform: none; }
+}
+
+/* ----------------------------------------------------------------- print -- */
+
+@media print {
+  .page { background: #fff; padding: 0 0 34pt; }
+  .sheet { border: 0; padding: 0; max-width: none; }
+  .section { break-inside: avoid; }
+  .secTitle { break-after: avoid; }
+  .blockLabel { break-after: avoid; }
+  .partLabel, .partTitle { break-after: avoid; }
+  .sigGrid { break-inside: avoid; }
+  .exhibitRow { break-inside: avoid; }
+  .schedRow { break-inside: avoid; }
+  .rows { break-inside: avoid; }
+  /* The break belongs to the REGION, not to the inner column box. On the box it
+     stranded the "Contents" label alone at the foot of page 1 while its own list
+     started on page 2. */
+  .toc { break-before: page; break-after: page; }
+  .actions { display: none; }
+  .btn { display: none; }
+  /* A paper copy carrying a live form under the real execution block presents
+     two competing signature apparatus, and somebody will ink the wrong one. */
+  .signBlock { display: none; }
+}
+
+/* ------------------------------------------------------------------ parts -- */
+
+/*
+ * Exhibit B is a separate instrument with its own execution, and until now it ran on
+ * from clause 17 wearing the same clothes, so a reader could not see where the
+ * Agreement ended. Real leases put a part page in. This is that, at screen weight.
+ */
+.part {
+  margin: 5rem 0 2.25rem;
+  padding-top: 1.75rem;
+  /* Doubled, because a single 2px ink rule is the weight this document already
+     spends under a money table total, and this is the largest break in it. */
+  border-top: 3px double var(--ink);
+  break-before: page;
+}
+
+.partLabel {
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 0.4rem;
+}
+
+.partTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.3;
+  text-wrap: balance;
+}
+
+/* --------------------------------------------------------------- contents -- */
+
+.toc { margin: 0 0 2.75rem; }
+
+.contents {
+  columns: 2;
+  column-gap: 2.5rem;
+}
+
+@media (max-width: 34rem) {
+  .contents { columns: 1; }
+}
+
+.tocRow {
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid var(--rule-hair);
+  font-size: 0.88rem;
+  line-height: 1.4;
+  break-inside: avoid;
+  text-decoration: none;
+  color: var(--body);
+}
+
+/* A contents row is a real target on a phone. Twenty-three of them at 44px is a screen
+   and a half, which is what a contents page costs and is the correct price. */
+@media (pointer: coarse) {
+  .tocRow {
+    min-height: 44px;
+    align-items: center;
+    padding: 0.5rem 0;
+  }
+}
+
+.tocRow:hover { color: var(--ink); }
+.tocRow:hover .tocTitle { text-decoration-color: var(--ink); }
+
+.tocNum {
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  font-size: 0.72rem;
+  color: var(--muted);
+  min-width: 1.9rem;
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.tocTitle {
+  flex: 1 1 auto;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--rule-hair);
+}
+
+@media print {
+  .tocTitle { text-decoration: none; }
+}
+
+/* A jumped-to clause should not land flush against the top of the window. */
+.section { scroll-margin-top: 1.5rem; }
+
+/* ---------------------------------------------------------- running foot -- */
+
+/*
+ * Screen-hidden, print-only, and fixed so Chrome repeats it on every sheet. A signature
+ * page that gets separated from the rest of a lease has to say which document it belongs
+ * to; the fingerprint is what makes that check exact rather than a matter of the title.
+ */
+.runningFoot { display: none; }
+
+@media print {
+  .runningFoot {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding-top: 4pt;
+    border-top: 0.5pt solid var(--rule);
+    font-family: var(--font-schibsted), system-ui, sans-serif;
+    font-size: 7pt;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+}
+
+/* ------------------------------------------------- who signs what, and where --
+ * Two links that render an identical sheet are two links somebody mixes up.
+ * These three say, on the sheet and on the paper: this copy is yours, that row
+ * is covered by the signature below, and that other row is not.
+ */
+
+.partyYou {
+  display: inline-block;
+  margin-left: 0.55rem;
+  padding: 0.05rem 0.4rem 0.1rem;
+  border: 1px solid var(--rule);
+  font-size: 0.62rem;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+}
+
+.execCover {
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--muted);
+  margin: 0.3rem 0 0;
+  max-width: 68ch;
+}
+
+.signWho {
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0.85rem 0 0;
+  max-width: 68ch;
+}
+
+@media print {
+  /* The signing form never prints, but whose copy it is has to. */
+  .signWho { display: none; }
+  .execCover { break-inside: avoid; }
+}
+
+/* The second route to the document, beside the download. Secondary to the
+   download and never competing with the act of signing, which is the only
+   filled control on the sheet. */
+.signMail {
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  font-size: 0.82rem;
+  color: var(--body);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  border-radius: 0;
+  padding: 0 0 2px;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.signMail:hover { color: var(--ink); border-bottom-color: var(--ink); }
+.signMail[disabled] { opacity: 0.55; cursor: default; }
+
+@media print {
+  .signMail { display: none; }
+}
+
+/* ------------------------------------------------------------- initials --
+ * The box lives in the outer margin beside the clause number, which is why the
+ * sheet's left padding is wider than the measure needs. It is 44px because a
+ * thumb has to land on it, and it prints, because the filed copy has to show
+ * the evidence the screen collected.
+ */
+
+.iniWrap { padding-top: 0.15rem; }
+
+.iniBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--sig);
+  background: transparent;
+  border-radius: 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 0.85rem;
+  color: var(--sig);
+  cursor: pointer;
+}
+
+.iniBox:disabled { border-color: var(--rule); color: var(--rule); cursor: default; }
+.iniOn { background: var(--sig); color: var(--paper); }
+
+.iniCap {
+  display: block;
+  width: 44px;
+  margin-top: 0.2rem;
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  font-size: 0.52rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  line-height: 1.25;
+  text-align: center;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.iniSchedule { margin: 2.2rem 0 0; }
+
+@media print {
+  /* A ruled box on an unexecuted copy, the initials on an executed one. Either
+     way the clause carries its own mark, the way a paper lease reads. */
+  .iniBox { border-color: var(--ink); color: var(--ink); }
+  .iniOn { background: transparent; color: var(--ink); }
+  .iniCap { display: none; }
+  .iniSchedule { break-inside: avoid; }
+}
+
+/* ----------------------------------------------------------------- rail --
+ * Screen only. The printed lease is the same document it has always been.
+ */
+
+.rail {
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  padding: 0.9rem 0.85rem;
+}
+
+.railToggle { display: none; }
+
+.railLabel {
+  display: block;
+  font-size: 0.56rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 2px solid var(--ink);
+}
+
+.railRow { padding: 0.35rem 0; border-bottom: 1px solid var(--rule-hair); }
+
+.railKey {
+  display: block;
+  font-size: 0.5rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.railVal {
+  display: block;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: var(--ink);
+  max-width: 30ch;
+}
+
+.railHereBlock { margin-top: 1rem; }
+
+.railNav { margin-top: 1rem; }
+
+.railNavRow {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.2rem 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 0.72rem;
+  line-height: 1.3;
+  color: var(--muted);
+  text-decoration: none;
+  min-height: 44px;
+  max-width: 30ch;
+}
+
+.railNavRow b {
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  font-size: 0.56rem;
+  font-weight: 600;
+  min-width: 1.4rem;
+  flex: 0 0 auto;
+}
+
+.railHere { color: var(--ink); }
+.railHere b { color: var(--sig); }
+.railTick { color: var(--sig); margin-left: auto; }
+
+.railGo {
+  display: block;
+  margin-top: 1rem;
+  background: var(--sig);
+  color: var(--paper);
+  border: 1px solid var(--sig);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 0.8rem 0.5rem;
+  text-align: center;
+  text-decoration: none;
+  min-height: 44px;
+}
+
+.railProgress {
+  font-size: 0.6rem;
+  line-height: 1.5;
+  color: var(--muted);
+  text-align: center;
+  margin: 0.45rem 0 0;
+  max-width: 34ch;
+}
+
+@media (max-width: 62rem) {
+  .rail { border-left: 0; border-right: 0; border-top: 0; }
+
+  .railToggle {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.8rem;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    min-height: 44px;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .railToggleLabel {
+    font-size: 0.56rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    flex: 0 0 auto;
+  }
+
+  .railToggleState {
+    font-family: var(--font-display), Georgia, serif;
+    font-size: 0.78rem;
+    color: var(--ink);
+    text-align: right;
+  }
+
+  .railBody { display: none; }
+  .railBodyOpen { display: block; padding-top: 0.6rem; }
+  .railBodyOpen > .railLabel:first-child { display: none; }
+  .railVal, .railNavRow, .railProgress { max-width: none; }
+}
+
+@media print { .rail { display: none; } }
+
+/* ------------------------------------------------------------ focus ring --
+ * The rail sits OUTSIDE .page, so the sheet's focus rule never reached it, and
+ * the initial boxes lost theirs to the 1px border painted over the outline.
+ * The geometry harness caught all seven. These are explicit and unscoped.
+ */
+.railToggle:focus-visible,
+.railGo:focus-visible,
+.railNavRow:focus-visible,
+.iniBox:focus-visible,
+.signMail:focus-visible {
+  outline: 2px solid var(--sig);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+/* --------------------------------------------------------- clause layout --
+ * Every clause is a wrapper now, because it carries an anchor the rail scrolls
+ * to and, on six of them, a box in the outer margin.
+ */
+
+.clauseWrap { margin: 2.4rem 0; scroll-margin-top: 1.5rem; }
+
+.clauseWrapMarked {
+  margin: 2.4rem 0;
+  scroll-margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 0 1.1rem;
+  margin-left: -3.6rem;
+}
+
+.clauseWrapMarked > .part,
+.clauseWrapMarked > .groupLabel { grid-column: 1 / -1; }
+.clauseIni { grid-column: 1; }
+.clauseWrapMarked > section { grid-column: 2; }
+
+/* The skeleton. Twenty-one clauses arriving as one wall was the complaint. */
+.groupLabel {
+  font-family: var(--font-schibsted), system-ui, sans-serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+  border-top: 1px solid var(--rule);
+  padding-top: 0.55rem;
+  margin: 2.8rem 0 0.5rem;
+  break-after: avoid;
+}
+
+@media (max-width: 34rem) {
+  /* The gutter is already gone at this width, so the boxes come inside the
+     measure rather than hanging off a sheet that has no margin left. */
+  .clauseWrapMarked {
+    margin-left: 0;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.6rem 0;
+  }
+  .clauseIni { grid-column: 1; }
+  .clauseWrapMarked > section { grid-column: 1; }
+}
+
+@media print {
+  .clauseWrap, .clauseWrapMarked { break-inside: auto; }
+  .clauseWrapMarked { margin-left: -2.2rem; }
+  .groupLabel { break-after: avoid; margin-top: 1.6rem; }
+}

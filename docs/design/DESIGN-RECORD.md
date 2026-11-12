@@ -98,3 +98,19 @@ consuming repo that wants its own faces in the PDF can pass font bytes later.
 - Bluebill has not been migrated onto the kit. It has an affirmation on file and
   two tenants about to sign, and swapping the engine under a half-executed lease
   is not a risk worth taking. It moves after they have signed.
+
+## Signer confirmation email (2026-11-12, round 1)
+
+Board: docs/design/email/board/ (0, 0+, d1 The Letter, d2 The Receipt, d3 The Track).
+Premise: the signer opens this email to be certain the signature counted, so status, the signed
+copy and the key terms lead and the speaker comes second.
+
+**Chosen: d3, The Track** (Jake, 2026-11-12, question board). Brand band in the business's own
+dark color with its wordmark, a three-step track read by shape (You signed / Agreement complete or
+Waiting on <name> / the next real date), one button to the signed copy, key terms as rows, reply
+plus an inline "book a call" link in the footer.
+Over: 0 (fails readability: 11px and 12px text, 3.6:1 contrast), 0+, d1 The Letter, d2 The Receipt.
+Why the others lost: they answer "is it done" in words; the track answers it by shape before a
+word is read, and it carries the one fact a signer wants next (what happens and when).
+Open: the light field benchmark was thin (DocuSign unreachable); phone-size checks on d1 to d3
+were still running at pick time.

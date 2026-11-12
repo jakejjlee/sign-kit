@@ -5,6 +5,7 @@ import { longDate } from "./dates";
 import { isFullyExecuted, outstandingParties, type Execution, type SignatureRecord } from "./execution";
 import { shortFingerprint } from "./fingerprint";
 import { pdfFilename, renderAgreementPdf } from "./pdf";
+import { buildSignerEmail, type SignerEmailOptions } from "./signer-email";
 
 /**
  * Getting the signed document to the people who need it.
@@ -66,37 +67,6 @@ function rows(pairs: [string, string][]): string {
     .join("")}</table>`;
 }
 
-function signerEmail(a: Agreement, rec: SignatureRecord, ex: Execution) {
-  const executed = isFullyExecuted(a, ex);
-  const waiting = outstandingParties(a, ex);
-
-  const status = executed
-    ? `<p style="margin:0 0 20px;font-size:16px;line-height:1.6;color:#3d382e">
-         Everyone named on it has now signed. Your completed copy is attached.
-       </p>`
-    : `<p style="margin:0 0 20px;font-size:16px;line-height:1.6;color:#3d382e">
-         ${esc(waiting.map((p) => p.legalName).join(" and "))} still needs to sign. The copy
-         attached shows it as it stands, and you will get the completed one once they have.
-       </p>`;
-
-  return {
-    subject: executed
-      ? `Signed: ${a.title}, ${a.subtitle ?? ""}`.trim()
-      : `Your signature is recorded, ${a.subtitle ?? a.title}`,
-    html: shell(
-      a,
-      executed ? "This agreement is complete" : "Your signature is recorded",
-      `Thank you, ${esc(rec.legalName)}. You signed on ${esc(rec.signedAtLocal)}.`,
-      `${status}
-       ${rows(a.letter.summary.map((r) => [r.label, r.value] as [string, string]))}
-       <p style="margin:0;font-family:system-ui,sans-serif;font-size:12px;line-height:1.6;color:#6b6455">
-         Version ${esc(longDate(a.version))}. Reference
-         ${esc(shortFingerprint(rec.fingerprint ?? ""))}. Keep the attached PDF.
-       </p>`
-    ),
-  };
-}
-
 function operatorEmail(a: Agreement, rec: SignatureRecord, ex: Execution) {
   const executed = isFullyExecuted(a, ex);
   const waiting = outstandingParties(a, ex);
@@ -150,7 +120,9 @@ export function deliveryConfig() {
 export async function deliverSignedCopy(
   a: Agreement,
   rec: SignatureRecord,
-  ex: Execution
+  ex: Execution,
+  /** Where the signer's button goes and any real next date. Both optional. */
+  signerOpts: Pick<SignerEmailOptions, "copyUrl" | "nextStep"> = {}
 ): Promise<DeliveryResult> {
   const apiKey = process.env.RESEND_API_KEY;
   const cfg = deliveryConfig();
@@ -179,7 +151,11 @@ export async function deliverSignedCopy(
 
   let signerCopy = false;
   if (rec.email) {
-    const msg = signerEmail(a, rec, ex);
+    const msg = buildSignerEmail(a, rec, ex, {
+      ...signerOpts,
+      attached: Boolean(attachments),
+      attachmentName: attachments?.[0]?.filename,
+    });
     try {
       const { error } = await resend.emails.send({
         from, to: rec.email, replyTo: operator,

@@ -1,0 +1,28 @@
+{
+  "_note": "Facts used on the five renders, each with its source. Anything not listed is an explicit unknown printed with data-unknown.",
+  "sunMountain": {
+    "brand": "Sun Mountain Stays", "entity": "Sun Mountain Stays LLC", "email": "hello@sunmountainstays.com",
+    "source": "Coordinator brief 2026-11-12; sms-cranbrook-return src/lib/agreements/brand.ts",
+    "tokens": ["#fffdf8", "#faf7f0", "#16120c", "#3f382d", "#6b6152", "#a9791f", "#8a5e12", "#0d2318", "#e0b866", "#f1ebdd"],
+    "tagline": "Short term rental management, Colorado Springs"
+  },
+  "mike": {
+    "agreement": "Management Agreement", "id": "sms-management-michael-williams-cranbrook-2026-11",
+    "signer": "Michael Williams", "property": "309 Cranbrook Circle, Colorado Springs, Colorado",
+    "startDate": "November 1, 2026", "fee": "15% of Net Revenue, 10% for stays of 30 nights or longer",
+    "feeNumbers": ["15%", "10%", "30 nights"], "onboardingFee": "$0, waived", "notice": "30 days",
+    "signedAt": "November 11, 2026, 6:59 PM MST",
+    "link": "https://sunmountainstays.com/client/michael-williams/management-agreement",
+    "next": "Cranbrook goes live Friday, November 13, 2026.",
+    "source": "Coordinator brief 2026-11-12 (agreement record and Jake)"
+  },
+  "lincoln": {
+    "agreement": "New Jersey Residential Lease", "unit": "243 Lincoln Avenue, Unit 2, Cliffside Park, New Jersey 07010",
+    "landlord": "Jamarber Dobrushi", "operator": "Palisade Stays", "email": "jake@palisadestays.com",
+    "rent": "$3,995 a month", "rentParts": "$3,695 rent, $300 parking", "deposit": "$3,695 at signing", "lateFee": "$250",
+    "figures": ["$3,995", "$3,695", "$300", "$250"], "due": "The 1st of each month",
+    "tokens": ["#33566f", "#2a475c", "#f3ede1", "#fbf8f1"],
+    "source": "~/Claude/clients/lincoln/content/agreements/unit-2.ts and content/property.ts"
+  },
+  "unknowns": ["tenant name", "time stamped at signing", "version date", "fingerprint", "brand phone", "Lincoln page link", "tenant lease start date"]
+}

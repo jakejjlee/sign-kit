@@ -1,0 +1,15 @@
+{
+  "title": "Signer confirmation email",
+  "meta": ["Round 1, 2026-11-12", "five options", "Sun Mountain Stays and a Palisade Stays lease"],
+  "basePath": "",
+  "premise": "The signer opens this email to be certain the signature counted, so every option puts the status, the signed PDF and the key terms on the first screen and treats the person speaking as second.",
+  "note": "Each option shows three surfaces on one page: Gmail on desktop (fallback faces), iPhone Mail at 390 px (web faces load), and the waiting-for-the-other-party state in the Lincoln lease brand. Subject lines are on each surface. Option 0 is the email the sign-kit sends today; the Sun Mountain site sends the signer nothing yet.",
+  "typeLocked": "Sun Mountain type lock: Newsreader + Instrument Sans, Cinzel wordmark only; Lincoln: Newsreader + Schibsted Grotesk",
+  "directions": [
+    { "n": "0", "file": "d0", "name": "Current sign-kit email", "tag": "Georgia + system-ui + mono", "live": true },
+    { "n": "0+", "file": "d0p", "name": "Same skeleton, done properly", "tag": "Newsreader + Instrument Sans" },
+    { "n": "1", "file": "d1", "name": "The Letter", "tag": "Newsreader leads" },
+    { "n": "2", "file": "d2", "name": "The Receipt", "tag": "Instrument Sans leads" },
+    { "n": "3", "file": "d3", "name": "The Track", "tag": "Newsreader + Cinzel wordmark" }
+  ]
+}

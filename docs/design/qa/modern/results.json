@@ -1,0 +1,555 @@
+{
+  "url": "http://127.0.0.1:8742",
+  "routes": [
+    "http://127.0.0.1:8742/sms-mike.html",
+    "http://127.0.0.1:8742/kit-lincoln-waiting.html"
+  ],
+  "ranAt": "2026-11-12T19:29:04.099Z",
+  "summary": "modern-checks: 2 BLOCK, 3 REPORT, 14 PASS, 5 SKIP of 24",
+  "checks": [
+    {
+      "id": "wcag22",
+      "status": "PASS",
+      "evidence": "/sms-mike.html @1440: 0 serious/critical, 0 moderate rules; /kit-lincoln-waiting.html @1440: 0 serious/critical, 0 moderate rules; /sms-mike.html @390: 0 serious/critical, 0 moderate rules; /kit-lincoln-waiting.html @390: 0 serious/critical, 0 moderate rules",
+      "details": [
+        {
+          "route": "/sms-mike.html",
+          "status": "PASS",
+          "evidence": "@1440: 0 serious/critical, 0 moderate rules",
+          "data": []
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "PASS",
+          "evidence": "@1440: 0 serious/critical, 0 moderate rules",
+          "data": []
+        },
+        {
+          "route": "/sms-mike.html",
+          "status": "PASS",
+          "evidence": "@390: 0 serious/critical, 0 moderate rules",
+          "data": []
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "PASS",
+          "evidence": "@390: 0 serious/critical, 0 moderate rules",
+          "data": []
+        }
+      ],
+      "ms": 20380
+    },
+    {
+      "id": "focus-obscured",
+      "status": "PASS",
+      "evidence": "/sms-mike.html @390: 0 of 2 focus stops fully hidden, 0 partly, 0 off-screen; /kit-lincoln-waiting.html @390: 0 of 2 focus stops fully hidden, 0 partly, 0 off-screen; /sms-mike.html @1440: 0 of 2 focus stops fully hidden, 0 partly, 0 off-screen; /kit-lincoln-waiting.html @1440: 0 of 2 focus stops fully hidden, 0 partly, 0 off-screen",
+      "details": [
+        {
+          "route": "/sms-mike.html",
+          "status": "PASS",
+          "evidence": "@390: 0 of 2 focus stops fully hidden, 0 partly, 0 off-screen"
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "PASS",
+          "evidence": "@390: 0 of 2 focus stops fully hidden, 0 partly, 0 off-screen"
+        },
+        {
+          "route": "/sms-mike.html",
+          "status": "PASS",
+          "evidence": "@1440: 0 of 2 focus stops fully hidden, 0 partly, 0 off-screen"
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "PASS",
+          "evidence": "@1440: 0 of 2 focus stops fully hidden, 0 partly, 0 off-screen"
+        }
+      ],
+      "ms": 14688
+    },
+    {
+      "id": "target-size",
+      "status": "PASS",
+      "evidence": "/sms-mike.html @390: 0 of 2 under 24px with no spacing, 0 under 44px (AAA); /kit-lincoln-waiting.html @390: 0 of 2 under 24px with no spacing, 0 under 44px (AAA); /sms-mike.html @1440: 0 of 2 under 24px with no spacing; /kit-lincoln-waiting.html @1440: 0 of 2 under 24px with no spacing",
+      "details": [
+        {
+          "route": "/sms-mike.html",
+          "status": "PASS",
+          "evidence": "@390: 0 of 2 under 24px with no spacing, 0 under 44px (AAA)",
+          "data": {
+            "n": 2,
+            "fails": [],
+            "aaa": []
+          }
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "PASS",
+          "evidence": "@390: 0 of 2 under 24px with no spacing, 0 under 44px (AAA)",
+          "data": {
+            "n": 2,
+            "fails": [],
+            "aaa": []
+          }
+        },
+        {
+          "route": "/sms-mike.html",
+          "status": "PASS",
+          "evidence": "@1440: 0 of 2 under 24px with no spacing",
+          "data": {
+            "n": 2,
+            "fails": [],
+            "aaa": []
+          }
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "PASS",
+          "evidence": "@1440: 0 of 2 under 24px with no spacing",
+          "data": {
+            "n": 2,
+            "fails": [],
+            "aaa": []
+          }
+        }
+      ],
+      "ms": 29689
+    },
+    {
+      "id": "auth-paste",
+      "status": "SKIP",
+      "evidence": "/sms-mike.html no password or one-time-code field; /kit-lincoln-waiting.html no password or one-time-code field",
+      "details": [
+        {
+          "route": "/sms-mike.html",
+          "status": "SKIP",
+          "evidence": "no password or one-time-code field"
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "SKIP",
+          "evidence": "no password or one-time-code field"
+        }
+      ],
+      "ms": 9888
+    },
+    {
+      "id": "reflow",
+      "status": "PASS",
+      "evidence": "/sms-mike.html @320: no sideways scroll (320px); /kit-lincoln-waiting.html @320: no sideways scroll (320px)",
+      "details": [
+        {
+          "route": "/sms-mike.html",
+          "status": "PASS",
+          "evidence": "@320: no sideways scroll (320px)"
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "PASS",
+          "evidence": "@320: no sideways scroll (320px)"
+        }
+      ],
+      "ms": 3341
+    },
+    {
+      "id": "text-spacing",
+      "status": "PASS",
+      "evidence": "/sms-mike.html @390: 0 box(es) clip text under WCAG spacing; /kit-lincoln-waiting.html @390: 0 box(es) clip text under WCAG spacing; /sms-mike.html @1440: 0 box(es) clip text under WCAG spacing; /kit-lincoln-waiting.html @1440: 0 box(es) clip text under WCAG spacing",
+      "details": [
+        {
+          "route": "/sms-mike.html",
+          "status": "PASS",
+          "evidence": "@390: 0 box(es) clip text under WCAG spacing",
+          "data": []
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "PASS",
+          "evidence": "@390: 0 box(es) clip text under WCAG spacing",
+          "data": []
+        },
+        {
+          "route": "/sms-mike.html",
+          "status": "PASS",
+          "evidence": "@1440: 0 box(es) clip text under WCAG spacing",
+          "data": []
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "PASS",
+          "evidence": "@1440: 0 box(es) clip text under WCAG spacing",
+          "data": []
+        }
+      ],
+      "ms": 8719
+    },
+    {
+      "id": "zoom200",
+      "status": "PASS",
+      "evidence": "/sms-mike.html @1280 root 200%: 0 clipped, 0 overlapping text box(es); 0% of text scaled (mostly px-sized, so text-only zoom does not enlarge it; browser zoom still does); /kit-lincoln-waiting.html @1280 root 200%: 0 clipped, 0 overlapping text box(es); 0% of text scaled (mostly px-sized, so text-only zoom does not enlarge it; browser zoom still does)",
+      "details": [
+        {
+          "route": "/sms-mike.html",
+          "status": "PASS",
+          "evidence": "@1280 root 200%: 0 clipped, 0 overlapping text box(es); 0% of text scaled (mostly px-sized, so text-only zoom does not enlarge it; browser zoom still does)"
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "PASS",
+          "evidence": "@1280 root 200%: 0 clipped, 0 overlapping text box(es); 0% of text scaled (mostly px-sized, so text-only zoom does not enlarge it; browser zoom still does)"
+        }
+      ],
+      "ms": 6718
+    },
+    {
+      "id": "inp",
+      "status": "PASS",
+      "evidence": "/kit-lincoln-waiting.html @390 4x CPU: 1 clicked, slowest 176ms div:nth-of-type(2) > div > a; /sms-mike.html no visible non-navigating controls to click",
+      "details": [
+        {
+          "route": "/sms-mike.html",
+          "status": "SKIP",
+          "evidence": "no visible non-navigating controls to click"
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "PASS",
+          "evidence": "@390 4x CPU: 1 clicked, slowest 176ms div:nth-of-type(2) > div > a"
+        }
+      ],
+      "ms": 17426
+    },
+    {
+      "id": "engines",
+      "status": "REPORT",
+      "evidence": "/sms-mike.html webkit@1440: 0 stuck invisible, 1 console, 0 page errors; /sms-mike.html webkit@390: 0 stuck invisible, 1 console, 0 page errors; /sms-mike.html chromium@1440: 0 stuck invisible, 1 console, 0 page errors; /sms-mike.html chromium@390: 0 stuck invisible, 1 console, 0 page errors; /sms-mike.html firefox@1440: 0 stuck invisible, 0 console, 0 page errors; /kit-lincoln-waiting.html firefox@1440: 0 stuck invisible, 0 console, 0 page errors; /sms-mike.html firefox@390: 0 stuck invisible, 0 console, 0 page errors; /kit-lincoln-waiting.html firefox@390: 0 stuck invisible, 0 console, 0 page errors; /kit-lincoln-waiting.html webkit@1440: 0 stuck invisible, 0 console, 0 page errors; /kit-lincoln-waiting.html webkit@390: 0 stuck invisible, 0 console, 0 page errors; /kit-lincoln-waiting.html chromium@1440: 0 stuck invisible, 0 console, 0 page errors; /kit-lincoln-waiting.html chromium@390: 0 stuck invisible, 0 console, 0 page errors (WebKit at 390 runs an iPhone 15 Pro profile; still not real iOS Safari: no shrinking toolbar)",
+      "details": [
+        {
+          "route": "/sms-mike.html",
+          "status": "PASS",
+          "evidence": "firefox@1440: 0 stuck invisible, 0 console, 0 page errors",
+          "data": {
+            "stuck": [],
+            "errs": [],
+            "perrs": []
+          }
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "PASS",
+          "evidence": "firefox@1440: 0 stuck invisible, 0 console, 0 page errors",
+          "data": {
+            "stuck": [],
+            "errs": [],
+            "perrs": []
+          }
+        },
+        {
+          "route": "/sms-mike.html",
+          "status": "PASS",
+          "evidence": "firefox@390: 0 stuck invisible, 0 console, 0 page errors",
+          "data": {
+            "stuck": [],
+            "errs": [],
+            "perrs": []
+          }
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "PASS",
+          "evidence": "firefox@390: 0 stuck invisible, 0 console, 0 page errors",
+          "data": {
+            "stuck": [],
+            "errs": [],
+            "perrs": []
+          }
+        },
+        {
+          "route": "/sms-mike.html",
+          "status": "REPORT",
+          "evidence": "webkit@1440: 0 stuck invisible, 1 console, 0 page errors",
+          "data": {
+            "stuck": [],
+            "errs": [
+              "Failed to load resource: The Internet connection appears to be offline."
+            ],
+            "perrs": []
+          }
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "PASS",
+          "evidence": "webkit@1440: 0 stuck invisible, 0 console, 0 page errors",
+          "data": {
+            "stuck": [],
+            "errs": [],
+            "perrs": []
+          }
+        },
+        {
+          "route": "/sms-mike.html",
+          "status": "REPORT",
+          "evidence": "webkit@390: 0 stuck invisible, 1 console, 0 page errors",
+          "data": {
+            "stuck": [],
+            "errs": [
+              "Failed to load resource: The Internet connection appears to be offline."
+            ],
+            "perrs": []
+          }
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "PASS",
+          "evidence": "webkit@390: 0 stuck invisible, 0 console, 0 page errors",
+          "data": {
+            "stuck": [],
+            "errs": [],
+            "perrs": []
+          }
+        },
+        {
+          "route": "/sms-mike.html",
+          "status": "REPORT",
+          "evidence": "chromium@1440: 0 stuck invisible, 1 console, 0 page errors",
+          "data": {
+            "stuck": [],
+            "errs": [
+              "Failed to load resource: net::ERR_INTERNET_DISCONNECTED"
+            ],
+            "perrs": []
+          }
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "PASS",
+          "evidence": "chromium@1440: 0 stuck invisible, 0 console, 0 page errors",
+          "data": {
+            "stuck": [],
+            "errs": [],
+            "perrs": []
+          }
+        },
+        {
+          "route": "/sms-mike.html",
+          "status": "REPORT",
+          "evidence": "chromium@390: 0 stuck invisible, 1 console, 0 page errors",
+          "data": {
+            "stuck": [],
+            "errs": [
+              "Failed to load resource: net::ERR_INTERNET_DISCONNECTED"
+            ],
+            "perrs": []
+          }
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "PASS",
+          "evidence": "chromium@390: 0 stuck invisible, 0 console, 0 page errors",
+          "data": {
+            "stuck": [],
+            "errs": [],
+            "perrs": []
+          }
+        }
+      ],
+      "ms": 106924
+    },
+    {
+      "id": "prefs.reduced-motion",
+      "status": "PASS",
+      "evidence": "/sms-mike.html 0 animation(s) over 0.2s still running under reduced motion; /kit-lincoln-waiting.html 0 animation(s) over 0.2s still running under reduced motion",
+      "details": [
+        {
+          "route": "/sms-mike.html",
+          "status": "PASS",
+          "evidence": "0 animation(s) over 0.2s still running under reduced motion"
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "PASS",
+          "evidence": "0 animation(s) over 0.2s still running under reduced motion"
+        }
+      ],
+      "ms": 14068
+    },
+    {
+      "id": "prefs.dark",
+      "status": "PASS",
+      "evidence": "/sms-mike.html dark scheme: 0 low-contrast element(s); /kit-lincoln-waiting.html dark scheme: 0 low-contrast element(s)",
+      "details": [
+        {
+          "route": "/sms-mike.html",
+          "status": "PASS",
+          "evidence": "dark scheme: 0 low-contrast element(s)"
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "PASS",
+          "evidence": "dark scheme: 0 low-contrast element(s)"
+        }
+      ],
+      "ms": 14068
+    },
+    {
+      "id": "prefs.forced-colors",
+      "status": "PASS",
+      "evidence": "/sms-mike.html forced colors: 0 of 8 focus stops lose their ring; /kit-lincoln-waiting.html forced colors: 0 of 8 focus stops lose their ring",
+      "details": [
+        {
+          "route": "/sms-mike.html",
+          "status": "PASS",
+          "evidence": "forced colors: 0 of 8 focus stops lose their ring"
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "PASS",
+          "evidence": "forced colors: 0 of 8 focus stops lose their ring"
+        }
+      ],
+      "ms": 14068
+    },
+    {
+      "id": "crawlers.robots",
+      "status": "PASS",
+      "evidence": "no robots.txt (404), so every crawler is allowed",
+      "ms": 2698
+    },
+    {
+      "id": "crawlers.cloudflare",
+      "status": "PASS",
+      "evidence": "no Cloudflare header (cf-ray) on the page",
+      "ms": 2698
+    },
+    {
+      "id": "crawlers.facts",
+      "status": "PASS",
+      "evidence": "/sms-mike.html 2 of 2 in server HTML; /kit-lincoln-waiting.html 2 of 2 in server HTML",
+      "details": [
+        {
+          "route": "/sms-mike.html",
+          "status": "PASS",
+          "evidence": "2 of 2 in server HTML"
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "PASS",
+          "evidence": "2 of 2 in server HTML"
+        }
+      ],
+      "ms": 2698
+    },
+    {
+      "id": "security-headers.hsts",
+      "status": "SKIP",
+      "evidence": "http URL: HSTS only applies over https",
+      "ms": 0
+    },
+    {
+      "id": "security-headers.nosniff",
+      "status": "BLOCK",
+      "evidence": "no X-Content-Type-Options: nosniff",
+      "ms": 0
+    },
+    {
+      "id": "security-headers.framing",
+      "status": "BLOCK",
+      "evidence": "no frame-ancestors and no X-Frame-Options: page can be framed (clickjacking)",
+      "ms": 0
+    },
+    {
+      "id": "security-headers.referrer",
+      "status": "REPORT",
+      "evidence": "no Referrer-Policy header (browser default applies)",
+      "ms": 0
+    },
+    {
+      "id": "security-headers.csp",
+      "status": "REPORT",
+      "evidence": "no Content-Security-Policy",
+      "ms": 0
+    },
+    {
+      "id": "bfcache",
+      "status": "SKIP",
+      "evidence": "/sms-mike.html no same-site link to leave through; /kit-lincoln-waiting.html no same-site link to leave through",
+      "details": [
+        {
+          "route": "/sms-mike.html",
+          "status": "SKIP",
+          "evidence": "no same-site link to leave through"
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "SKIP",
+          "evidence": "no same-site link to leave through"
+        }
+      ],
+      "ms": 3974
+    },
+    {
+      "id": "states.errors",
+      "status": "PASS",
+      "evidence": "/sms-mike.html no fetch/XHR calls on load to fail; offline: 0 clicks made no network calls; /kit-lincoln-waiting.html no fetch/XHR calls on load to fail; offline: 1 clicks made no network calls",
+      "details": [
+        {
+          "route": "/sms-mike.html",
+          "status": "PASS",
+          "evidence": "no fetch/XHR calls on load to fail; offline: 0 clicks made no network calls"
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "PASS",
+          "evidence": "no fetch/XHR calls on load to fail; offline: 1 clicks made no network calls"
+        }
+      ],
+      "ms": 189538
+    },
+    {
+      "id": "states.long-string",
+      "status": "SKIP",
+      "evidence": "/sms-mike.html no visible text input; /kit-lincoln-waiting.html no visible text input",
+      "details": [
+        {
+          "route": "/sms-mike.html",
+          "status": "SKIP",
+          "evidence": "no visible text input"
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "SKIP",
+          "evidence": "no visible text input"
+        }
+      ],
+      "ms": 189539
+    },
+    {
+      "id": "pdf",
+      "status": "SKIP",
+      "evidence": "/sms-mike.html not a report path; pass --pdf to print it; /kit-lincoln-waiting.html not a report path; pass --pdf to print it",
+      "details": [
+        {
+          "route": "/sms-mike.html",
+          "status": "SKIP",
+          "evidence": "not a report path; pass --pdf to print it"
+        },
+        {
+          "route": "/kit-lincoln-waiting.html",
+          "status": "SKIP",
+          "evidence": "not a report path; pass --pdf to print it"
+        }
+      ],
+      "ms": 0
+    }
+  ],
+  "wouldHaveSent": [],
+  "notes": [
+    "WebKit is the Playwright WebKit build, not real iOS Safari.",
+    "Non-GET requests were aborted, never sent; see wouldHaveSent.",
+    "chromium: pinned build missing, used chromium-1248",
+    "firefox: pinned build missing, used firefox-1555",
+    "webkit: pinned build missing, used webkit-2370",
+    "chromium: pinned build missing, used chromium-1248"
+  ],
+  "browserProcessesLeftAfterCleanup": 0
+}

@@ -177,7 +177,7 @@ export function buildSignerEmail(
   const place = a.subtitle ?? a.title;
 
   const steps: string[] = [];
-  steps.push(step("done", 1, "You signed", `${esc(rec.legalName)}, ${esc(rec.signedAtLocal)}`, false, p));
+  steps.push(step("done", 1, "You signed", `${esc(rec.legalName)}, ${esc(rec.signedAtLocal.replace(/(\d{1,2}:\d{2}):\d{2}/, "$1"))}`, false, p));
   if (executed) {
     const next = opts.nextStep;
     steps.push(

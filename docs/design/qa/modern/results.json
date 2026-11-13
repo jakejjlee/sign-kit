@@ -4,8 +4,8 @@
     "http://127.0.0.1:8742/sms-mike.html",
     "http://127.0.0.1:8742/kit-lincoln-waiting.html"
   ],
-  "ranAt": "2026-11-12T19:29:04.099Z",
-  "summary": "modern-checks: 2 BLOCK, 3 REPORT, 14 PASS, 5 SKIP of 24",
+  "ranAt": "2026-11-13T15:57:50.674Z",
+  "summary": "modern-checks: 0 BLOCK, 0 REPORT, 15 PASS, 9 SKIP of 24",
   "checks": [
     {
       "id": "wcag22",
@@ -37,7 +37,7 @@
           "data": []
         }
       ],
-      "ms": 20380
+      "ms": 6895
     },
     {
       "id": "focus-obscured",
@@ -65,7 +65,7 @@
           "evidence": "@1440: 0 of 2 focus stops fully hidden, 0 partly, 0 off-screen"
         }
       ],
-      "ms": 14688
+      "ms": 5838
     },
     {
       "id": "target-size",
@@ -113,7 +113,7 @@
           }
         }
       ],
-      "ms": 29689
+      "ms": 5021
     },
     {
       "id": "auth-paste",
@@ -131,7 +131,7 @@
           "evidence": "no password or one-time-code field"
         }
       ],
-      "ms": 9888
+      "ms": 2628
     },
     {
       "id": "reflow",
@@ -149,7 +149,7 @@
           "evidence": "@320: no sideways scroll (320px)"
         }
       ],
-      "ms": 3341
+      "ms": 2527
     },
     {
       "id": "text-spacing",
@@ -181,7 +181,7 @@
           "data": []
         }
       ],
-      "ms": 8719
+      "ms": 6180
     },
     {
       "id": "zoom200",
@@ -199,12 +199,12 @@
           "evidence": "@1280 root 200%: 0 clipped, 0 overlapping text box(es); 0% of text scaled (mostly px-sized, so text-only zoom does not enlarge it; browser zoom still does)"
         }
       ],
-      "ms": 6718
+      "ms": 3351
     },
     {
       "id": "inp",
       "status": "PASS",
-      "evidence": "/kit-lincoln-waiting.html @390 4x CPU: 1 clicked, slowest 176ms div:nth-of-type(2) > div > a; /sms-mike.html no visible non-navigating controls to click",
+      "evidence": "/kit-lincoln-waiting.html @390 4x CPU: 1 clicked, slowest 56ms div:nth-of-type(2) > div > a; /sms-mike.html no visible non-navigating controls to click",
       "details": [
         {
           "route": "/sms-mike.html",
@@ -214,15 +214,15 @@
         {
           "route": "/kit-lincoln-waiting.html",
           "status": "PASS",
-          "evidence": "@390 4x CPU: 1 clicked, slowest 176ms div:nth-of-type(2) > div > a"
+          "evidence": "@390 4x CPU: 1 clicked, slowest 56ms div:nth-of-type(2) > div > a"
         }
       ],
-      "ms": 17426
+      "ms": 3210
     },
     {
       "id": "engines",
-      "status": "REPORT",
-      "evidence": "/sms-mike.html webkit@1440: 0 stuck invisible, 1 console, 0 page errors; /sms-mike.html webkit@390: 0 stuck invisible, 1 console, 0 page errors; /sms-mike.html chromium@1440: 0 stuck invisible, 1 console, 0 page errors; /sms-mike.html chromium@390: 0 stuck invisible, 1 console, 0 page errors; /sms-mike.html firefox@1440: 0 stuck invisible, 0 console, 0 page errors; /kit-lincoln-waiting.html firefox@1440: 0 stuck invisible, 0 console, 0 page errors; /sms-mike.html firefox@390: 0 stuck invisible, 0 console, 0 page errors; /kit-lincoln-waiting.html firefox@390: 0 stuck invisible, 0 console, 0 page errors; /kit-lincoln-waiting.html webkit@1440: 0 stuck invisible, 0 console, 0 page errors; /kit-lincoln-waiting.html webkit@390: 0 stuck invisible, 0 console, 0 page errors; /kit-lincoln-waiting.html chromium@1440: 0 stuck invisible, 0 console, 0 page errors; /kit-lincoln-waiting.html chromium@390: 0 stuck invisible, 0 console, 0 page errors (WebKit at 390 runs an iPhone 15 Pro profile; still not real iOS Safari: no shrinking toolbar)",
+      "status": "PASS",
+      "evidence": "/sms-mike.html firefox@1440: 0 stuck invisible, 0 console, 0 page errors; /kit-lincoln-waiting.html firefox@1440: 0 stuck invisible, 0 console, 0 page errors; /sms-mike.html firefox@390: 0 stuck invisible, 0 console, 0 page errors; /kit-lincoln-waiting.html firefox@390: 0 stuck invisible, 0 console, 0 page errors; /sms-mike.html webkit@1440: 0 stuck invisible, 0 console, 0 page errors; /kit-lincoln-waiting.html webkit@1440: 0 stuck invisible, 0 console, 0 page errors; /sms-mike.html webkit@390: 0 stuck invisible, 0 console, 0 page errors; /kit-lincoln-waiting.html webkit@390: 0 stuck invisible, 0 console, 0 page errors; /sms-mike.html chromium@1440: 0 stuck invisible, 0 console, 0 page errors; /kit-lincoln-waiting.html chromium@1440: 0 stuck invisible, 0 console, 0 page errors; /sms-mike.html chromium@390: 0 stuck invisible, 0 console, 0 page errors; /kit-lincoln-waiting.html chromium@390: 0 stuck invisible, 0 console, 0 page errors (WebKit at 390 runs an iPhone 15 Pro profile; still not real iOS Safari: no shrinking toolbar)",
       "details": [
         {
           "route": "/sms-mike.html",
@@ -266,13 +266,11 @@
         },
         {
           "route": "/sms-mike.html",
-          "status": "REPORT",
-          "evidence": "webkit@1440: 0 stuck invisible, 1 console, 0 page errors",
+          "status": "PASS",
+          "evidence": "webkit@1440: 0 stuck invisible, 0 console, 0 page errors",
           "data": {
             "stuck": [],
-            "errs": [
-              "Failed to load resource: The Internet connection appears to be offline."
-            ],
+            "errs": [],
             "perrs": []
           }
         },
@@ -288,13 +286,11 @@
         },
         {
           "route": "/sms-mike.html",
-          "status": "REPORT",
-          "evidence": "webkit@390: 0 stuck invisible, 1 console, 0 page errors",
+          "status": "PASS",
+          "evidence": "webkit@390: 0 stuck invisible, 0 console, 0 page errors",
           "data": {
             "stuck": [],
-            "errs": [
-              "Failed to load resource: The Internet connection appears to be offline."
-            ],
+            "errs": [],
             "perrs": []
           }
         },
@@ -310,13 +306,11 @@
         },
         {
           "route": "/sms-mike.html",
-          "status": "REPORT",
-          "evidence": "chromium@1440: 0 stuck invisible, 1 console, 0 page errors",
+          "status": "PASS",
+          "evidence": "chromium@1440: 0 stuck invisible, 0 console, 0 page errors",
           "data": {
             "stuck": [],
-            "errs": [
-              "Failed to load resource: net::ERR_INTERNET_DISCONNECTED"
-            ],
+            "errs": [],
             "perrs": []
           }
         },
@@ -332,13 +326,11 @@
         },
         {
           "route": "/sms-mike.html",
-          "status": "REPORT",
-          "evidence": "chromium@390: 0 stuck invisible, 1 console, 0 page errors",
+          "status": "PASS",
+          "evidence": "chromium@390: 0 stuck invisible, 0 console, 0 page errors",
           "data": {
             "stuck": [],
-            "errs": [
-              "Failed to load resource: net::ERR_INTERNET_DISCONNECTED"
-            ],
+            "errs": [],
             "perrs": []
           }
         },
@@ -353,7 +345,7 @@
           }
         }
       ],
-      "ms": 106924
+      "ms": 20252
     },
     {
       "id": "prefs.reduced-motion",
@@ -371,7 +363,7 @@
           "evidence": "0 animation(s) over 0.2s still running under reduced motion"
         }
       ],
-      "ms": 14068
+      "ms": 10426
     },
     {
       "id": "prefs.dark",
@@ -389,7 +381,7 @@
           "evidence": "dark scheme: 0 low-contrast element(s)"
         }
       ],
-      "ms": 14068
+      "ms": 10426
     },
     {
       "id": "prefs.forced-colors",
@@ -407,19 +399,19 @@
           "evidence": "forced colors: 0 of 8 focus stops lose their ring"
         }
       ],
-      "ms": 14068
+      "ms": 10426
     },
     {
       "id": "crawlers.robots",
       "status": "PASS",
       "evidence": "no robots.txt (404), so every crawler is allowed",
-      "ms": 2698
+      "ms": 2674
     },
     {
       "id": "crawlers.cloudflare",
       "status": "PASS",
       "evidence": "no Cloudflare header (cf-ray) on the page",
-      "ms": 2698
+      "ms": 2675
     },
     {
       "id": "crawlers.facts",
@@ -437,37 +429,37 @@
           "evidence": "2 of 2 in server HTML"
         }
       ],
-      "ms": 2698
+      "ms": 2675
     },
     {
       "id": "security-headers.hsts",
       "status": "SKIP",
-      "evidence": "http URL: HSTS only applies over https",
-      "ms": 0
+      "evidence": "email render (data-medium=\"email\"): an inbox serves no HTTP headers",
+      "ms": 1
     },
     {
       "id": "security-headers.nosniff",
-      "status": "BLOCK",
-      "evidence": "no X-Content-Type-Options: nosniff",
-      "ms": 0
+      "status": "SKIP",
+      "evidence": "email render (data-medium=\"email\"): an inbox serves no HTTP headers",
+      "ms": 1
     },
     {
       "id": "security-headers.framing",
-      "status": "BLOCK",
-      "evidence": "no frame-ancestors and no X-Frame-Options: page can be framed (clickjacking)",
-      "ms": 0
+      "status": "SKIP",
+      "evidence": "email render (data-medium=\"email\"): an inbox serves no HTTP headers",
+      "ms": 1
     },
     {
       "id": "security-headers.referrer",
-      "status": "REPORT",
-      "evidence": "no Referrer-Policy header (browser default applies)",
-      "ms": 0
+      "status": "SKIP",
+      "evidence": "email render (data-medium=\"email\"): an inbox serves no HTTP headers",
+      "ms": 1
     },
     {
       "id": "security-headers.csp",
-      "status": "REPORT",
-      "evidence": "no Content-Security-Policy",
-      "ms": 0
+      "status": "SKIP",
+      "evidence": "email render (data-medium=\"email\"): an inbox serves no HTTP headers",
+      "ms": 1
     },
     {
       "id": "bfcache",
@@ -485,7 +477,7 @@
           "evidence": "no same-site link to leave through"
         }
       ],
-      "ms": 3974
+      "ms": 2926
     },
     {
       "id": "states.errors",
@@ -503,7 +495,7 @@
           "evidence": "no fetch/XHR calls on load to fail; offline: 1 clicks made no network calls"
         }
       ],
-      "ms": 189538
+      "ms": 21939
     },
     {
       "id": "states.long-string",
@@ -521,7 +513,7 @@
           "evidence": "no visible text input"
         }
       ],
-      "ms": 189539
+      "ms": 21939
     },
     {
       "id": "pdf",

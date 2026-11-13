@@ -4,7 +4,7 @@ Branch: design/signer-confirmation-email in ~/Claude/sign-kit. Started 2026-11-1
 
 1) Brief written: docs/design/email/BRIEF.md.
 2) Board built and committed (048064a), served at 127.0.0.1:8731, opened in Safari.
-3) PICKED 2026-11-12: d3 "The Track" (recorded in DESIGN-RECORD.md). Build helper running:
+3) PICKED 2026-11-12: d3 "The Track". BUILT: kit 7e521e3 (pushed), SMS PR #311 (e9280b4). Waiting on "ship it" + whether to send Mike his copy.
    kit notify.ts + SMS worktree ~/Claude/.claude-worktrees/sms-signer-email on
    feat/signer-confirmation-email, final renders in docs/design/email/final/.
 4) After the pick: lift the picked markup into src/lib/notify.ts signerEmail()/shell(), wire Sun

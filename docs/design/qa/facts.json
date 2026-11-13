@@ -1,0 +1,88 @@
+{
+ "url": "http://127.0.0.1:8742",
+ "routes": [
+  "/sms-mike.html",
+  "/kit-lincoln-waiting.html"
+ ],
+ "extracted": 13,
+ "facts": [
+  {
+   "kind": "percent",
+   "claim": "10%",
+   "route": "/sms-mike.html",
+   "context": "lorado Start date November 1, 2026 Management fee 10% of Net Revenue Onboarding fee None Notice to end"
+  },
+  {
+   "kind": "time",
+   "claim": "6:59 PM",
+   "route": "/sms-mike.html",
+   "context": "You signed Michael Williams, November 11, 2026, 6:59 PM MST ✓ Agreement complete Every party has s"
+  },
+  {
+   "kind": "date",
+   "claim": "November 11, 2026",
+   "route": "/sms-mike.html",
+   "context": "ngs, Colorado ✓ You signed Michael Williams, November 11, 2026, 6:59 PM MST ✓ Agreement complete Every pa"
+  },
+  {
+   "kind": "date",
+   "claim": "November 1, 2026",
+   "route": "/sms-mike.html",
+   "context": "ook Circle, Colorado Springs, Colorado Start date November 1, 2026 Management fee 10% of Net Revenue Onboarding fee"
+  },
+  {
+   "kind": "address",
+   "claim": "309 Cranbrook Circle",
+   "route": "/sms-mike.html",
+   "context": "Management Agreement It is signed and complete. 309 Cranbrook Circle, Colorado Springs, Colorado ✓ You signed Mic"
+  },
+  {
+   "kind": "money",
+   "claim": "$3,995",
+   "route": "/kit-lincoln-waiting.html",
+   "context": "apartment 243 Lincoln Avenue, Unit 2 Rent, all in $3,995 a month Made up of $3,695 rent, $300 parking Due"
+  },
+  {
+   "kind": "money",
+   "claim": "$3,695",
+   "route": "/kit-lincoln-waiting.html",
+   "context": "ue, Unit 2 Rent, all in $3,995 a month Made up of $3,695 rent, $300 parking Due The 1st of each month Depo"
+  },
+  {
+   "kind": "money",
+   "claim": "$300",
+   "route": "/kit-lincoln-waiting.html",
+   "context": "nt, all in $3,995 a month Made up of $3,695 rent, $300 parking Due The 1st of each month Deposit, refund"
+  },
+  {
+   "kind": "money",
+   "claim": "$250",
+   "route": "/kit-lincoln-waiting.html",
+   "context": ", refundable $3,695 at signing Late after the 1st $250 The PDF is attached. Version November 1, 2026. R"
+  },
+  {
+   "kind": "time",
+   "claim": "2:30 PM",
+   "route": "/kit-lincoln-waiting.html",
+   "context": "You signed Sample Tenant, November 12, 2026 at 2:30 PM EST 2 Waiting on Jamarber Dobrushi The lan"
+  },
+  {
+   "kind": "date",
+   "claim": "November 12, 2026",
+   "route": "/kit-lincoln-waiting.html",
+   "context": "New Jersey 07010 ✓ You signed Sample Tenant, November 12, 2026 at 2:30 PM EST 2 Waiting on Jamarber Dobrus"
+  },
+  {
+   "kind": "date",
+   "claim": "November 1, 2026",
+   "route": "/kit-lincoln-waiting.html",
+   "context": "after the 1st $250 The PDF is attached. Version November 1, 2026. Reference 0123456789abcdef. Keep this email for"
+  },
+  {
+   "kind": "address",
+   "claim": "243 Lincoln Avenue",
+   "route": "/kit-lincoln-waiting.html",
+   "context": "y Residential Lease Your signature is recorded. 243 Lincoln Avenue, Unit 2, Cliffside Park, New Jersey 07010 ✓ Y"
+  }
+ ]
+}

@@ -5,11 +5,14 @@ import { makeRecord, type Execution, type SignatureRecord } from "../src/lib/exe
 import { buildSignerEmail, contrast, signerPalette } from "../src/lib/signer-email";
 
 const sent: Record<string, unknown>[] = [];
+/** Lets a test make the signer's own send hang forever, like a stalled mail service. */
+const hang = { signer: false };
 vi.mock("resend", () => ({
   Resend: class {
     emails = {
       send: async (msg: Record<string, unknown>) => {
         sent.push(msg);
+        if (hang.signer && msg.to === "mike@example.com") return new Promise(() => {});
         return { data: { id: "mock" }, error: null };
       },
     };
@@ -82,7 +85,7 @@ describe("signer email: The Track", () => {
       copyUrl: "https://sunmountainstays.com/client/michael-williams/management-agreement",
       attached: true, attachmentName: "cranbrook-executed.pdf",
     });
-    expect(m.subject).toBe("Signed: Management Agreement, 309 Cranbrook Circle, Colorado Springs, Colorado");
+    expect(m.subject).toBe("309 Cranbrook Circle, Colorado Springs, Colorado | Management Agreement | Fully signed, November 11, 2026");
     expect(m.html).toContain("It is signed and complete.");
     expect(m.html).toContain("Agreement complete");
     expect(m.html).toContain("Michael Williams");
@@ -95,11 +98,12 @@ describe("signer email: The Track", () => {
   it("waiting: subject, heading, and the outstanding party is named", () => {
     const { a, mike, waiting } = states();
     const m = buildSignerEmail(a, mike, waiting, { attached: true });
-    expect(m.subject).toBe("Your signature is recorded: 309 Cranbrook Circle, Colorado Springs, Colorado");
+    // The state leads the subject, so a phone list that cuts at about 40 characters still shows it.
+    expect(m.subject).toBe("309 Cranbrook Circle, Colorado Springs, Colorado | Management Agreement | Signed by Michael Williams, November 11, 2026");
     expect(m.html).toContain("Your signature is recorded.");
     expect(m.html).toContain("Waiting on Jake Lee");
     expect(m.html).toContain("The manager still needs to sign");
-    expect(m.html).toContain("You get the completed agreement");
+    expect(m.html).toContain("We email you when it is complete");
     expect(m.html).not.toContain("Agreement complete");
     expect(m.html).not.toContain("It is signed and complete.");
   });
@@ -115,6 +119,52 @@ describe("signer email: The Track", () => {
     const mike = rec(a, "owner", "Michael Williams");
     const m = buildSignerEmail(a, mike, { signatures: { owner: mike } });
     expect(m.html).toContain("Waiting on Ann Lee and Bo Lee");
+  });
+
+  it("reads three or more parties as a list, one role word per role, with the right verb", () => {
+    const a = agreement({
+      parties: [
+        { id: "owner", legalName: "Michael Williams", role: "Owner" },
+        { id: "a", legalName: "Ann Lee", role: "Co-owner" },
+        { id: "b", legalName: "Bo Lee", role: "Co-owner" },
+        { id: "c", legalName: "Cy Lee", role: "Manager" },
+      ],
+    });
+    const mike = rec(a, "owner", "Michael Williams");
+    const m = buildSignerEmail(a, mike, { signatures: { owner: mike } });
+    expect(m.html).toContain("Waiting on Ann Lee, Bo Lee and Cy Lee");
+    expect(m.html).toContain("The co-owner and manager still need to sign");
+    expect(m.html).not.toContain("and Bo Lee and");
+    expect(m.subject).toContain(" | Signed by Michael Williams, ");
+  });
+
+  it("keeps the time and zone on one line, so a receipt never breaks as 6:59 / PM MST", () => {
+    const { a, mike, executed } = states();
+    const { html } = buildSignerEmail(a, mike, executed);
+    expect(html).toMatch(/\d{1,2}:\d{2} (AM|PM) [A-Z]{3}/);
+    expect(html).not.toMatch(/\d{1,2}:\d{2} (AM|PM)/);
+  });
+
+  it("every painted background sits on a table cell that also carries bgcolor (Outlook, dark modes)", () => {
+    const { a, mike, waiting } = states();
+    const { html } = buildSignerEmail(a, mike, waiting, { copyUrl: "https://example.com/c", attached: true });
+    const bare = [...html.matchAll(/<(\w+)\b([^>]*style="[^"]*background:[^"]*"[^>]*)>/g)].filter(
+      ([, tag, attrs]) => !["a", "img"].includes(tag) && !/bgcolor=/.test(attrs)
+    );
+    expect(bare.map((b) => b[0])).toEqual([]);
+  });
+
+  it("phone and inbox details: format-detection off, padded preheader, empty-alt decoration, plain text part", () => {
+    const { a, mike, executed } = states();
+    const m = buildSignerEmail(a, mike, executed, { copyUrl: "https://example.com/c" });
+    expect(m.html).toContain('name="format-detection"');
+    expect(m.html).toContain("xmlns:w=");
+    expect(m.html.match(/&zwnj;&nbsp;/g)?.length ?? 0).toBeGreaterThanOrEqual(60);
+    expect(m.text).toContain("1) You signed: Michael Williams");
+    expect(m.text).toContain("Open your signed copy: https://example.com/c");
+    expect(m.text).toContain("Management fee: 15% of Net Revenue");
+    expect(m.text).not.toMatch(/<|&nbsp;| /);
+    expect(m.html.length).toBeLessThan(40_000); // Gmail clips a message at about 102KB
   });
 
   it("key terms come from the agreement's own summary rows", () => {
@@ -170,7 +220,8 @@ describe("signer email: The Track", () => {
         expect(buttons[0][1]).toMatch(/^Open your (signed )?copy$/);
       });
       it("never sets an inline font size under 13px, and body text stays at 16px or more where it is body", () => {
-        const sizes = fontSizes(html);
+        // Empty spacer cells (a 2px track line holding one non-breaking space) carry no readable text.
+        const sizes = fontSizes(html.replace(/<td[^>]*>&nbsp;<\/td>/g, ""));
         expect(sizes.length).toBeGreaterThan(5);
         expect(Math.min(...sizes)).toBeGreaterThanOrEqual(13);
       });
@@ -257,14 +308,66 @@ describe("deliverSignedCopy sends The Track to the signer and keeps the operator
     const res = await deliverSignedCopy(a, mike, executed, { copyUrl: "https://example.com/c" });
     expect(res.signerCopy).toBe(true);
     expect(res.operatorNotice).toBe(true);
-    expect(sent).toHaveLength(2);
-    const [signer, operator] = sent;
-    expect(signer.to).toBe("mike@example.com");
+    // Mike, Jake (an earlier signer with an address is owed the completed copy too) and the operator.
+    expect(sent).toHaveLength(3);
+    const signer = sent.find((m) => m.to === "mike@example.com") as Record<string, unknown>;
+    const operator = sent.find((m) => m.to === "ops@example.com") as Record<string, unknown>;
     expect(String(signer.html)).toContain("It is signed and complete.");
     expect(String(signer.html)).toContain("unit-2-executed.pdf is attached.");
     expect(String(signer.html)).not.toContain("tel:");
+    expect(String(signer.text)).toContain("1) You signed:");
+    expect(signer.from).toBe("Sun Mountain Stays <hello@sunmountainstays.com>");
     expect(signer.attachments).toHaveLength(1);
-    expect(operator.to).toBe("ops@example.com");
     expect(String(operator.subject)).toContain("FULLY EXECUTED");
+    expect(String(operator.text)).toContain("Fully executed");
+  });
+
+  it("an earlier signer gets the completed copy when the last party signs, and only if they left an address", async () => {
+    const { deliverSignedCopy } = await import("../src/lib/notify");
+    const { a, mike } = states();
+    const jake = { ...rec(a, "mgr", "Jake Lee"), email: "jake@example.com" };
+    await deliverSignedCopy(a, jake, { signatures: { owner: mike, mgr: jake } });
+    expect(sent.map((m) => m.to).sort()).toEqual(["jake@example.com", "mike@example.com", "ops@example.com"]);
+    sent.length = 0;
+    const jakeNoAddress = { ...jake, email: undefined };
+    await deliverSignedCopy(a, jakeNoAddress, { signatures: { owner: mike, mgr: jakeNoAddress } });
+    expect(sent.map((m) => String(m.to)).sort()).toEqual(["mike@example.com", "ops@example.com", "ops@example.com"]);
+    expect(sent.some((m) => String(m.subject).startsWith("[NO SIGNER ADDRESS]"))).toBe(true);
+    expect(sent.some((m) => String(m.subject).includes("SIGNER COPY FAILED"))).toBe(false);
+  });
+
+  it("a waiting signature emails only the signer who just signed", async () => {
+    const { deliverSignedCopy } = await import("../src/lib/notify");
+    const { a, mike, waiting } = states();
+    await deliverSignedCopy(a, mike, waiting);
+    expect(sent.map((m) => m.to).sort()).toEqual(["mike@example.com", "ops@example.com"]);
+  });
+
+  it("a hung mail service cannot hold the signing response past the limit, and the operator is still told", async () => {
+    vi.useFakeTimers();
+    try {
+      const { deliverSignedCopy, STEP_TIMEOUT_MS } = await import("../src/lib/notify");
+      const { a, mike, waiting } = states();
+      hang.signer = true;
+      const started = deliverSignedCopy(a, mike, waiting);
+      await vi.advanceTimersByTimeAsync(STEP_TIMEOUT_MS + 50);
+      const res = await started;
+      expect(res.signerCopy).toBe(false);
+      expect(res.operatorNotice).toBe(true);
+      expect(res.detail).toContain("took over");
+      expect(sent.some((m) => String(m.subject).startsWith("[SIGNER COPY FAILED]"))).toBe(true);
+    } finally {
+      hang.signer = false;
+      vi.useRealTimers();
+    }
+  });
+});
+
+describe("searchable names", () => {
+  it("names the PDF by place and document, and says partly signed or signed, never draft", async () => {
+    const { pdfFilename } = await vi.importActual<typeof import("../src/lib/pdf")>("../src/lib/pdf");
+    const { a, waiting, executed } = states();
+    expect(pdfFilename(a, waiting)).toBe("309-Cranbrook-Circle-Colorado-Springs-Colorado-Management-Agreement-partly-signed.pdf");
+    expect(pdfFilename(a, executed)).toBe("309-Cranbrook-Circle-Colorado-Springs-Colorado-Management-Agreement-signed.pdf");
   });
 });

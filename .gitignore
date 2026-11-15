@@ -2,3 +2,5 @@
 /.next
 .DS_Store
 *.tsbuildinfo
+.email-renders/
+docs/superpowers/RESUME-*.md

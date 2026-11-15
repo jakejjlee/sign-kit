@@ -35,7 +35,7 @@ export type PdfBlock =
   | { k: "caps"; text: string };
 
 export type PdfSection = {
-  /** Number as printed ("1", "3.4"). */
+  /** Number as printed ("1", "3.4"). Empty for an unnumbered part such as an opening summary. */
   n: string;
   /** Optional heading opening a run of clauses; only the first of a run carries it. */
   group?: string;
@@ -52,15 +52,23 @@ export type PdfModel = {
   heading?: string;
   /** One muted line under the heading, e.g. "Prepared by Sun Mountain Stays, ...". */
   preparedBy: string;
+  /** Paragraphs under the masthead, before the parties (a standfirst, say). */
+  intro?: string[];
   /** One line per party, e.g. "Owner: Michael Williams", under a "Parties" heading. */
   parties: string[];
   /** "What is payable": label and amount, already formatted. */
   payable?: { lines: { label: string; value: string; total?: boolean }[]; footnote: string };
+  /** Opening parts that come before the parties, such as a summary of the terms. */
+  front?: PdfSection[];
   body: PdfSection[];
+  /** Paragraphs that close the body, before the signatures (a callout, say). */
+  afterBody?: string[];
   /** "Attached to and part of this agreement": one line each. */
   attachments?: string[];
   /** "Clauses initialed separately": one line each. */
   initialsSchedule?: string[];
+  /** One line under the "Signatures" heading, before the first line. */
+  signatureNote?: string;
   /** One entry per signature line, in printed order. */
   signatures: { caption: string; named: boolean; typed?: string; status: string }[];
   /** The sentence under the signatures (version, e-sign law, counterparts). */
@@ -198,7 +206,7 @@ function drawSection(d: Draw, f: Fonts, sec: PdfSection) {
   }
   d.need(40);
   d.gap(6);
-  d.text(`${sec.n}  ${sec.title}`, { font: f.bold, size: 11.5 });
+  d.text(sec.n ? `${sec.n}  ${sec.title}` : sec.title, { font: f.bold, size: 11.5 });
   if (sec.mark) {
     // In the margin beside the clause, which is where a paper lease puts it.
     d.page.drawText(sec.mark, {
@@ -231,6 +239,13 @@ export async function renderPdf(m: PdfModel): Promise<Uint8Array> {
   d.rule();
   d.gap(8);
 
+  for (const para of m.intro ?? []) {
+    d.text(para);
+    d.gap(4);
+  }
+  if (m.intro?.length) d.gap(4);
+  for (const sec of m.front ?? []) drawSection(d, f, sec);
+
   /* ---- parties ---- */
   d.text("Parties", { font: f.bold, size: 11.5 });
   d.gap(3);
@@ -256,6 +271,13 @@ export async function renderPdf(m: PdfModel): Promise<Uint8Array> {
 
   /* ---- body ---- */
   for (const sec of m.body) drawSection(d, f, sec);
+  if (m.afterBody?.length) {
+    d.gap(8);
+    for (const para of m.afterBody) {
+      d.text(para, { font: f.italic });
+      d.gap(4);
+    }
+  }
 
   /* ---- attachments ---- */
   if (m.attachments && m.attachments.length > 0) {
@@ -294,6 +316,10 @@ export async function renderPdf(m: PdfModel): Promise<Uint8Array> {
   d.gap(10);
   d.text("Signatures", { font: f.bold, size: 11.5 });
   d.gap(6);
+  if (m.signatureNote) {
+    d.text(m.signatureNote, { size: 9.5, color: MUTED });
+    d.gap(6);
+  }
 
   for (const s of m.signatures) {
     d.need(58);

@@ -197,7 +197,12 @@ export function buildSignerEmail(
         "now",
         2,
         `Waiting on ${esc(waitNames)}`,
-        `The ${esc(waitRoles)} still ${waiting.length > 1 ? "need" : "needs"} to sign. The agreement is not complete until then.`,
+        // A role reads well here only when it is a short title ("manager"). A long legal
+        // capacity ("Owner, for himself and his operating company") turns into a garbled
+        // sentence once lowercased and joined, so it falls back to plain words.
+        waiting.every((w) => !w.role.includes(",") && w.role.trim().split(/\s+/).length <= 3)
+          ? `The ${esc(waitRoles)} still ${waiting.length > 1 ? "need" : "needs"} to sign. The agreement is not complete until then.`
+          : `${waiting.length > 1 ? "Their signatures are" : "That signature is"} still needed. The agreement is not complete until then.`,
         false,
         p
       )

@@ -85,6 +85,11 @@
       "types": "./src/lib/signer-email-core.ts",
       "import": "./src/lib/signer-email-core.ts",
       "default": "./src/lib/signer-email-core.ts"
+    },
+    "./lib/pdf-core": {
+      "types": "./src/lib/pdf-core.ts",
+      "import": "./src/lib/pdf-core.ts",
+      "default": "./src/lib/pdf-core.ts"
     }
   },
   "scripts": {

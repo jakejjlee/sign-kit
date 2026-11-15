@@ -3,6 +3,7 @@ import { longDate } from "./dates";
 import { isFullyExecuted, outstandingParties, type Execution, type SignatureRecord } from "./execution";
 import { shortFingerprint } from "./fingerprint";
 import {
+  DEFAULT_FACES,
   type BuiltEmail,
   type EmailModel,
   FALLBACK,
@@ -40,11 +41,7 @@ export type SignerEmailOptions = {
   nextStep?: { what: string; when: string };
 };
 
-const FACES = {
-  serif: "Georgia,'Times New Roman',serif",
-  sans: "'Helvetica Neue',Helvetica,Arial,sans-serif",
-  wordmark: "Georgia,'Times New Roman',serif",
-};
+const FACES = DEFAULT_FACES;
 
 function token(a: Agreement, k: BrandToken): string | undefined {
   const v = a.brand.tokens?.[k];
@@ -98,11 +95,21 @@ export function buildSignerEmail(
   const model: EmailModel = {
     palette: signerPalette(a),
     faces: FACES,
+    logo: a.brand.logo,
+    fontsHref: a.brand.fontsHref,
     brandName: a.brand.name,
     docTitle: a.title,
     subjectPlace: a.subtitle,
     place,
     signedBy: rec.legalName,
+    signedRole: a.parties.find((p) => p.id === rec.party)?.role,
+    others: a.parties
+      .filter((p) => p.id !== rec.party && ex.signatures[p.id])
+      .map((p) => ({
+        name: p.legalName,
+        role: p.role,
+        when: ex.signatures[p.id]?.signedAtLocal.replace(/(\d{1,2}:\d{2}):\d{2}/, "$1"),
+      })),
     signedWhen: rec.signedAtLocal.replace(/(\d{1,2}:\d{2}):\d{2}/, "$1"),
     waiting,
     nextStep: opts.nextStep,

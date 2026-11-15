@@ -1,40 +1,39 @@
 /**
- * The signer's confirmation email, direction d3, "The Track": the ONE place
- * its design lives.
+ * The Specimen: the ONE email design for every signing and form email across Jake's businesses
+ * (picked by Jake on the round 2 board, 2026-11-14, over the Track, which was rejected).
  *
- * This file imports nothing. It takes a plain description of the message (the
- * model below) and returns { subject, html, text }. Two callers describe their
- * messages differently and share every pixel:
+ * This file imports nothing. It holds the whole design and three ways to describe a message to it:
  *
- * - the kit's own adapter, src/lib/signer-email.ts (Agreement and Execution)
- * - the Sun Mountain Stays site, which keeps a byte-for-byte copy of this file
- *   (src/lib/agreements/vendor/signer-email-core.ts) and describes its own
- *   agreements. `pnpm emails:vendor <site repo>` makes that copy and stamps it
- *   with this file's hash; the site's test fails if the copy is edited by hand
- *   or falls behind.
+ * - renderSignerEmail(EmailModel)   the confirmation a signer gets after signing (waiting or complete)
+ * - renderOperatorEmail(OperatorModel)  the alert the business inbox gets when someone signs
+ * - renderReceiptEmail(ReceiptModel)    the receipt for a form (a sheet of what was received)
  *
- * A signer opens this to be certain the signature counted. So the first thing
- * on it is where they stand, drawn as a short vertical track that reads by
- * shape (a check, a number, a dashed number) AND by words, then one button to
- * the signed copy, then the key terms as rows.
+ * All three build a SpecimenModel and call renderSpecimen(), the layout itself. Sites that cannot
+ * depend on the kit keep a byte-for-byte copy (`pnpm emails:vendor <site repo>`); the web-kit mail
+ * framework gets the same layout as a generated module (`pnpm emails:vendor-webkit <web-kit repo>`),
+ * so there is one design and one place to change it.
  *
- * Mechanics, all of them chosen for the inboxes that actually exist:
- * - tables and inline styles only; no <style> block, no webfont, no script
+ * The design: a tinted ground with the business's real logo centered at the top, one large sentence
+ * saying what happened, one full-width button, then the thing itself drawn as a sheet of paper (its
+ * title, its terms, and one signature line per party: a signed name sits on its line, an unsigned
+ * one shows "Signature needed"), a quiet footer. No colored header band and no step track.
+ *
+ * Mechanics, chosen for the inboxes that actually exist:
+ * - tables and inline styles; one small <style> for light-only and phone sizes (a progressive
+ *   extra: the email is complete without it)
  * - 600px maximum, fluid under that; body copy 16px or more, nothing under 13px
- * - every painted shape is a table cell carrying BOTH bgcolor and style, so
- *   Outlook's Word engine (which drops div backgrounds) and forced dark modes
- *   keep the colors and the track
- * - the wordmark is live text in a web-safe face; a logo is decoration and has
- *   empty alt text, so images off shows the name once, not twice
- * - the button is a plain link in every client, with a VML twin for Outlook
- * - the page declares itself light-only and switches off phone auto-linking of
- *   addresses and dates, which would otherwise turn them blue and underlined
- * - the preview line is the hidden preheader, padded so the band text cannot
- *   follow it into the inbox list
+ * - every painted cell carries BOTH bgcolor and style, so Outlook's Word engine keeps the colors
+ * - web font first with a deliberate system fallback (Iowan Old Style, Charter, Georgia; Helvetica
+ *   Neue, Arial), never a Times New Roman fallback
+ * - the logo is a hosted image with alt text and its own background painted in; the wordmark is
+ *   live text when there is no logo, so images off still shows the name
+ * - the button is a plain link in every client with a VML twin for Outlook
+ * - the page declares itself light-only and switches off phone auto-linking
+ * - the preview line is a hidden preheader, padded so body text cannot follow it into the list
  * - "book a call" is an inline text link in the footer, never a button
  * - a plain-text twin is always built, so no send ever goes out html-only
  *
- * No phone number appears anywhere on this email. Contact is the reply.
+ * No phone number appears anywhere on these emails. Contact is the reply.
  */
 
 export type Palette = {
@@ -43,8 +42,10 @@ export type Palette = {
   ink: string;
   muted: string;
   rule: string;
+  /** The brand's deep color: the button and the signed name. */
   band: string;
   bandText: string;
+  /** The brand's accent: the gold rule and the stamp tint. */
   bandAccent: string;
 };
 
@@ -52,35 +53,48 @@ export type Faces = { serif: string; sans: string; wordmark: string };
 
 export type Term = { label: string; value: string | string[] };
 
+/** A hosted logo. `markOnly` marks a square mark, which is shown above the live wordmark. */
+export type Logo = { src: string; width: number; height: number; alt: string; markOnly?: boolean };
+
+export type Signer = { name: string; role?: string; when?: string };
+
 export type EmailModel = {
   palette: Palette;
   faces: Faces;
   /** The wordmark, the footer sentence and the preheader all use this. */
   brandName: string;
-  /** Small second line on the band, e.g. "Management Agreement". */
+  /** The document's title, e.g. "Management Agreement". */
   docTitle: string;
   /**
    * The client or place that leads the subject, e.g. "309 Cranbrook Circle, Colorado Springs".
    * Empty when the document names no one, and the subject then starts with the document.
    */
   subjectPlace?: string;
-  /** Under the heading: the property or document, one line per entry. */
+  /** Under the sheet title: the property or document, one line per entry. */
   place: string | string[];
-  /** A decorative mark beside the wordmark, painted on its own ground. */
+  /** The real logo, hosted. Preferred over `mark`. */
+  logo?: Logo;
+  /** A square mark (the older field): shown above the live wordmark at 64px. */
   mark?: { src: string; ground: string };
+  /** Hosted web font stylesheet (Google Fonts) for the brand's faces. */
+  fontsHref?: string;
   signedBy: string;
+  /** The signer's role on the document, e.g. "Owner". */
+  signedRole?: string;
   /** "November 11, 2026, 6:59 PM MST". Empty when the time cannot be read. */
   signedWhen: string;
+  /** Parties who signed earlier, shown on their lines when known. */
+  others?: Signer[];
   /** Parties who have not signed. Empty means the agreement is complete. */
   waiting: { name: string; role?: string }[];
   /** The next real date after signing, when one exists. Never invented. */
   nextStep?: { what: string; when: string };
-  /** Step 2 of a complete agreement, e.g. "Every party has signed." */
+  /** Said under the headline when the agreement is complete, e.g. "Every party has signed." */
   completeDetail: string;
-  /** Step 3 of a waiting agreement. */
+  /** What happens after the missing signatures: the detail line carries the promise. */
   completion: { title: string; detail: string };
   button?: { url: string };
-  /** Short paragraphs under the button. */
+  /** Short sentences under the button (the attachment line). */
   note: string[];
   terms: Term[];
   /** Small-print sentences above "Keep this email for your records." */
@@ -92,7 +106,41 @@ export type EmailModel = {
 
 export type BuiltEmail = { subject: string; html: string; text: string };
 
-/* --------------------------------------------------------------- helpers -- */
+/* ------------------------------------------------------- the layout -- */
+
+export type Sheet = {
+  title: string;
+  place?: string;
+  /** A line above the rows, e.g. "For your records, here is what you sent:". */
+  caption?: string;
+  rows: { label: string; value: string }[];
+  signatures?: { name: string; role?: string; signed: boolean; when?: string }[];
+  /** A reference the reader can quote, drawn as the last row. */
+  reference?: { label: string; value: string };
+};
+
+export type SpecimenModel = {
+  subject: string;
+  preheader: string;
+  palette: Palette;
+  faces: Faces;
+  fontsHref?: string;
+  brandName: string;
+  logo?: Logo;
+  headline: string;
+  /** Paragraphs under the headline. `[label](https://url)` becomes an inline link. */
+  lead: string[];
+  /** The stamp on the sheet: "Complete", "Signed 1 of 2", "Received". */
+  status: string;
+  button?: { url: string; label: string };
+  /** Small lines under the button. */
+  attach?: string[];
+  sheet: Sheet;
+  /** Paragraphs under the sheet, links as above. */
+  after?: string[];
+  signoff?: { name: string; title?: string };
+  footer: { reply?: string; fine?: string; legal: string };
+};
 
 export function esc(s: string): string {
   return s.replace(/[<>&"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;" })[c] as string);
@@ -105,7 +153,7 @@ export function joinNames(names: readonly string[]): string {
 }
 
 /** Roles read once each: ["owner", "owner", "manager"] becomes "owner and manager". */
-function uniqueRoles(waiting: EmailModel["waiting"]): string {
+function uniqueRoles(waiting: { role?: string }[]): string {
   const seen: string[] = [];
   for (const w of waiting) {
     const r = (w.role ?? "").toLowerCase();
@@ -117,12 +165,12 @@ function uniqueRoles(waiting: EmailModel["waiting"]): string {
 /** Keeps "6:59 PM MST" on one line so a receipt never breaks as "6:59 / PM MST". */
 export function keepTogether(s: string): string {
   return s.replace(/(\d{1,2}:\d{2}) (AM|PM)( [A-Z]{2,5})?/g, (_m, t: string, ap: string, z?: string) =>
-    `${t} ${ap}${z ? ` ${z.trim()}` : ""}`
+    `${t}\u00a0${ap}${z ? `\u00a0${z.trim()}` : ""}`
   );
 }
 
 function plain(s: string): string {
-  return s.replace(/ /g, " ");
+  return s.replace(/\u00a0/g, " ");
 }
 
 /* ------------------------------------------------------------- contrast -- */
@@ -164,13 +212,19 @@ export function readable(bg: string, ...candidates: (string | undefined)[]): str
   return usable.find((c) => contrast(c, bg) >= 4.5) ?? usable[usable.length - 1] ?? "#000000";
 }
 
+function mix(a: string, b: string, t: number): string {
+  const A = hexToRgb(a) ?? [0, 0, 0];
+  const B = hexToRgb(b) ?? [255, 255, 255];
+  return `#${A.map((v, i) => Math.round(v * t + B[i] * (1 - t)).toString(16).padStart(2, "0")).join("")}`;
+}
+
 export type PaletteInput = {
   paper: string;
   ground: string;
   ink?: string;
   muted?: string;
   rule: string;
-  /** The brand's deep color. Used as the band only if the paper reads on it. */
+  /** The brand's deep color. Used for the button only if the paper reads on it. */
   band?: string;
   bandText?: string;
   accent?: string;
@@ -186,10 +240,9 @@ export const FALLBACK = {
 } as const;
 
 /**
- * Every pair the email paints is checked here, not assumed: ink and muted on
- * the paper, the band against the paper it must carry as text, the band's text
- * and its accent line. A token that would fail 4.5:1 is replaced by one that
- * passes rather than shipped unreadable.
+ * Every pair the email paints is checked here, not assumed: ink and muted on the paper, the deep
+ * color against the paper it must carry as the button, the button's text and the accent. A token
+ * that would fail 4.5:1 is replaced by one that passes rather than shipped unreadable.
  */
 export function makePalette(t: PaletteInput): Palette {
   const paper = t.paper;
@@ -198,60 +251,215 @@ export function makePalette(t: PaletteInput): Palette {
   const bandWanted = isHex(t.band) ? t.band : FALLBACK.band;
   const band = contrast(paper, bandWanted) >= 4.5 ? bandWanted : ink;
   const bandText = readable(band, t.bandText, paper, "#ffffff");
-  const bandAccent = readable(band, t.accent, bandText);
+  const bandAccent = isHex(t.accent) ? t.accent : readable(band, bandText);
   return { paper, ground: t.ground, ink, muted, rule: t.rule, band, bandText, bandAccent };
 }
 
-/* ---------------------------------------------------------------- pieces -- */
+/* ----------------------------------------------------------- type stacks -- */
 
-const IDLE = "#8f8570"; // the not-yet marker's border and the idle track: 3.4:1 on the paper
-const IDLE_TEXT = "#5c5446";
+export const SANS_STACK = "'Instrument Sans',-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif";
+export const SERIF_NEWSREADER = "Newsreader,'Iowan Old Style',Charter,Georgia,serif";
+export const SERIF_GARAMOND = "'EB Garamond',Garamond,'Iowan Old Style',Charter,Georgia,serif";
+export const WORDMARK_CINZEL = "Cinzel,'Trajan Pro',Georgia,serif";
+export const FONTS_NEWSREADER =
+  "https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Instrument+Sans:wght@400;500;600;700&display=swap";
+export const FONTS_GARAMOND =
+  "https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&display=swap";
 
-function button(href: string, label: string, p: Palette, f: Faces): string {
-  const safe = esc(href);
-  return `<!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${safe}" style="height:52px;v-text-anchor:middle;width:260px" arcsize="12%" fillcolor="${p.band}" stroke="f"><w:anchorlock/><center style="color:${p.bandText};font-family:Arial,sans-serif;font-size:16px;font-weight:bold">${esc(label)}</center></v:roundrect><![endif]-->
-<!--[if !mso]><!--><a href="${safe}" style="display:inline-block;background:${p.band};color:${p.bandText};font-family:${f.sans};font-size:16px;font-weight:600;line-height:20px;text-align:center;text-decoration:none;padding:16px 28px;border-radius:6px;min-height:20px">${esc(label)}</a><!--<![endif]-->`;
+/** The default faces: Newsreader and Instrument Sans with the deliberate fallbacks. */
+export const DEFAULT_FACES: Faces = { serif: SERIF_NEWSREADER, sans: SANS_STACK, wordmark: SERIF_NEWSREADER };
+
+/** A stack must never fall to Times New Roman: strip it and make sure Georgia is the serif floor. */
+function stack(s: string, generic: "serif" | "sans-serif"): string {
+  const cleaned = s
+    .split(",")
+    .map((p) => p.trim())
+    .filter((p) => p && !/^'?times new roman'?$/i.test(p) && p !== "serif" && p !== "sans-serif");
+  if (generic === "serif" && !cleaned.some((p) => /georgia/i.test(p))) cleaned.push("Georgia");
+  if (generic === "sans-serif" && !cleaned.some((p) => /arial|helvetica/i.test(p))) cleaned.push("Arial");
+  return `${cleaned.join(",")},${generic}`;
 }
 
-type StepState = "done" | "now" | "later";
+/* --------------------------------------------------------------- layout -- */
 
-/** A square marker drawn as a one-cell table: bgcolor and border survive Outlook and dark modes. */
-function marker(state: StepState, n: number, p: Palette, f: Faces): string {
-  const wrap = (inner: string) =>
-    `<table role="presentation" aria-hidden="true" cellpadding="0" cellspacing="0" border="0"><tr>${inner}</tr></table>`;
-  if (state === "done") {
-    return wrap(
-      `<td width="28" height="28" align="center" valign="middle" bgcolor="${p.band}" style="width:28px;height:28px;background:${p.band};color:${p.bandAccent};font-family:${f.sans};font-size:16px;line-height:28px;font-weight:700;border-radius:6px">&#10003;</td>`
-    );
-  }
-  if (state === "now") {
-    return wrap(
-      `<td width="24" height="24" align="center" valign="middle" bgcolor="#ffffff" style="width:24px;height:24px;background:#ffffff;border:2px solid ${p.band};color:${p.band};font-family:${f.sans};font-size:14px;line-height:24px;font-weight:700;border-radius:6px">${n}</td>`
-    );
-  }
-  return wrap(
-    `<td width="24" height="24" align="center" valign="middle" bgcolor="${p.paper}" style="width:24px;height:24px;background:${p.paper};border:2px dashed ${IDLE};color:${IDLE_TEXT};font-family:${f.sans};font-size:14px;line-height:24px;font-weight:700;border-radius:6px">${n}</td>`
+const PAD = "&zwnj;&nbsp;".repeat(90);
+const T = (inner: string, attrs = "") =>
+  `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" ${attrs}>${inner}</table>`;
+const gap = (h: number) => `<div style="height:${h}px;line-height:${h}px;font-size:1px">&nbsp;</div>`;
+const sp = (h: number) => `<tr><td height="${h}" style="height:${h}px;font-size:1px;line-height:${h}px">&nbsp;</td></tr>`;
+
+type Colors = {
+  paper: string;
+  ground: string;
+  ink: string;
+  muted: string;
+  mutedOnGround: string;
+  rule: string;
+  deep: string;
+  onDeep: string;
+  gold: string;
+  accent: string;
+  tint: string;
+  tint2: string;
+};
+
+function colors(p: Palette): Colors {
+  const tint = mix(p.bandAccent, p.paper, 0.14);
+  return {
+    paper: p.paper,
+    ground: p.ground,
+    ink: p.ink,
+    muted: p.muted,
+    mutedOnGround: readable(p.ground, p.muted, p.ink),
+    rule: p.rule,
+    deep: p.band,
+    onDeep: p.bandText,
+    gold: p.bandAccent,
+    accent: readable(tint, p.band, p.ink),
+    tint,
+    tint2: mix(p.bandAccent, p.paper, 0.3),
+  };
+}
+
+/** `[label](https://url)` becomes an inline link; everything else is escaped. */
+function inline(text: string, link: string): string {
+  return esc(text).replace(
+    /\[([^\]]+)\]\((https:[^)]+)\)/g,
+    (_m, l: string, u: string) => `<a href="${u}" style="color:${link};text-decoration:underline;text-underline-offset:3px">${l}</a>`
   );
 }
+function stripLinks(text: string): { text: string; urls: string[] } {
+  const urls: string[] = [];
+  const t = text.replace(/\[([^\]]+)\]\((https:[^)]+)\)/g, (_m, l: string, u: string) => {
+    urls.push(u);
+    return /^[^\s]+\.[a-z]{2,}(\/[^\s]*)?$/i.test(l) ? u : `${l}: ${u}`;
+  });
+  return { text: t, urls };
+}
 
-/**
- * One step. The marker sits in the first row; the connecting line is a second,
- * stretchy row under it, so the line always reaches the next marker however
- * many lines the text wraps to.
- */
-function step(state: StepState, n: number, title: string, detail: string, last: boolean, p: Palette, f: Faces): string {
-  const text = `<p style="margin:0;font-family:${f.serif};font-size:21px;line-height:28px;color:${p.ink}">${esc(title)}</p><p style="margin:2px 0 0;font-family:${f.sans};font-size:16px;line-height:22px;color:${p.muted};word-wrap:break-word">${esc(detail)}</p>`;
-  const spine = state === "done" ? p.band : IDLE;
-  if (last) {
-    return `<tr><td width="28" valign="top" style="padding:0;width:28px">${marker(state, n, p, f)}</td><td valign="top" style="padding:0 0 0 16px">${text}</td></tr>`;
+function button(href: string, label: string, c: Colors, sans: string): string {
+  const safe = esc(href);
+  return `<!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${safe}" style="height:56px;v-text-anchor:middle;width:544px" arcsize="10%" fillcolor="${c.deep}" stroke="f"><w:anchorlock/><center style="color:${c.onDeep};font-family:Arial,sans-serif;font-size:17px;font-weight:bold">${esc(label)}</center></v:roundrect><![endif]-->
+<!--[if !mso]><!--><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="${c.deep}" style="background:${c.deep};border-radius:6px"><a href="${safe}" style="display:block;height:56px;line-height:56px;padding:0 28px;font-family:${sans};font-size:17px;font-weight:600;color:${c.onDeep};text-align:center;text-decoration:none">${esc(label)}</a></td></tr></table><!--<![endif]-->`;
+}
+
+function para(t: string | undefined, c: Colors, font: string, o: { size?: number; lh?: number; color: string; align?: string; mt?: number; link?: string }): string {
+  if (!t) return "";
+  return `<p style="margin:${o.mt ?? 0}px 0 0;font-family:${font};font-size:${o.size ?? 17}px;line-height:${o.lh ?? 26}px;color:${o.color};text-align:${o.align ?? "left"};word-wrap:break-word">${inline(t, o.link ?? c.accent)}</p>`;
+}
+
+/** The layout itself: the one place the Specimen is drawn. Pure: no network, clock or environment. */
+export function renderSpecimen(m: SpecimenModel): BuiltEmail {
+  const c = colors(m.palette);
+  const serif = stack(m.faces.serif, "serif");
+  const sans = stack(m.faces.sans, "sans-serif");
+  const wordmarkFont = stack(m.faces.wordmark, "serif");
+  const sheet = m.sheet;
+
+  const wordmark = `<span style="font-family:${wordmarkFont};font-size:15px;line-height:21px;letter-spacing:.14em;text-transform:uppercase;color:${c.ink}">${esc(m.brandName)}</span>`;
+  const img = (l: Logo, w: number) => {
+    const h = Math.round((w * l.height) / l.width);
+    return `<img src="${esc(l.src)}" width="${w}" height="${h}" alt="${esc(l.alt)}" bgcolor="${c.ground}" style="display:block;width:${w}px;max-width:100%;height:auto;border:0;margin:0 auto;background:${c.ground};font-family:${serif};font-size:18px;line-height:24px;color:${c.ink}">`;
+  };
+  let head: string;
+  if (m.logo?.markOnly) {
+    head = `<table role="presentation" align="center" cellpadding="0" cellspacing="0" border="0"><tr><td align="center">${img(m.logo, 64)}</td></tr><tr><td align="center" style="padding-top:12px">${wordmark}</td></tr></table>`;
+  } else if (m.logo) {
+    head = `<table role="presentation" align="center" cellpadding="0" cellspacing="0" border="0"><tr><td align="center">${img(m.logo, Math.min(m.logo.width, 210))}</td></tr></table>`;
+  } else {
+    head = `<table role="presentation" align="center" cellpadding="0" cellspacing="0" border="0"><tr><td align="center">${wordmark}</td></tr></table>`;
   }
-  return `<tr><td colspan="3" width="28" valign="top" style="padding:0;width:28px">${marker(state, n, p, f)}</td><td rowspan="2" valign="top" style="padding:0 0 18px 16px">${text}</td></tr><tr><td width="13" style="padding:0;width:13px;font-size:1px;line-height:1px">&nbsp;</td><td width="2" bgcolor="${spine}" style="padding:0;width:2px;background:${spine};font-size:1px;line-height:1px">&nbsp;</td><td width="13" style="padding:0;width:13px;font-size:1px;line-height:1px">&nbsp;</td></tr>`;
+
+  const rows = sheet.rows
+    .map(
+      (r) =>
+        `<tr><td valign="top" width="34%" style="padding:11px 12px 11px 0;border-top:1px solid ${c.rule};font-family:${sans};font-size:14px;line-height:21px;color:${c.muted}">${esc(r.label)}</td><td valign="top" style="padding:11px 0;border-top:1px solid ${c.rule};font-family:${serif};font-size:17px;line-height:24px;color:${c.ink};word-wrap:break-word">${esc(r.value)}</td></tr>`
+    )
+    .concat(
+      sheet.reference
+        ? [
+            `<tr><td valign="top" width="34%" style="padding:11px 12px 11px 0;border-top:1px solid ${c.rule};font-family:${sans};font-size:14px;line-height:21px;color:${c.muted}">${esc(sheet.reference.label)}</td><td valign="top" style="padding:11px 0;border-top:1px solid ${c.rule};font-family:${sans};font-size:16px;line-height:24px;letter-spacing:.04em;color:${c.ink};word-wrap:break-word">${esc(sheet.reference.value)}</td></tr>`,
+          ]
+        : []
+    )
+    .join("");
+
+  const sigs = (sheet.signatures ?? [])
+    .map((p) => {
+      const role = p.role ? `, ${esc(p.role)}` : "";
+      return `${sp(22)}<tr><td colspan="2" style="padding:0 0 4px;font-family:${serif};font-style:italic;font-size:${p.signed ? 28 : 17}px;line-height:34px;color:${p.signed ? c.deep : c.muted}">${p.signed ? esc(p.name) : "Signature needed"}</td></tr>
+<tr><td colspan="2" height="1" style="height:1px;font-size:1px;line-height:1px;border-top:1px ${p.signed ? "solid" : "dashed"} ${p.signed ? c.ink : "#8a8678"}">&nbsp;</td></tr>
+<tr><td colspan="2" style="padding:6px 0 0;font-family:${sans};font-size:13px;line-height:19px;color:${c.muted}">${esc(p.name)}${role}. ${p.signed ? (p.when ? `Signed ${esc(keepTogether(p.when))}` : "Signed") : "Has not signed yet"}</td></tr>`;
+    })
+    .join("");
+
+  const stamp = `<table role="presentation" align="right" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="${c.tint}" style="background:${c.tint};border-radius:4px;padding:5px 10px;font-family:${sans};font-size:13px;line-height:16px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:${c.accent};white-space:nowrap">${esc(m.status)}</td></tr></table>`;
+
+  const sheetHtml = `${T(
+    `<tr><td class="px" bgcolor="${c.paper}" style="background:${c.paper};border:1px solid ${c.tint2};padding:30px 32px 30px">
+${T(`<tr><td valign="top" class="dt" style="font-family:${serif};font-size:26px;line-height:32px;color:${c.ink}">${esc(sheet.title)}</td><td valign="top" align="right" width="116">${stamp}</td></tr>${sheet.place ? `<tr><td colspan="2" style="padding:4px 0 0;font-family:${sans};font-size:15px;line-height:22px;color:${c.muted}">${sheet.place.split("\n").map(esc).join("<br>")}</td></tr>` : ""}${sheet.caption ? `<tr><td colspan="2" style="padding:4px 0 0;font-family:${sans};font-size:15px;line-height:22px;color:${c.muted}">${esc(sheet.caption)}</td></tr>` : ""}${sp(18)}`)}
+${rows ? T(rows, 'style="border-collapse:collapse"') : ""}
+${sheet.signatures?.length ? T(sigs) : ""}
+</td></tr>`
+  )}${["96", "92"]
+    .map((w) =>
+      T(
+        `<tr><td align="center" style="padding:0">${T(`<tr><td width="${w}%" height="5" bgcolor="${c.paper}" style="width:${w}%;height:5px;font-size:1px;line-height:1px;background:${c.paper};border:1px solid ${c.tint2};border-top:0">&nbsp;</td></tr>`, `align="center" style="width:${w}%"`)}</td></tr>`
+      )
+    )
+    .join("")}`;
+
+  const body = T(`<tr><td class="px" bgcolor="${c.ground}" style="background:${c.ground};padding:40px 28px 36px;border-top:4px solid ${c.gold}">
+${head}
+<h1 class="h1" style="margin:30px 0 0;font-family:${serif};font-size:34px;line-height:40px;font-weight:400;color:${c.ink};text-align:center">${esc(m.headline)}</h1>
+${m.lead.map((t, i) => para(t, c, sans, { color: c.mutedOnGround, align: "center", mt: i ? 10 : 12 })).join("")}
+${m.button ? `${gap(24)}${button(m.button.url, m.button.label, c, sans)}` : ""}
+${gap(28)}
+${sheetHtml}
+${(m.attach ?? []).map((t, i) => para(t, c, sans, { size: 14, lh: 21, color: c.mutedOnGround, align: "center", mt: i ? 4 : 18 })).join("")}
+${(m.after ?? []).map((t) => para(t, c, sans, { color: c.ink, align: "center", mt: 26 })).join("")}
+${m.signoff ? `<p style="margin:14px 0 0;text-align:center;font-family:${serif};font-style:italic;font-size:26px;line-height:32px;color:${c.deep}">${esc(m.signoff.name)}</p>${para(m.signoff.title, c, sans, { size: 14, lh: 20, color: c.mutedOnGround, align: "center" })}` : ""}
+${gap(30)}
+${para(m.footer.reply, c, sans, { size: 14, lh: 22, color: c.mutedOnGround, align: "center" })}
+${para(m.footer.fine, c, sans, { size: 13, lh: 20, color: c.mutedOnGround, align: "center", mt: 6 })}
+${para(m.footer.legal, c, sans, { size: 13, lh: 20, color: c.mutedOnGround, align: "center", mt: 6 })}
+</td></tr>`);
+
+  const html = `<!doctype html>
+<html lang="en" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only"><meta name="format-detection" content="telephone=no,date=no,address=no,email=no"><!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]--><title>${esc(m.subject)}</title>${m.fontsHref ? `<link href="${esc(m.fontsHref)}" rel="stylesheet">` : ""}
+<style>:root{color-scheme:light only;supported-color-schemes:light}body{margin:0;padding:0;-webkit-text-size-adjust:100%;text-size-adjust:100%}img{-ms-interpolation-mode:bicubic}@media (max-width:480px){.px{padding-left:20px!important;padding-right:20px!important}.h1{font-size:28px!important;line-height:34px!important}.dt{font-size:22px!important;line-height:28px!important}}</style></head>
+<body style="margin:0;padding:0;background:${c.ground}" bgcolor="${c.ground}">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;font-size:13px;line-height:13px;color:${c.ground};mso-hide:all">${esc(m.preheader)}${PAD}</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${c.ground}" style="background:${c.ground}"><tr><td align="center" style="padding:0">
+<!--[if mso]><table role="presentation" width="600" align="center" cellpadding="0" cellspacing="0"><tr><td><![endif]-->
+<div style="max-width:600px;margin:0 auto;text-align:left">${body}</div>
+<!--[if mso]></td></tr></table><![endif]--></td></tr></table>
+</body></html>`;
+
+  const lines: string[] = [m.headline, ""];
+  for (const t of m.lead) lines.push(stripLinks(t).text);
+  if (m.button) lines.push("", `${m.button.label}: ${m.button.url}`);
+  for (const t of m.attach ?? []) lines.push(t);
+  lines.push("", sheet.title);
+  if (sheet.place) lines.push(sheet.place);
+  if (sheet.caption) lines.push(sheet.caption);
+  for (const r of sheet.rows) lines.push(`${r.label}: ${r.value}`);
+  if (sheet.reference) lines.push(`${sheet.reference.label}: ${sheet.reference.value}`);
+  if (sheet.signatures?.length) {
+    lines.push("");
+    for (const p of sheet.signatures) lines.push(`${p.name}${p.role ? `, ${p.role}` : ""}: ${p.signed ? `signed${p.when ? ` ${plain(p.when)}` : ""}` : "has not signed yet"}`);
+  }
+  for (const t of m.after ?? []) lines.push("", stripLinks(t).text);
+  if (m.signoff) lines.push("", m.signoff.name, ...(m.signoff.title ? [m.signoff.title] : []));
+  lines.push("");
+  if (m.footer.reply) lines.push(stripLinks(m.footer.reply).text);
+  if (m.footer.fine) lines.push(m.footer.fine);
+  lines.push(m.footer.legal);
+  return { subject: m.subject, html, text: lines.join("\n") };
 }
 
-function termRow(t: Term, p: Palette, f: Faces): string {
-  const value = (Array.isArray(t.value) ? t.value : [t.value]).map(esc).join("<br>");
-  return `<tr><td valign="top" width="38%" style="padding:12px 12px 12px 0;border-top:1px solid ${p.rule};font-family:${f.sans};font-size:16px;line-height:22px;color:${p.muted}">${esc(t.label)}</td><td valign="top" style="padding:12px 0;border-top:1px solid ${p.rule};font-family:${f.serif};font-size:18px;line-height:24px;color:${p.ink};word-wrap:break-word">${value}</td></tr>`;
-}
+/* ----------------------------------------------------------- subject -- */
 
 /** "November 11, 2026, 6:59 PM MST" or "November 11, 2026 at 6:59:12 PM MST" to "November 11, 2026". */
 export function signedDay(signedWhen: string): string {
@@ -274,99 +482,175 @@ export function subjectFor(
   return `${m.subjectPlace ? `${m.subjectPlace} | ` : ""}${m.docTitle} | ${what}${day ? `, ${day}` : ""}`;
 }
 
-/* --------------------------------------------------------------- builder -- */
+const FOOTER_REPLY = (brand: string, bookUrl: string) => `Reply to this email and it reaches ${brand}. Or [book a call](${bookUrl}).`;
+
+/* ----------------------------------------------- the signer's email -- */
 
 /**
- * Pure: no network, no clock, no environment, so it can be rendered to a file
- * and read before anything is ever sent.
+ * The confirmation a signer gets after signing. Pure: no network, no clock, no environment, so it
+ * can be rendered to a file and read before anything is ever sent.
  */
 export function renderSignerEmail(m: EmailModel): BuiltEmail {
-  const p = m.palette;
-  const f = m.faces;
   const complete = m.waiting.length === 0;
   const names = joinNames(m.waiting.map((w) => w.name));
   const verb = m.waiting.length > 1 ? "need" : "needs";
   const roles = uniqueRoles(m.waiting);
-  const when = m.signedWhen ? keepTogether(m.signedWhen) : "";
-  const signedDetail = when ? `${m.signedBy}, ${when}` : m.signedBy;
-  const subject = subjectFor(m);
-  const heading = complete ? "It is signed and complete." : "Your signature is recorded.";
   const place = Array.isArray(m.place) ? m.place : [m.place];
-  const preheader = complete
-    ? `Your ${m.docTitle} with ${m.brandName} is signed and complete.`
-    : `${names} still ${verb} to sign. ${m.completion.title}.`;
-  const buttonLabel = complete ? "Open your signed copy" : "Open your copy";
+  const subject = subjectFor(m);
+  const when = m.signedWhen ? keepTogether(m.signedWhen) : "";
 
-  const steps: { state: StepState; title: string; detail: string }[] = [{ state: "done", title: "You signed", detail: signedDetail }];
+  const lead: string[] = [];
   if (complete) {
-    steps.push({ state: "done", title: "Agreement complete", detail: m.completeDetail });
-    if (m.nextStep) steps.push({ state: "now", title: m.nextStep.what, detail: m.nextStep.when });
+    lead.push(m.completeDetail || "Every party has signed.");
+    if (m.nextStep) lead.push(`${m.nextStep.what}: ${m.nextStep.when}.`);
   } else {
-    steps.push({
-      state: "now",
-      title: `Waiting on ${names}`,
-      // A role reads well here only when it is a short title ("manager"). A long legal capacity
-      // ("Owner, for himself and his operating company") garbles once lowercased and joined.
-      detail:
-        roles && m.waiting.every((w) => !(w.role ?? "").includes(",") && (w.role ?? "").trim().split(/\s+/).length <= 3)
-          ? `The ${roles} still ${verb} to sign. The agreement is not complete until then.`
-          : `${m.waiting.length > 1 ? "Their signatures are" : "That signature is"} still needed. The agreement is not complete until then.`,
-    });
-    steps.push({ state: "later", title: m.completion.title, detail: m.completion.detail });
+    // A role reads well here only when it is a short title ("manager"). A long legal capacity
+    // garbles once lowercased and joined, so it falls back to a plain sentence.
+    const shortRoles =
+      roles && m.waiting.every((w) => !(w.role ?? "").includes(",") && (w.role ?? "").trim().split(/\s+/).length <= 3);
+    lead.push(
+      shortRoles
+        ? `The ${roles} still ${verb} to sign, so the agreement is not complete yet.`
+        : `${names} still ${verb} to sign, so the agreement is not complete yet.`
+    );
+    lead.push(m.completion.detail);
   }
-  const stepRows = steps.map((s, i) => step(s.state, i + 1, s.title, s.detail, i === steps.length - 1, p, f)).join("");
 
-  const terms = m.terms.map((t) => termRow(t, p, f)).join("");
+  const signatures: NonNullable<Sheet["signatures"]> = [
+    ...(m.others ?? []).map((o) => ({ name: o.name, role: o.role, signed: true, when: o.when })),
+    { name: m.signedBy, role: m.signedRole, signed: true, when },
+    ...m.waiting.map((w) => ({ name: w.name, role: w.role, signed: false })),
+  ];
+  // The signer sits first on the sheet.
+  signatures.sort((a, b) => (a.name === m.signedBy ? -1 : b.name === m.signedBy ? 1 : 0));
+
   const fine = [...(m.fineprint ?? []), "Keep this email for your records."].join(" ");
+  const sm: SpecimenModel = {
+    subject,
+    preheader: complete
+      ? `Your ${m.docTitle} with ${m.brandName} is signed and complete.`
+      : `${names} still ${verb} to sign. ${m.completion.title}.`,
+    palette: m.palette,
+    faces: m.faces,
+    fontsHref: m.fontsHref,
+    brandName: m.brandName,
+    logo: m.logo ?? (m.mark ? { src: m.mark.src, width: 256, height: 256, alt: m.brandName, markOnly: true } : undefined),
+    headline: complete ? "Your agreement is signed and complete." : "Your signature is recorded.",
+    lead,
+    status: complete ? "Complete" : `Signed ${signatures.filter((s) => s.signed).length} of ${signatures.length}`,
+    button: m.button ? { url: m.button.url, label: complete ? "Open your signed copy" : "Open your copy" } : undefined,
+    attach: m.note,
+    sheet: {
+      title: m.docTitle,
+      place: place.join("\n"),
+      rows: m.terms.map((t) => ({ label: t.label, value: Array.isArray(t.value) ? t.value.join("; ") : t.value })),
+      signatures,
+    },
+    footer: { reply: FOOTER_REPLY(m.brandName, m.bookUrl), fine, legal: m.legalLine },
+  };
+  return renderSpecimen(sm);
+}
 
-  const mark = m.mark
-    ? `<td valign="middle" style="padding-right:14px"><img src="${esc(m.mark.src)}" width="52" height="52" alt="" style="display:block;width:52px;height:52px;border:0;background:${m.mark.ground}" bgcolor="${m.mark.ground}"></td>`
-    : "";
+/* ---------------------------------------------- the operator's alert -- */
 
-  const band = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="${p.band}" style="background:${p.band};padding:24px 20px"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>${mark}<td valign="middle"><p style="margin:0;font-family:${f.wordmark};font-size:16px;line-height:24px;letter-spacing:.12em;text-transform:uppercase;color:${p.bandText}">${esc(m.brandName)}</p><p style="margin:2px 0 0;font-family:${f.sans};font-size:14px;line-height:20px;color:${p.bandAccent}">${esc(m.docTitle)}</p></td></tr></table></td></tr></table>`;
+export type OperatorModel = {
+  palette: Palette;
+  faces: Faces;
+  brandName: string;
+  logo?: Logo;
+  fontsHref?: string;
+  docTitle: string;
+  subjectPlace?: string;
+  place: string;
+  signedBy: string;
+  signedWhen: string;
+  /** Parties still to sign. Empty means fully executed. */
+  waiting: { name: string; role?: string }[];
+  /** The signature record: signed by, when, their email, version, fingerprint, and so on. */
+  record: Term[];
+  /** The signed agreement, when there is a page or file for it. */
+  button?: { url: string; label?: string };
+  /** The attachment line, and the line saying the record is filed elsewhere. */
+  note: string[];
+  legalLine: string;
+};
 
-  const footer = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="${p.band}" style="background:${p.band};padding:22px 20px"><p style="margin:0;font-family:${f.sans};font-size:16px;line-height:24px;color:${p.bandText}">Reply to this email and it reaches ${esc(m.brandName)}. Or <a href="${esc(m.bookUrl)}" style="color:${p.bandAccent};text-decoration:underline">book a call</a>.</p><p style="margin:6px 0 0;font-family:${f.sans};font-size:14px;line-height:22px;color:${p.bandAccent}">${esc(m.legalLine)}</p></td></tr></table>`;
+/** The alert the business inbox gets when someone signs: who, when, what is left, the record. */
+export function renderOperatorEmail(m: OperatorModel): BuiltEmail {
+  const complete = m.waiting.length === 0;
+  const subject = subjectFor({ waiting: m.waiting, subjectPlace: m.subjectPlace, docTitle: m.docTitle, signedBy: m.signedBy, signedWhen: m.signedWhen });
+  const names = joinNames(m.waiting.map((w) => w.name));
+  const verb = m.waiting.length > 1 ? "have" : "has";
+  const sm: SpecimenModel = {
+    subject,
+    preheader: complete ? `${m.signedBy} signed. The agreement is complete.` : `${m.signedBy} signed. ${names} ${verb} not signed yet.`,
+    palette: m.palette,
+    faces: m.faces,
+    fontsHref: m.fontsHref,
+    brandName: m.brandName,
+    logo: m.logo,
+    headline: complete ? `${m.signedBy} signed. It is complete.` : `${m.signedBy} signed.`,
+    lead: [complete ? "Every party has signed. The executed agreement is attached." : `${names} ${verb} not signed yet.`],
+    status: complete ? "Complete" : "Waiting",
+    button: m.button ? { url: m.button.url, label: m.button.label ?? "Open the signed agreement" } : undefined,
+    attach: m.note,
+    sheet: {
+      title: "Signature record",
+      place: m.place,
+      rows: m.record.map((t) => ({ label: t.label, value: Array.isArray(t.value) ? t.value.join("; ") : t.value })),
+      signatures: [
+        { name: m.signedBy, signed: true, when: keepTogether(m.signedWhen) },
+        ...m.waiting.map((w) => ({ name: w.name, role: w.role, signed: false })),
+      ],
+    },
+    footer: { reply: "Sent to the business inbox when someone signs.", legal: m.legalLine },
+  };
+  return renderSpecimen(sm);
+}
 
-  const pad = "&zwnj;&nbsp;".repeat(90);
-  const notes = m.note
-    .map((n, i) => `<p style="margin:${i === 0 ? "16px" : "6px"} 0 0;font-family:${f.sans};font-size:16px;line-height:24px;color:${p.muted};word-wrap:break-word">${esc(n)}</p>`)
-    .join("");
+/* ------------------------------------------------- the form receipt -- */
 
-  const panel = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="${p.paper}" style="background:${p.paper};padding:34px 24px 30px">
-<h1 style="margin:0 0 6px;font-family:${f.serif};font-size:34px;line-height:40px;font-weight:400;color:${p.ink}">${heading}</h1>
-<p style="margin:0 0 28px;font-family:${f.sans};font-size:16px;line-height:24px;color:${p.muted}">${place.map(esc).join("<br>")}</p>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 30px;table-layout:fixed">${stepRows}</table>
-${m.button ? `<div style="margin:0 0 6px">${button(m.button.url, buttonLabel, p, f)}</div>` : ""}${notes}
-${terms ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;border-bottom:1px solid ${p.rule};margin:34px 0 0">${terms}</table>` : ""}
-<p style="margin:16px 0 0;font-family:${f.sans};font-size:14px;line-height:22px;color:${p.muted};word-wrap:break-word">${esc(fine)}</p>
-</td></tr></table>`;
+export type ReceiptModel = {
+  palette: Palette;
+  faces: Faces;
+  brandName: string;
+  logo?: Logo;
+  fontsHref?: string;
+  /** The subject, already built (Business | what | name, Month D, YYYY). */
+  subject: string;
+  headline: string;
+  /** Opening paragraphs; the first may be a greeting. */
+  lead: string[];
+  /** "Your inquiry", "What you sent". */
+  sheetTitle: string;
+  /** "For your records, here is what you sent:". */
+  caption?: string;
+  received: { label: string; value: string }[];
+  reference?: { label: string; value: string };
+  after?: string[];
+  signoff?: { name: string; title?: string };
+  legalLine: string;
+  status?: string;
+};
 
-  const html = `<!doctype html>
-<html lang="en" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only"><meta name="format-detection" content="telephone=no,date=no,address=no,email=no"><!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]--><title>${esc(subject)}</title></head>
-<body style="margin:0;padding:0;background:${p.ground}" bgcolor="${p.ground}">
-<div style="display:none;max-height:0;overflow:hidden;opacity:0;font-size:13px;line-height:13px;color:${p.ground};mso-hide:all">${esc(preheader)}${pad}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${p.ground}" style="background:${p.ground}"><tr><td align="center" style="padding:0">
-<!--[if mso]><table role="presentation" width="600" align="center" cellpadding="0" cellspacing="0"><tr><td><![endif]-->
-<div style="max-width:600px;margin:0 auto;text-align:left">${band}${panel}${footer}</div>
-<!--[if mso]></td></tr></table><![endif]--></td></tr></table>
-</body></html>`;
-
-  const lines: string[] = [heading, ...place, ""];
-  steps.forEach((s, i) => lines.push(`${i + 1}) ${s.title}: ${plain(s.detail)}`));
-  if (m.button) lines.push("", `${buttonLabel}: ${m.button.url}`);
-  if (m.note.length) lines.push(...m.note);
-  if (m.terms.length) {
-    lines.push("");
-    for (const t of m.terms) {
-      const v = Array.isArray(t.value) ? t.value : [t.value];
-      lines.push(`${t.label}: ${v.join("; ")}`);
-    }
-  }
-  lines.push("", fine, "", `Reply to this email and it reaches ${m.brandName}. Or book a call: ${m.bookUrl}`, m.legalLine);
-  const text = lines.join("\n");
-
-  return { subject, html, text };
+/** The receipt for a form: a sheet of what was received and the reference. No signature lines. */
+export function renderReceiptEmail(m: ReceiptModel): BuiltEmail {
+  return renderSpecimen({
+    subject: m.subject,
+    preheader: m.lead.find((l) => !/^(hello|hi|dear)\b/i.test(l)) ?? m.headline,
+    palette: m.palette,
+    faces: m.faces,
+    fontsHref: m.fontsHref,
+    brandName: m.brandName,
+    logo: m.logo,
+    headline: m.headline,
+    lead: m.lead,
+    status: m.status ?? "Received",
+    sheet: { title: m.sheetTitle, caption: m.caption, rows: m.received, reference: m.reference },
+    after: m.after,
+    signoff: m.signoff,
+    footer: { legal: m.legalLine },
+  });
 }
 
 /* ------------------------------------------------------------------ lint -- */
@@ -374,10 +658,10 @@ ${terms ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="
 const EM_DASH = String.fromCharCode(8212);
 
 /**
- * The cheap checks, as a list of problems (empty means clean). Pure string
- * work, a few milliseconds per email, so every state of every agreement can be
- * checked on each test run. It does not replace looking at a render; it
- * catches what a change to the markup or the copy would silently break.
+ * The cheap checks, as a list of problems (empty means clean). Pure string work, a few milliseconds
+ * per email, so every state of every agreement can be checked on each test run. It does not
+ * replace looking at a render; it catches what a change to the markup or the copy would silently
+ * break.
  */
 export function lintSignerEmail(m: BuiltEmail): string[] {
   const { subject, html, text } = m;
@@ -386,34 +670,36 @@ export function lintSignerEmail(m: BuiltEmail): string[] {
     if (cond) problems.push(msg);
   };
   const visible = html.replace(/<!--[\s\S]*?-->/g, "").replace(/<!doctype html>/i, "");
-  const sizes = [...visible.replace(/<td[^>]*>&nbsp;<\/td>/g, "").matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g)].map((x) => Number(x[1]));
+  const body = visible.replace(/<head>[\s\S]*?<\/head>/i, "");
+  const sizes = [...body.replace(/<td[^>]*>&nbsp;<\/td>/g, "").matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g)].map((x) => Number(x[1])).filter((n) => n > 2);
 
   bad(html.length > 90_000, `html is ${html.length} bytes; Gmail clips at about 102,000`);
   bad(Math.min(...sizes) < 13, `a font size under 13px (${Math.min(...sizes)})`);
   bad(subject.length === 0 || subject.length > 200, `subject length ${subject.length}`);
-  bad(!/ \| (Signed by .+|Fully signed)(, [A-Z][a-z]+ \d{1,2}, \d{4})?$/.test(subject), "subject does not end with what happened and the day");
+  bad(!/^[^|]+ \| [^|]+ \| .+$/.test(subject) && !/^[^|]+ \| .+$/.test(subject), "subject is not Place | Document | what happened");
   bad((html + text + subject).includes(EM_DASH), "an em dash");
-  bad(/!/.test(visible + text + subject), "an exclamation mark");
-  bad(/tel:|\(?\d{3}\)?[ .-]\d{3}[ .-]\d{4}/.test(visible + text), "a phone number or tel: link");
-  bad(/<style\b/i.test(html), "a <style> block");
+  bad(/!/.test(`${body.replace(/<[^>]+>/g, "")}${text}${subject}`), "an exclamation mark");
+  bad(/tel:|\(?\d{3}\)?[ .-]\d{3}[ .-]\d{4}/.test(body + text), "a phone number or tel: link");
   bad(/<script\b/i.test(html), "a <script>");
+  bad(/prefers-color-scheme\s*:\s*dark/i.test(html), "a dark-mode style");
+  bad(/Times New Roman/i.test(html), "a Times New Roman fallback");
   bad(!/name="format-detection"/.test(html), "phone auto-linking is not switched off");
   bad(!/content="light only"/.test(html), "the page does not declare itself light-only");
   bad((html.match(/&zwnj;&nbsp;/g)?.length ?? 0) < 60, "the preheader is not padded");
   bad(/<img\b(?![^>]*\balt=)/.test(html), "an image with no alt attribute");
-  bad(/\d{1,2}:\d{2} (AM|PM)/.test(visible), "a time that can break across lines");
-  bad(/\d{1,2}:\d{2}:\d{2}/.test(visible + text), "a time with seconds");
-  const bare = [...visible.matchAll(/<(\w+)\b([^>]*style="[^"]*background:[^"]*"[^>]*)>/g)].filter(
-    ([, tag, attrs]) => !["a", "img"].includes(tag) && !/bgcolor=/.test(attrs)
+  bad(/<img\b[^>]*\balt=""/.test(html), "an image with empty alt text");
+  bad(/\d{1,2}:\d{2} (AM|PM)/.test(body), "a time that can break across lines");
+  bad(/\d{1,2}:\d{2}:\d{2}/.test(body + text), "a time with seconds");
+  const bare = [...body.matchAll(/<(\w+)\b([^>]*style="[^"]*background:[^"]*"[^>]*)>/g)].filter(
+    ([, tag, attrs]) => !["a", "img", "div"].includes(tag) && !/bgcolor=/.test(attrs)
   );
   bad(bare.length > 0, `a painted background with no bgcolor on <${bare[0]?.[1]}>`);
-  const buttons = visible.match(/padding:16px 28px/g)?.length ?? 0;
+  const buttons = body.match(/height:56px;line-height:56px/g)?.length ?? 0;
   bad(buttons > 1, `${buttons} buttons`);
-  bad(!/Or <a [^>]*>book a call<\/a>\./.test(visible), "book a call is not an inline link");
-  bad(/<a [^>]*href="(?!https:\/\/)[^"]*"/.test(visible), "a link that is not https");
+  bad(/book a call<\/a>/.test(body) && !/Or <a [^>]*>book a call<\/a>\./.test(body), "book a call is not an inline link");
+  bad(/<a [^>]*href="(?!https:\/\/)[^"]*"/.test(body), "a link that is not https");
   bad(text.trim().length < 80, "the plain-text part is missing or empty");
-  bad(/<[a-z][^>]*>|&nbsp;|&amp;| /.test(text), "markup or a non-breaking space leaked into the plain text");
-  bad(!/^1\) You signed: /m.test(text), "the plain text has no numbered track");
-  bad(/>undefined<|\[object Object\]|NaN/.test(visible + text), "an undefined value leaked into the email");
+  bad(/<[a-z][^>]*>|&nbsp;|&amp;|\u00a0/.test(text), "markup or a non-breaking space leaked into the plain text");
+  bad(/>undefined<|\[object Object\]|NaN/.test(body + text), "an undefined value leaked into the email");
   return problems;
 }

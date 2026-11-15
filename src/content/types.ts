@@ -45,6 +45,14 @@ export type Brand = {
    * came from, not like a product bolted onto it.
    */
   tokens?: Partial<Record<BrandToken, string>>;
+  /**
+   * The business's real logo as a hosted image (https), shown at the top of its emails. A square
+   * mark sets `markOnly`, and the email puts the business name under it as live text. Never a
+   * redraw: the file the business already publishes.
+   */
+  logo?: { src: string; width: number; height: number; alt: string; markOnly?: boolean };
+  /** Hosted web font stylesheet for the business's faces (the emails fall back to Georgia and Arial). */
+  fontsHref?: string;
 };
 
 export type BrandToken =

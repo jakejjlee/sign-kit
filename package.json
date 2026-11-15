@@ -97,7 +97,8 @@
     "test": "vitest run",
     "emails": "RENDER_EMAILS=.email-renders vitest run tests/render-emails.test.ts --reporter=dot && node scripts/emails-shots.mjs .email-renders",
     "emails:lint": "vitest run tests/render-emails.test.ts --reporter=dot",
-    "emails:vendor": "node scripts/vendor-email-core.mjs"
+    "emails:vendor": "node scripts/vendor-email-core.mjs",
+    "emails:vendor-webkit": "node scripts/vendor-webkit.mjs"
   },
   "peerDependencies": {
     "@pdf-lib/fontkit": "^1.1",

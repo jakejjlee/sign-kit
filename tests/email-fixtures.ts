@@ -56,7 +56,7 @@ export function agreementFor(brand: BrandKey, over: Partial<Agreement> = {}): Ag
       summary: [
         { label: "Property", value: "309 Cranbrook Circle, Colorado Springs, Colorado" },
         { label: "Start date", value: "November 1, 2026" },
-        { label: "Management fee", value: "15% of Net Revenue, or 10% on stays of 30 nights or longer" },
+        { label: "Management fee", value: "10% of Net Revenue" },
         { label: "Onboarding fee", value: "None" },
         { label: "Term", value: "Month to month" },
         { label: "Notice to end", value: "30 days notice, after the first 90 days" },

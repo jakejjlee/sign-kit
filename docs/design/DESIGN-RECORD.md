@@ -114,3 +114,56 @@ Why the others lost: they answer "is it done" in words; the track answers it by 
 word is read, and it carries the one fact a signer wants next (what happens and when).
 Open: the light field benchmark was thin (DocuSign unreachable); phone-size checks on d1 to d3
 were still running at pick time.
+
+## Signer confirmation email: The Track REJECTED (2026-11-14)
+
+Jake saw the Track rendered across the live agreements and said "These look like complete dog shit"
+and "make them look good, professional, top tier webdev ui ux and graphical design".
+
+**The Track (round 1 pick, d3) is rejected.** Never bring it back except as option 0 (the live
+incumbent) on a board. What was wrong, measured on the real renders: a heavy colored band across
+the top, a cramped step track whose third step collapsed to one letter per line, a generic
+two-column table for the terms, and a font stack that fell to Times New Roman where the brand face
+did not load, which reads cheap. The step track as an idea (status read by shape) is also not to be
+re-offered as a direction.
+
+Round 2 board: docs/design/email/board-r2/ (option 0 = the live Track, 0+ = the same skeleton done
+properly, three new directions that differ by construction: the Specimen, the Tiles, the Ledger).
+The pick is recorded here when Jake makes it. Premise the set shares: the email is a letter on the
+business's own paper, with what happened stated in one large sentence at the top, the logo small
+and quiet, no colored header band and no step track.
+
+Round 2 pre-screen (blind, order-swapped comparisons against 0+): the Specimen and the Tiles beat 0+
+in both runs on the final renders; the Ledger lost both (the critic favored the dark band and the
+step track, which Jake rejected, so it went to the board as is and says so). Gate: 0 of 25 renders
+fail, type and palette declared brand-locked. Folio was
+replaced by the Ledger mid-run after losing twice. A discrepancy to settle: the sun-mountain-stays
+main registry still carries Cranbrook at 15% (10% on 30+ night stays) and $400 onboarding; the board
+uses the 10% flat, no onboarding fee, 30 days after 90 terms from the November record.
+
+## The Specimen is the one email design (Jake, 2026-11-14, round 2 board)
+
+Board: docs/design/email/board-r2/ (sources; the renders are rebuilt with `node build.mjs`).
+**Chosen: option 1, The Specimen**, for every signing and form email, over 0 (the live Track), 0+
+(the Track done properly), 2 The Tiles and 3 The Ledger.
+
+What it is: a tinted ground with the business's real logo centered, one large sentence saying what
+happened, one full-width button, then the thing itself drawn as a sheet of paper (title, terms, one
+signature line per party; a signed name sits on its line, an unsigned one says "Signature needed"),
+a quiet footer. No colored header band, no step track.
+
+Where it lives: `src/lib/signer-email-core.ts` holds the layout (`renderSpecimen`) and three ways to
+describe a message to it: `renderSignerEmail` (waiting and complete), `renderOperatorEmail` (the
+alert to the business inbox) and `renderReceiptEmail` (a form receipt: a sheet of what was received
+and the reference, no signature lines). Sites keep a byte-for-byte copy (`pnpm emails:vendor`); the
+web-kit mail framework gets a generated module (`pnpm emails:vendor-webkit`). One design, one source.
+
+Rules the code enforces: web font first, then Iowan Old Style, Charter, Georgia (never Times New
+Roman: the stack repairs itself); real hosted logo with alt text and its background painted in;
+light only; 600px; 13px floor; one button; book a call is an inline link; no phone number; subject
+"<place> | <document> | Signed by <name>, <date>" (Fully signed when complete).
+
+Cranbrook (Michael Williams, 309 Cranbrook Circle) is 10% of Net Revenue flat with no onboarding
+fee, the November version signed on 2026-11-11 (Jake, 2026-11-14). The sun-mountain-stays registry
+still carries an older September record (15%, 10% on 30-plus nights, $400 onboarding) that Jake has
+to have corrected there.

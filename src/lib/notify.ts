@@ -11,8 +11,8 @@ import {
 } from "./execution";
 import { shortFingerprint } from "./fingerprint";
 import { pdfFilename, renderAgreementPdf } from "./pdf";
-import { buildSignerEmail, type SignerEmailOptions } from "./signer-email";
-import { joinNames } from "./signer-email-core";
+import { buildSignerEmail, signerPalette, type SignerEmailOptions } from "./signer-email";
+import { DEFAULT_FACES, renderOperatorEmail } from "./signer-email-core";
 
 /**
  * Getting the signed document to the people who need it.
@@ -39,76 +39,47 @@ export type DeliveryResult = {
   detail: string;
 };
 
-function esc(s: string): string {
-  return s.replace(/[<>&]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" })[c] as string);
-}
-
-/** One visual language, taking the brand's own accent so the mail matches the page. */
-function shell(a: Agreement, heading: string, lead: string, body: string): string {
-  const accent = a.brand.tokens?.accent ?? "#7a4a22";
-  const ground = a.brand.tokens?.ground ?? "#f3ede1";
-  const paper = a.brand.tokens?.paper ?? "#fbf8f1";
-  return `
-  <div style="margin:0;padding:28px 18px;background:${ground};font-family:Georgia,'Times New Roman',serif">
-    <div style="max-width:560px;margin:0 auto;background:${paper};border:1px solid #ddd2bb;padding:32px 30px">
-      <p style="margin:0 0 22px;font-family:system-ui,sans-serif;font-size:11px;letter-spacing:.14em;
-        text-transform:uppercase;color:${accent}">${esc(a.title)}</p>
-      <h1 style="margin:0 0 6px;font-size:23px;line-height:1.15;font-weight:400;color:#1b1a16">${esc(heading)}</h1>
-      <p style="margin:0 0 24px;font-size:15px;color:#6b6455">${esc(a.subtitle ?? "")}</p>
-      <p style="margin:0 0 22px;font-size:16px;line-height:1.6;color:#3d382e">${lead}</p>
-      ${body}
-      <p style="margin:28px 0 0;padding-top:18px;border-top:1px solid #e5dac4;
-        font-family:system-ui,sans-serif;font-size:13px;line-height:1.6;color:#6b6455">
-        ${esc(a.brand.name)}, ${esc(a.brand.role)}.<br>
-        Call or text <a href="${a.brand.phoneHref}" style="color:${accent}">${esc(a.brand.phone)}</a>.
-      </p>
-    </div>
-  </div>`;
-}
-
-function rows(pairs: [string, string][]): string {
-  return `<table style="border-collapse:collapse;width:100%;margin:0 0 20px">${pairs
-    .map(
-      ([k, v]) =>
-        `<tr><td style="padding:9px 0;border-bottom:1px solid #e5dac4;font-family:system-ui,sans-serif;
-          font-size:14px;color:#6b6455">${esc(k)}</td>
-         <td style="padding:9px 0;border-bottom:1px solid #e5dac4;text-align:right;
-          font-family:ui-monospace,SFMono-Regular,monospace;font-size:14px;color:#1b1a16">${esc(v)}</td></tr>`
-    )
-    .join("")}</table>`;
-}
-
-function operatorEmail(a: Agreement, rec: SignatureRecord, ex: Execution) {
+/**
+ * The notice to the business inbox when someone signs: the same Specimen as the signer's email, so
+ * the person reading it sees who signed, when, who is still to sign and the record, at a glance.
+ * The subject follows the one convention: "<place> | <document> | Signed by <name>, <date>".
+ */
+function operatorEmail(
+  a: Agreement,
+  rec: SignatureRecord,
+  ex: Execution,
+  opts: { attached?: boolean; copyUrl?: string } = {}
+) {
   const executed = isFullyExecuted(a, ex);
-  const waiting = outstandingParties(a, ex);
-  const facts: [string, string][] = [
-    ["Signed by", rec.legalName],
-    ["Typed", rec.typed],
-    ["When", rec.signedAtLocal],
-    ["Their email", rec.email ?? "not given"],
-    ["From", rec.ip ?? "not recorded"],
-    ["Version", longDate(rec.version)],
-    ["Fingerprint", shortFingerprint(rec.fingerprint ?? "none")],
-  ];
-  const lead = executed
-    ? "Every party has signed. The executed agreement is attached."
-    : `${joinNames(waiting.map((p) => p.legalName))} ${waiting.length > 1 ? "have" : "has"} not signed yet.`;
-  const heading = executed ? "Fully executed" : `${rec.legalName} has signed`;
-  const filed =
-    "The signature record is filed in the agreements folder on the shared drive. This email is the notification, not the record.";
-  return {
-    subject: executed
-      ? `FULLY EXECUTED: ${a.subtitle ?? a.title}`
-      : `Signed by ${rec.legalName}: ${a.subtitle ?? a.title}`,
-    html: shell(
-      a,
-      heading,
-      lead,
-      rows(facts) +
-        `<p style="margin:0;font-family:system-ui,sans-serif;font-size:12px;line-height:1.6;color:#6b6455">${filed}</p>`
-    ),
-    text: [heading, lead, "", ...facts.map(([k, v]) => `${k}: ${v}`), "", filed].join("\n"),
-  };
+  const waiting = outstandingParties(a, ex).map((p) => ({ name: p.legalName, role: p.role }));
+  const record: { label: string; value: string }[] = [];
+  if (rec.typed && rec.typed !== rec.legalName) record.push({ label: "Typed", value: rec.typed });
+  record.push(
+    { label: "Their email", value: rec.email ?? "not given" },
+    { label: "From", value: rec.ip ?? "not recorded" },
+    { label: "Version", value: longDate(rec.version) },
+    { label: "Fingerprint", value: shortFingerprint(rec.fingerprint ?? "none") }
+  );
+  const note: string[] = [];
+  if (opts.attached) note.push(executed ? "The executed PDF is attached." : "The PDF is attached, as it stands with the signatures so far.");
+  note.push("The signature record is filed in the agreements folder on the shared drive. This email is the notification, not the record.");
+  return renderOperatorEmail({
+    palette: signerPalette(a),
+    faces: DEFAULT_FACES,
+    brandName: a.brand.name,
+    logo: a.brand.logo,
+    fontsHref: a.brand.fontsHref,
+    docTitle: a.title,
+    subjectPlace: a.subtitle,
+    place: a.subtitle ?? a.title,
+    signedBy: rec.legalName,
+    signedWhen: rec.signedAtLocal.replace(/(\d{1,2}:\d{2}):\d{2}/, "$1"),
+    waiting,
+    record: record.map((r) => ({ label: r.label, value: r.value })),
+    button: opts.copyUrl ? { url: opts.copyUrl } : undefined,
+    note,
+    legalLine: `${a.brand.name}, ${a.brand.role}.`,
+  });
 }
 
 /** Can this environment actually deliver? Reported by the health route. */
@@ -232,7 +203,7 @@ export async function deliverSignedCopy(
     return { who, problem };
   });
 
-  const op = operatorEmail(a, rec, ex);
+  const op = operatorEmail(a, rec, ex, { attached: Boolean(attachments), copyUrl: signerOpts.copyUrl });
   const operatorJob = deliver(operator, rec.email ?? undefined, op).then((problem) => {
     if (problem) console.error(`[sign-kit] operator notice to ${operator} failed: ${problem}`);
     return problem;

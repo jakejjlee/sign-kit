@@ -82,7 +82,7 @@ describe("signer email: The Track", () => {
       copyUrl: "https://sunmountainstays.com/client/michael-williams/management-agreement",
       attached: true, attachmentName: "cranbrook-executed.pdf",
     });
-    expect(m.subject).toBe("Signed: Management Agreement, 309 Cranbrook Circle, Colorado Springs, Colorado");
+    expect(m.subject).toBe("309 Cranbrook Circle, Colorado Springs, Colorado | Management Agreement | Fully signed, November 11, 2026");
     expect(m.html).toContain("It is signed and complete.");
     expect(m.html).toContain("Agreement complete");
     expect(m.html).toContain("Michael Williams");
@@ -95,7 +95,7 @@ describe("signer email: The Track", () => {
   it("waiting: subject, heading, and the outstanding party is named", () => {
     const { a, mike, waiting } = states();
     const m = buildSignerEmail(a, mike, waiting, { attached: true });
-    expect(m.subject).toBe("Your signature is recorded: 309 Cranbrook Circle, Colorado Springs, Colorado");
+    expect(m.subject).toBe("309 Cranbrook Circle, Colorado Springs, Colorado | Management Agreement | Signed by Michael Williams, November 11, 2026");
     expect(m.html).toContain("Your signature is recorded.");
     expect(m.html).toContain("Waiting on Jake Lee");
     expect(m.html).toContain("The manager still needs to sign");
@@ -266,5 +266,14 @@ describe("deliverSignedCopy sends The Track to the signer and keeps the operator
     expect(signer.attachments).toHaveLength(1);
     expect(operator.to).toBe("ops@example.com");
     expect(String(operator.subject)).toContain("FULLY EXECUTED");
+  });
+});
+
+describe("searchable names", () => {
+  it("names the PDF by place and document, and says partly signed or signed, never draft", async () => {
+    const { pdfFilename } = await vi.importActual<typeof import("../src/lib/pdf")>("../src/lib/pdf");
+    const { a, waiting, executed } = states();
+    expect(pdfFilename(a, waiting)).toBe("309-Cranbrook-Circle-Colorado-Springs-Colorado-Management-Agreement-partly-signed.pdf");
+    expect(pdfFilename(a, executed)).toBe("309-Cranbrook-Circle-Colorado-Springs-Colorado-Management-Agreement-signed.pdf");
   });
 });

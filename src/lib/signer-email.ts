@@ -251,9 +251,16 @@ ${opts.copyUrl ? `<div style="margin:0 0 34px">${button(opts.copyUrl, buttonLabe
 </body></html>`;
 
   return {
-    subject: executed
-      ? `Signed: ${a.title}${a.subtitle ? `, ${a.subtitle}` : ""}`
-      : `Your signature is recorded: ${place}`,
+    // Searchable and skimmable in an inbox list (Jake, 2026-11-14): who and where first,
+    // then the document, then what happened and the day it happened, all in the subject.
+    subject: `${a.subtitle ? `${a.subtitle} | ` : ""}${a.title} | ${
+      executed ? "Fully signed" : `Signed by ${rec.legalName}`
+    }, ${signedDay(rec.signedAtLocal)}`,
     html,
   };
+}
+
+/** "November 14, 2026 at 8:40:12 PM EST" to "November 14, 2026": the day, for a subject line. */
+export function signedDay(signedAtLocal: string): string {
+  return signedAtLocal.split(" at ")[0].trim();
 }

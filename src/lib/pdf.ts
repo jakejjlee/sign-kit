@@ -355,10 +355,13 @@ function usdish(v: number): string {
 
 /** A stamped filename, so a saved copy sorts and identifies itself. */
 export function pdfFilename(a: Agreement, ex: Execution): string {
-  const stamp = isFullyExecuted(a, ex) ? "executed" : "draft";
-  const slug = (a.subtitle ?? a.title)
+  // A copy with some signatures on it is not a draft; say what it is (2026-11-14).
+  // The name carries the client or place AND the document, so a search finds it.
+  const stamp = isFullyExecuted(a, ex) ? "signed" : "partly-signed";
+  const slug = `${a.subtitle ? `${a.subtitle} ` : ""}${a.title}`
     .replace(/[^A-Za-z0-9]+/g, "-")
     .replace(/^-|-$/g, "")
-    .slice(0, 60);
+    .slice(0, 90)
+    .replace(/-$/, "");
   return `${slug}-${stamp}.pdf`;
 }

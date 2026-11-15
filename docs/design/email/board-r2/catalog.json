@@ -1,0 +1,227 @@
+{
+  "_note": "Short facts only (names, terms, figures), each with its source. Signing dates and times in the samples are stand-ins for a real send; terms, parties, wording and logos are real.",
+  "sources": {
+    "waiting": "palisade 36 River Road management agreement (palisade repo, sign-kit render 2026-11-14); wording from sign-kit signer email",
+    "complete": "sun-mountain-stays Cranbrook agreement record, Michael Williams signed Nov 11 2026 6:59 PM MST (sign-kit BRIEF.md); live render 2026-11-14",
+    "alert": "roam-north-agreement content/agreements/direct-site.ts; sign-kit operator notice (notify.ts)",
+    "form": "palisade src/messages/en.json content.ui.confirmationEmail and content.ui.inquiry; src/lib/contact/reasons.ts",
+    "plfa": "plfa-submissions forms/spec/consignment-agreement.json (gallery: Perry Lawson Fine Art LLC)"
+  },
+  "entities": [
+    {
+      "id": "palisade-36-river-road-management-agreement",
+      "facts": {
+        "document": {
+          "value": "Management Agreement",
+          "source": "palisade 36 River Road management agreement (palisade repo, sign-kit render 2026-11-14); wording from sign-kit signer email"
+        },
+        "place": {
+          "value": "36 River Road, Oakland, New Jersey",
+          "source": "palisade 36 River Road management agreement (palisade repo, sign-kit render 2026-11-14); wording from sign-kit signer email"
+        },
+        "Property": {
+          "value": "Unit A (lower) and Unit B (upper)",
+          "source": "palisade 36 River Road management agreement (palisade repo, sign-kit render 2026-11-14); wording from sign-kit signer email"
+        },
+        "Model": {
+          "value": "Two furnished residences, 31-night minimum stay",
+          "source": "palisade 36 River Road management agreement (palisade repo, sign-kit render 2026-11-14); wording from sign-kit signer email"
+        },
+        "Management fee": {
+          "value": "15% of collected lodging revenue, both units",
+          "source": "palisade 36 River Road management agreement (palisade repo, sign-kit render 2026-11-14); wording from sign-kit signer email"
+        },
+        "Setup and onboarding": {
+          "value": "$600, one time, both units",
+          "source": "palisade 36 River Road management agreement (palisade repo, sign-kit render 2026-11-14); wording from sign-kit signer email"
+        },
+        "Cleaning": {
+          "value": "Separate from the management fee, no markup",
+          "source": "palisade 36 River Road management agreement (palisade repo, sign-kit render 2026-11-14); wording from sign-kit signer email"
+        },
+        "Term": {
+          "value": "Month-to-month, 30 days written notice",
+          "source": "palisade 36 River Road management agreement (palisade repo, sign-kit render 2026-11-14); wording from sign-kit signer email"
+        },
+        "Owner 1": {
+          "value": "Ismail Canseven",
+          "source": "palisade 36 River Road management agreement (palisade repo, sign-kit render 2026-11-14); wording from sign-kit signer email"
+        },
+        "Manager 2": {
+          "value": "Jake Lee",
+          "source": "palisade 36 River Road management agreement (palisade repo, sign-kit render 2026-11-14); wording from sign-kit signer email"
+        },
+        "business": {
+          "value": "Palisade Stays",
+          "source": "palisade 36 River Road management agreement (palisade repo, sign-kit render 2026-11-14); wording from sign-kit signer email"
+        }
+      }
+    },
+    {
+      "id": "sun-mountain-309-cranbrook-management-agreement",
+      "facts": {
+        "document": {
+          "value": "Management Agreement",
+          "source": "sun-mountain-stays Cranbrook agreement record, Michael Williams signed Nov 11 2026 6:59 PM MST (sign-kit BRIEF.md); live render 2026-11-14"
+        },
+        "place": {
+          "value": "309 Cranbrook Circle, Colorado Springs, Colorado",
+          "source": "sun-mountain-stays Cranbrook agreement record, Michael Williams signed Nov 11 2026 6:59 PM MST (sign-kit BRIEF.md); live render 2026-11-14"
+        },
+        "Start date": {
+          "value": "November 1, 2026",
+          "source": "sun-mountain-stays Cranbrook agreement record, Michael Williams signed Nov 11 2026 6:59 PM MST (sign-kit BRIEF.md); live render 2026-11-14"
+        },
+        "Management fee": {
+          "value": "10% of Net Revenue",
+          "source": "sun-mountain-stays Cranbrook agreement record, Michael Williams signed Nov 11 2026 6:59 PM MST (sign-kit BRIEF.md); live render 2026-11-14"
+        },
+        "Onboarding fee": {
+          "value": "None",
+          "source": "sun-mountain-stays Cranbrook agreement record, Michael Williams signed Nov 11 2026 6:59 PM MST (sign-kit BRIEF.md); live render 2026-11-14"
+        },
+        "Term": {
+          "value": "Month to month",
+          "source": "sun-mountain-stays Cranbrook agreement record, Michael Williams signed Nov 11 2026 6:59 PM MST (sign-kit BRIEF.md); live render 2026-11-14"
+        },
+        "Notice to end": {
+          "value": "30 days notice, after the first 90 days",
+          "source": "sun-mountain-stays Cranbrook agreement record, Michael Williams signed Nov 11 2026 6:59 PM MST (sign-kit BRIEF.md); live render 2026-11-14"
+        },
+        "Owner 1": {
+          "value": "Michael Williams",
+          "source": "sun-mountain-stays Cranbrook agreement record, Michael Williams signed Nov 11 2026 6:59 PM MST (sign-kit BRIEF.md); live render 2026-11-14"
+        },
+        "Manager 2": {
+          "value": "Jake Lee",
+          "source": "sun-mountain-stays Cranbrook agreement record, Michael Williams signed Nov 11 2026 6:59 PM MST (sign-kit BRIEF.md); live render 2026-11-14"
+        },
+        "business": {
+          "value": "Sun Mountain Stays",
+          "source": "sun-mountain-stays Cranbrook agreement record, Michael Williams signed Nov 11 2026 6:59 PM MST (sign-kit BRIEF.md); live render 2026-11-14"
+        }
+      }
+    },
+    {
+      "id": "xenia-roam-north-direct-booking-website-agreement",
+      "facts": {
+        "document": {
+          "value": "Signature record",
+          "source": "roam-north-agreement content/agreements/direct-site.ts; sign-kit operator notice (notify.ts)"
+        },
+        "place": {
+          "value": "Roam North Stays, Euclid Grand, Cleveland",
+          "source": "roam-north-agreement content/agreements/direct-site.ts; sign-kit operator notice (notify.ts)"
+        },
+        "Signed by": {
+          "value": "Zachary Lindquist",
+          "source": "roam-north-agreement content/agreements/direct-site.ts; sign-kit operator notice (notify.ts)"
+        },
+        "When": {
+          "value": "November 14, 2026, 8:40 PM EST",
+          "source": "roam-north-agreement content/agreements/direct-site.ts; sign-kit operator notice (notify.ts)"
+        },
+        "Agreement": {
+          "value": "Direct-Booking Website Agreement",
+          "source": "roam-north-agreement content/agreements/direct-site.ts; sign-kit operator notice (notify.ts)"
+        },
+        "Build price": {
+          "value": "$5,000, nothing up front",
+          "source": "roam-north-agreement content/agreements/direct-site.ts; sign-kit operator notice (notify.ts)"
+        },
+        "Until repaid": {
+          "value": "50% of the nightly rate on site bookings",
+          "source": "roam-north-agreement content/agreements/direct-site.ts; sign-kit operator notice (notify.ts)"
+        },
+        "After that": {
+          "value": "10%, for as long as the site runs",
+          "source": "roam-north-agreement content/agreements/direct-site.ts; sign-kit operator notice (notify.ts)"
+        },
+        "Client 1": {
+          "value": "Zachary Lindquist",
+          "source": "roam-north-agreement content/agreements/direct-site.ts; sign-kit operator notice (notify.ts)"
+        },
+        "Builder 2": {
+          "value": "Xenia LLC",
+          "source": "roam-north-agreement content/agreements/direct-site.ts; sign-kit operator notice (notify.ts)"
+        },
+        "business": {
+          "value": "Xenia",
+          "source": "roam-north-agreement content/agreements/direct-site.ts; sign-kit operator notice (notify.ts)"
+        }
+      }
+    },
+    {
+      "id": "palisade-inquiry-receipt",
+      "facts": {
+        "document": {
+          "value": "Your inquiry",
+          "source": "palisade src/messages/en.json content.ui.confirmationEmail and content.ui.inquiry; src/lib/contact/reasons.ts"
+        },
+        "place": {
+          "value": "For your records, here's what you sent:",
+          "source": "palisade src/messages/en.json content.ui.confirmationEmail and content.ui.inquiry; src/lib/contact/reasons.ts"
+        },
+        "Reason": {
+          "value": "Full-Service Management",
+          "source": "palisade src/messages/en.json content.ui.confirmationEmail and content.ui.inquiry; src/lib/contact/reasons.ts"
+        },
+        "Property": {
+          "value": "Bergen County, NJ",
+          "source": "palisade src/messages/en.json content.ui.confirmationEmail and content.ui.inquiry; src/lib/contact/reasons.ts"
+        },
+        "business": {
+          "value": "Palisade Stays",
+          "source": "palisade src/messages/en.json content.ui.confirmationEmail and content.ui.inquiry; src/lib/contact/reasons.ts"
+        }
+      }
+    },
+    {
+      "id": "perry-lawson-consignment-agreement",
+      "facts": {
+        "document": {
+          "value": "Consignment Agreement",
+          "source": "plfa-submissions forms/spec/consignment-agreement.json (gallery: Perry Lawson Fine Art LLC)"
+        },
+        "place": {
+          "value": "Perry Lawson Fine Art LLC",
+          "source": "plfa-submissions forms/spec/consignment-agreement.json (gallery: Perry Lawson Fine Art LLC)"
+        },
+        "Commission": {
+          "value": "50% of the retail price of sold artworks",
+          "source": "plfa-submissions forms/spec/consignment-agreement.json (gallery: Perry Lawson Fine Art LLC)"
+        },
+        "Paid to the artist": {
+          "value": "Within 30 days of the gallery receiving payment",
+          "source": "plfa-submissions forms/spec/consignment-agreement.json (gallery: Perry Lawson Fine Art LLC)"
+        },
+        "Term": {
+          "value": "From delivery, ongoing until ended in writing by either party",
+          "source": "plfa-submissions forms/spec/consignment-agreement.json (gallery: Perry Lawson Fine Art LLC)"
+        },
+        "Shipping": {
+          "value": "Packing and shipping are the artist's",
+          "source": "plfa-submissions forms/spec/consignment-agreement.json (gallery: Perry Lawson Fine Art LLC)"
+        },
+        "Insurance": {
+          "value": "The gallery insures the work while on its premises",
+          "source": "plfa-submissions forms/spec/consignment-agreement.json (gallery: Perry Lawson Fine Art LLC)"
+        },
+        "Gallery 1": {
+          "value": "Carole Perry",
+          "source": "plfa-submissions forms/spec/consignment-agreement.json (gallery: Perry Lawson Fine Art LLC)"
+        },
+        "business": {
+          "value": "Perry Lawson Fine Art",
+          "source": "plfa-submissions forms/spec/consignment-agreement.json (gallery: Perry Lawson Fine Art LLC)"
+        }
+      }
+    }
+  ],
+  "unknowns": [
+    "signing times of the sample sends",
+    "fingerprint",
+    "signer IP",
+    "signer email"
+  ]
+}

@@ -8,7 +8,7 @@
  *
  *   pnpm emails:vendor <site repo> [--dir src/lib/agreements/vendor] [--only signer-email-core] [--check]
  *
- * The cores: signer-email-core.ts (the signer's confirmation email, "The Track")
+ * The cores: signer-email-core.ts (the signer's confirmation, operator alert and form receipt email, "The Specimen")
  * and pdf-core.ts (the signed PDF layout). Without --check it writes
  * <site>/<dir>/<core>.ts. With --check it writes nothing and exits 1 if a copy
  * is not exactly what this command would write (hand-edited, or behind the kit).

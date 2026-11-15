@@ -1,0 +1,215 @@
+{
+  "title": "Transactional emails, round 2",
+  "meta": [
+    "five options, five emails each",
+    "round 2 (round 1 was 12 November)",
+    "14 November 2026"
+  ],
+  "basePath": "",
+  "typeLocked": "each brand's own locked faces (Newsreader or EB Garamond with Instrument Sans); the options differ by construction, not typeface",
+  "paletteLocked": "each brand's own palette tokens; the options differ by construction, not color",
+  "premise": "Every option puts what happened in one large sentence at the top and one real button under it; the three new ones also drop the colored header band and the step track, so the email reads as a page from the business, not a notification from a tool.",
+  "note": "Tabs a to e are the same five emails in every option: a) signed, waiting on others (Palisade, 36 River Road); b) fully signed, PDF attached (Sun Mountain, 309 Cranbrook Circle); c) the alert to Jake (Xenia, Roam North website agreement); d) form receipt (Palisade inquiry, Jake's approved wording); e) fully signed with no open button (Perry Lawson, Consignment Agreement). Terms, parties, wording and logos are real. Signing dates and times are stand-ins. Use the phone toggle for the 390 view.",
+  "directions": [
+    {
+      "n": "0a",
+      "file": "d0",
+      "name": "0 Live: the Track / Signed, waiting on others",
+      "label": "Live a",
+      "tag": "Palisade · EB Garamond + Instrument Sans",
+      "live": true
+    },
+    {
+      "n": "0b",
+      "file": "d0-complete",
+      "name": "0 Live: the Track / Fully signed, PDF attached",
+      "label": "Live b",
+      "tag": "Sun Mountain · Newsreader + Instrument Sans",
+      "live": false
+    },
+    {
+      "n": "0c",
+      "file": "d0-alert",
+      "name": "0 Live: the Track / Operator alert to Jake",
+      "label": "Live c",
+      "tag": "Xenia, Roam North · Newsreader + Instrument Sans",
+      "live": false
+    },
+    {
+      "n": "0d",
+      "file": "d0-form",
+      "name": "0 Live: the Track / Form receipt",
+      "label": "Live d",
+      "tag": "Palisade · EB Garamond + Instrument Sans",
+      "live": false
+    },
+    {
+      "n": "0e",
+      "file": "d0-plfa",
+      "name": "0 Live: the Track / Fully signed, no open button",
+      "label": "Live e",
+      "tag": "Perry Lawson · EB Garamond + Instrument Sans",
+      "live": false
+    },
+    {
+      "n": "0+a",
+      "file": "d0p",
+      "name": "0+ The Track, done properly / Signed, waiting on others",
+      "label": "0+ a",
+      "tag": "Palisade · EB Garamond + Instrument Sans",
+      "live": false
+    },
+    {
+      "n": "0+b",
+      "file": "d0p-complete",
+      "name": "0+ The Track, done properly / Fully signed, PDF attached",
+      "label": "0+ b",
+      "tag": "Sun Mountain · Newsreader + Instrument Sans",
+      "live": false
+    },
+    {
+      "n": "0+c",
+      "file": "d0p-alert",
+      "name": "0+ The Track, done properly / Operator alert to Jake",
+      "label": "0+ c",
+      "tag": "Xenia, Roam North · Newsreader + Instrument Sans",
+      "live": false
+    },
+    {
+      "n": "0+d",
+      "file": "d0p-form",
+      "name": "0+ The Track, done properly / Form receipt",
+      "label": "0+ d",
+      "tag": "Palisade · EB Garamond + Instrument Sans",
+      "live": false
+    },
+    {
+      "n": "0+e",
+      "file": "d0p-plfa",
+      "name": "0+ The Track, done properly / Fully signed, no open button",
+      "label": "0+ e",
+      "tag": "Perry Lawson · EB Garamond + Instrument Sans",
+      "live": false
+    },
+    {
+      "n": "1a",
+      "file": "d1",
+      "name": "1 The Specimen / Signed, waiting on others",
+      "label": "Specimen a",
+      "tag": "Palisade · EB Garamond + Instrument Sans",
+      "live": false
+    },
+    {
+      "n": "1b",
+      "file": "d1-complete",
+      "name": "1 The Specimen / Fully signed, PDF attached",
+      "label": "Specimen b",
+      "tag": "Sun Mountain · Newsreader + Instrument Sans",
+      "live": false
+    },
+    {
+      "n": "1c",
+      "file": "d1-alert",
+      "name": "1 The Specimen / Operator alert to Jake",
+      "label": "Specimen c",
+      "tag": "Xenia, Roam North · Newsreader + Instrument Sans",
+      "live": false
+    },
+    {
+      "n": "1d",
+      "file": "d1-form",
+      "name": "1 The Specimen / Form receipt",
+      "label": "Specimen d",
+      "tag": "Palisade · EB Garamond + Instrument Sans",
+      "live": false
+    },
+    {
+      "n": "1e",
+      "file": "d1-plfa",
+      "name": "1 The Specimen / Fully signed, no open button",
+      "label": "Specimen e",
+      "tag": "Perry Lawson · EB Garamond + Instrument Sans",
+      "live": false
+    },
+    {
+      "n": "2a",
+      "file": "d2",
+      "name": "2 The Tiles / Signed, waiting on others",
+      "label": "Tiles a",
+      "tag": "Palisade · EB Garamond + Instrument Sans",
+      "live": false
+    },
+    {
+      "n": "2b",
+      "file": "d2-complete",
+      "name": "2 The Tiles / Fully signed, PDF attached",
+      "label": "Tiles b",
+      "tag": "Sun Mountain · Newsreader + Instrument Sans",
+      "live": false
+    },
+    {
+      "n": "2c",
+      "file": "d2-alert",
+      "name": "2 The Tiles / Operator alert to Jake",
+      "label": "Tiles c",
+      "tag": "Xenia, Roam North · Newsreader + Instrument Sans",
+      "live": false
+    },
+    {
+      "n": "2d",
+      "file": "d2-form",
+      "name": "2 The Tiles / Form receipt",
+      "label": "Tiles d",
+      "tag": "Palisade · EB Garamond + Instrument Sans",
+      "live": false
+    },
+    {
+      "n": "2e",
+      "file": "d2-plfa",
+      "name": "2 The Tiles / Fully signed, no open button",
+      "label": "Tiles e",
+      "tag": "Perry Lawson · EB Garamond + Instrument Sans",
+      "live": false
+    },
+    {
+      "n": "3a",
+      "file": "d3",
+      "name": "3 The Ledger / Signed, waiting on others",
+      "label": "Ledger a",
+      "tag": "Palisade · EB Garamond + Instrument Sans",
+      "live": false
+    },
+    {
+      "n": "3b",
+      "file": "d3-complete",
+      "name": "3 The Ledger / Fully signed, PDF attached",
+      "label": "Ledger b",
+      "tag": "Sun Mountain · Newsreader + Instrument Sans",
+      "live": false
+    },
+    {
+      "n": "3c",
+      "file": "d3-alert",
+      "name": "3 The Ledger / Operator alert to Jake",
+      "label": "Ledger c",
+      "tag": "Xenia, Roam North · Newsreader + Instrument Sans",
+      "live": false
+    },
+    {
+      "n": "3d",
+      "file": "d3-form",
+      "name": "3 The Ledger / Form receipt",
+      "label": "Ledger d",
+      "tag": "Palisade · EB Garamond + Instrument Sans",
+      "live": false
+    },
+    {
+      "n": "3e",
+      "file": "d3-plfa",
+      "name": "3 The Ledger / Fully signed, no open button",
+      "label": "Ledger e",
+      "tag": "Perry Lawson · EB Garamond + Instrument Sans",
+      "live": false
+    }
+  ]
+}

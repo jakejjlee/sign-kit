@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Agreement } from "../src/content/types";
 import { makeRecord, type Execution, type SignatureRecord } from "../src/lib/execution";
 import { buildSignerEmail, contrast, signerPalette } from "../src/lib/signer-email";
+import { DEFAULT_FACES, lintSignerEmail, renderOperatorEmail, renderReceiptEmail } from "../src/lib/signer-email-core";
 
 const sent: Record<string, unknown>[] = [];
 /** Lets a test make the signer's own send hang forever, like a stalled mail service. */
@@ -46,7 +47,7 @@ function agreement(over: Partial<Agreement> = {}): Agreement {
       summary: [
         { label: "Property", value: "309 Cranbrook Circle" },
         { label: "Start date", value: "November 1, 2026" },
-        { label: "Management fee", value: "15% of Net Revenue" },
+        { label: "Management fee", value: "10% of Net Revenue" },
       ],
       ifWrong: "Reply.",
     },
@@ -78,7 +79,7 @@ function fontSizes(html: string): number[] {
   return [...html.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g)].map((m) => Number(m[1]));
 }
 
-describe("signer email: The Track", () => {
+describe("signer email: The Specimen", () => {
   it("fully executed: subject, heading, signer, date, button, no waiting language", () => {
     const { a, mike, executed } = states();
     const m = buildSignerEmail(a, mike, executed, {
@@ -86,13 +87,16 @@ describe("signer email: The Track", () => {
       attached: true, attachmentName: "cranbrook-executed.pdf",
     });
     expect(m.subject).toBe("309 Cranbrook Circle, Colorado Springs, Colorado | Management Agreement | Fully signed, November 11, 2026");
-    expect(m.html).toContain("It is signed and complete.");
-    expect(m.html).toContain("Agreement complete");
+    expect(m.html).toContain("Your agreement is signed and complete.");
+    expect(m.html).toContain("Every party has signed.");
     expect(m.html).toContain("Michael Williams");
+    expect(m.html).toContain("Jake Lee");
+    expect(m.html).toContain("Complete");
     expect(m.html).toContain("November 11, 2026");
     expect(m.html).toContain("Open your signed copy");
     expect(m.html).toContain("cranbrook-executed.pdf is attached.");
-    expect(m.html).not.toContain("Waiting on");
+    expect(m.html).not.toContain("Signature needed");
+    expect(m.html).not.toContain("Has not signed yet");
   });
 
   it("waiting: subject, heading, and the outstanding party is named", () => {
@@ -101,11 +105,11 @@ describe("signer email: The Track", () => {
     // The state leads the subject, so a phone list that cuts at about 40 characters still shows it.
     expect(m.subject).toBe("309 Cranbrook Circle, Colorado Springs, Colorado | Management Agreement | Signed by Michael Williams, November 11, 2026");
     expect(m.html).toContain("Your signature is recorded.");
-    expect(m.html).toContain("Waiting on Jake Lee");
+    expect(m.html).toContain("Signed 1 of 2");
+    expect(m.html).toContain("Signature needed");
+    expect(m.html).toContain("Jake Lee, Manager. Has not signed yet");
     expect(m.html).toContain("The manager still needs to sign");
-    expect(m.html).toContain("We email you when it is complete");
-    expect(m.html).not.toContain("Agreement complete");
-    expect(m.html).not.toContain("It is signed and complete.");
+    expect(m.html).not.toContain("Your agreement is signed and complete.");
   });
 
   it("names every outstanding party when more than one is missing", () => {
@@ -118,7 +122,9 @@ describe("signer email: The Track", () => {
     });
     const mike = rec(a, "owner", "Michael Williams");
     const m = buildSignerEmail(a, mike, { signatures: { owner: mike } });
-    expect(m.html).toContain("Waiting on Ann Lee and Bo Lee");
+    expect(m.html).toContain("Ann Lee, Co-owner. Has not signed yet");
+    expect(m.html).toContain("Bo Lee, Manager. Has not signed yet");
+    expect(m.html).toContain("Signed 1 of 3");
   });
 
   it("reads three or more parties as a list, one role word per role, with the right verb", () => {
@@ -132,16 +138,15 @@ describe("signer email: The Track", () => {
     });
     const mike = rec(a, "owner", "Michael Williams");
     const m = buildSignerEmail(a, mike, { signatures: { owner: mike } });
-    expect(m.html).toContain("Waiting on Ann Lee, Bo Lee and Cy Lee");
     expect(m.html).toContain("The co-owner and manager still need to sign");
-    expect(m.html).not.toContain("and Bo Lee and");
+    expect(m.html).toContain("Cy Lee, Manager. Has not signed yet");
     expect(m.subject).toContain(" | Signed by Michael Williams, ");
   });
 
   it("keeps the time and zone on one line, so a receipt never breaks as 6:59 / PM MST", () => {
     const { a, mike, executed } = states();
     const { html } = buildSignerEmail(a, mike, executed);
-    expect(html).toMatch(/\d{1,2}:\d{2} (AM|PM) [A-Z]{3}/);
+    expect(html).toMatch(/\d{1,2}:\d{2}\u00a0(AM|PM)\u00a0[A-Z]{3}/);
     expect(html).not.toMatch(/\d{1,2}:\d{2} (AM|PM)/);
   });
 
@@ -158,11 +163,11 @@ describe("signer email: The Track", () => {
     const { a, mike, executed } = states();
     const m = buildSignerEmail(a, mike, executed, { copyUrl: "https://example.com/c" });
     expect(m.html).toContain('name="format-detection"');
-    expect(m.html).toContain("xmlns:w=");
+    expect(m.html).toContain("xmlns:v=");
     expect(m.html.match(/&zwnj;&nbsp;/g)?.length ?? 0).toBeGreaterThanOrEqual(60);
-    expect(m.text).toContain("1) You signed: Michael Williams");
+    expect(m.text).toContain("Michael Williams, Owner: signed November 11, 2026");
     expect(m.text).toContain("Open your signed copy: https://example.com/c");
-    expect(m.text).toContain("Management fee: 15% of Net Revenue");
+    expect(m.text).toContain("Management fee: 10% of Net Revenue");
     expect(m.text).not.toMatch(/<|&nbsp;| /);
     expect(m.html.length).toBeLessThan(40_000); // Gmail clips a message at about 102KB
   });
@@ -176,7 +181,7 @@ describe("signer email: The Track", () => {
     }
   });
 
-  it("a real next date adds the third step, and without one the track has two", () => {
+  it("a real next date is said under the headline, and without one nothing is invented", () => {
     const { a, mike, executed } = states();
     const withNext = buildSignerEmail(a, mike, executed, {
       nextStep: { what: "Cranbrook goes live", when: "Friday, November 13, 2026" },
@@ -197,7 +202,7 @@ describe("signer email: The Track", () => {
 
       it("has no em dash and no exclamation mark in any copy", () => {
         expect(html).not.toContain("—");
-        expect(html.replace(/<!doctype html>/i, "").replace(/<!--[\s\S]*?-->/g, "")).not.toContain("!");
+        expect(html.replace(/<!doctype html>/i, "").replace(/<!--[\s\S]*?-->/g, "").replace(/<style>[\s\S]*?<\/style>/g, "")).not.toContain("!");
       });
       it("has no phone number and no tel: link", () => {
         expect(html).not.toContain("tel:");
@@ -215,13 +220,13 @@ describe("signer email: The Track", () => {
         expect(html).toMatch(/Reply to this email and it reaches Sun Mountain Stays\. Or <a [^>]*>book a call<\/a>\./);
       });
       it("has exactly one button, and it is not book a call", () => {
-        const buttons = [...html.matchAll(/<a [^>]*padding:16px 28px[^>]*>([^<]*)<\/a>/g)];
+        const buttons = [...html.matchAll(/<a [^>]*height:56px;line-height:56px[^>]*>([^<]*)<\/a>/g)];
         expect(buttons).toHaveLength(1);
         expect(buttons[0][1]).toMatch(/^Open your (signed )?copy$/);
       });
       it("never sets an inline font size under 13px, and body text stays at 16px or more where it is body", () => {
         // Empty spacer cells (a 2px track line holding one non-breaking space) carry no readable text.
-        const sizes = fontSizes(html.replace(/<td[^>]*>&nbsp;<\/td>/g, ""));
+        const sizes = fontSizes(html.replace(/<td[^>]*>&nbsp;<\/td>/g, "")).filter((n) => n > 2);
         expect(sizes.length).toBeGreaterThan(5);
         expect(Math.min(...sizes)).toBeGreaterThanOrEqual(13);
       });
@@ -229,12 +234,12 @@ describe("signer email: The Track", () => {
         expect(html).toContain('role="presentation"');
         expect(html).toContain('content="light only"');
         expect(html).toContain("max-width:600px");
-        expect(html).not.toMatch(/<style/i);
+        expect(html).not.toContain("Times New Roman");
       });
       it("wears the brand's own colors", () => {
-        expect(html).toContain("#0d2318"); // accentText becomes the band
-        expect(html).toContain("#e0b866"); // accent is the small text on the band
-        expect(html).toContain("#faf7f0"); // paper
+        expect(html).toContain("#0d2318"); // accentText becomes the button and the signed name
+        expect(html).toContain("#e0b866"); // accent is the gold rule
+        expect(html).toContain("#faf7f0"); // paper (the sheet)
         expect(html).toContain("#f3ede1"); // ground
       });
     });
@@ -243,11 +248,22 @@ describe("signer email: The Track", () => {
   it("the wordmark is live text, so it survives images off", () => {
     const { a, mike, executed } = states();
     const { html } = buildSignerEmail(a, mike, executed);
-    expect(html).toContain("Sun Mountain Stays</p>");
+    expect(html).toContain("Sun Mountain Stays</span>");
     expect(html).not.toContain("<img");
   });
 
-  it("another brand's tokens change the band", () => {
+  it("a real logo is a hosted image with alt text and its background painted in", () => {
+    const base = agreement();
+    const a = agreement({
+      brand: { ...base.brand, logo: { src: "https://sunmountainstays.com/brand/sun-mountain-mark-256.png", width: 256, height: 256, alt: "Sun Mountain Stays", markOnly: true } },
+    });
+    const { html } = buildSignerEmail(a, rec(a, "owner", "Michael Williams"), { signatures: {} });
+    expect(html).toMatch(/<img src="https:\/\/sunmountainstays\.com\/brand\/sun-mountain-mark-256\.png"[^>]*alt="Sun Mountain Stays"/);
+    expect(html).toMatch(/<img [^>]*bgcolor="#f3ede1"/);
+    expect(lintSignerEmail({ subject: "x | y | Signed by z", html, text: "t".repeat(100) })).not.toContain("an image with no alt attribute");
+  });
+
+  it("another brand's tokens change the button", () => {
     const a = agreement({
       brand: { ...agreement().brand, name: "Palisade Stays",
         tokens: { paper: "#fbf8f1", ground: "#f3ede1", accent: "#33566f", accentText: "#2a475c" } },
@@ -294,7 +310,7 @@ describe("signer email: The Track", () => {
   });
 });
 
-describe("deliverSignedCopy sends The Track to the signer and keeps the operator email", () => {
+describe("deliverSignedCopy sends The Specimen to the signer and to the business inbox", () => {
   beforeEach(() => {
     sent.length = 0;
     process.env.RESEND_API_KEY = "re_test_mock";
@@ -302,7 +318,7 @@ describe("deliverSignedCopy sends The Track to the signer and keeps the operator
     process.env.LEAD_TO_EMAIL = "ops@example.com";
   });
 
-  it("signer gets the new email with the PDF; operator email is unchanged in kind", async () => {
+  it("signer gets the Specimen with the PDF; the business inbox gets the Specimen alert", async () => {
     const { deliverSignedCopy } = await import("../src/lib/notify");
     const { a, mike, executed } = states();
     const res = await deliverSignedCopy(a, mike, executed, { copyUrl: "https://example.com/c" });
@@ -312,14 +328,17 @@ describe("deliverSignedCopy sends The Track to the signer and keeps the operator
     expect(sent).toHaveLength(3);
     const signer = sent.find((m) => m.to === "mike@example.com") as Record<string, unknown>;
     const operator = sent.find((m) => m.to === "ops@example.com") as Record<string, unknown>;
-    expect(String(signer.html)).toContain("It is signed and complete.");
+    expect(String(signer.html)).toContain("Your agreement is signed and complete.");
     expect(String(signer.html)).toContain("unit-2-executed.pdf is attached.");
     expect(String(signer.html)).not.toContain("tel:");
-    expect(String(signer.text)).toContain("1) You signed:");
+    expect(String(signer.text)).toContain("Michael Williams, Owner: signed");
     expect(signer.from).toBe("Sun Mountain Stays <hello@sunmountainstays.com>");
     expect(signer.attachments).toHaveLength(1);
-    expect(String(operator.subject)).toContain("FULLY EXECUTED");
-    expect(String(operator.text)).toContain("Fully executed");
+    expect(String(operator.subject)).toBe("309 Cranbrook Circle, Colorado Springs, Colorado | Management Agreement | Fully signed, November 11, 2026");
+    expect(String(operator.html)).toContain("Michael Williams signed. It is complete.");
+    expect(String(operator.html)).toContain("Signature record");
+    expect(String(operator.html)).toContain("Open the signed agreement");
+    expect(String(operator.text)).toContain("Every party has signed. The executed agreement is attached.");
   });
 
   it("an earlier signer gets the completed copy when the last party signs, and only if they left an address", async () => {
@@ -369,5 +388,58 @@ describe("searchable names", () => {
     const { a, waiting, executed } = states();
     expect(pdfFilename(a, waiting)).toBe("309-Cranbrook-Circle-Colorado-Springs-Colorado-Management-Agreement-partly-signed.pdf");
     expect(pdfFilename(a, executed)).toBe("309-Cranbrook-Circle-Colorado-Springs-Colorado-Management-Agreement-signed.pdf");
+  });
+});
+
+describe("the operator alert and the form receipt wear the same Specimen", () => {
+  const palette = signerPalette(agreement());
+  const faces = DEFAULT_FACES;
+
+  it("the operator alert names who signed, who is left, and the record, and passes the cheap checks", () => {
+    const m = renderOperatorEmail({
+      palette, faces, brandName: "Sun Mountain Stays", docTitle: "Management Agreement",
+      subjectPlace: "309 Cranbrook Circle", place: "309 Cranbrook Circle, Colorado Springs, Colorado",
+      signedBy: "Michael Williams", signedWhen: "November 11, 2026, 6:59 PM MST",
+      waiting: [{ name: "Jake Lee", role: "Manager" }],
+      record: [{ label: "Version", value: "November 1, 2026" }],
+      button: { url: "https://example.com/c" },
+      note: ["The signature record is filed on the shared drive."],
+      legalLine: "Sun Mountain Stays LLC",
+    });
+    expect(m.subject).toBe("309 Cranbrook Circle | Management Agreement | Signed by Michael Williams, November 11, 2026");
+    expect(m.html).toContain("Michael Williams signed.");
+    expect(m.html).toContain("Jake Lee has not signed yet.");
+    expect(m.html).toContain("Signature needed");
+    expect(m.html).toContain("Open the signed agreement");
+    expect(lintSignerEmail(m)).toEqual([]);
+  });
+
+  it("the form receipt is a sheet of what was received and a reference, with no signature lines", () => {
+    const m = renderReceiptEmail({
+      palette, faces, brandName: "Palisade Stays",
+      subject: "Palisade Stays | Inquiry received | Full-Service Management, November 14, 2026",
+      headline: "Your inquiry has arrived.",
+      lead: ["Thank you for writing in. Your inquiry arrived, and I review every one personally."],
+      sheetTitle: "Your inquiry", caption: "For your records, here is what you sent:",
+      received: [{ label: "Reason", value: "Full-Service Management" }],
+      reference: { label: "Reference", value: "INQ-261114-7K3QX" },
+      after: ["To choose a time to talk, book a call with me here: [jakejjlee.com/meet](https://jakejjlee.com/meet)"],
+      signoff: { name: "Jake Lee", title: "Founder, Palisade Stays" },
+      legalLine: "Palisade Stays LLC.",
+    });
+    expect(m.html).toContain("INQ-261114-7K3QX");
+    expect(m.html).toContain("Received");
+    expect(m.html).not.toContain("Signature needed");
+    expect(m.text).toContain("Reference: INQ-261114-7K3QX");
+    expect(m.text).toContain("book a call with me here: https://jakejjlee.com/meet");
+  });
+
+  it("a Times New Roman stack is repaired, never shipped", () => {
+    const m = renderReceiptEmail({
+      palette, faces: { serif: "Georgia,'Times New Roman',serif", sans: "Arial,sans-serif", wordmark: "Georgia,'Times New Roman',serif" },
+      brandName: "Palisade Stays", subject: "Palisade Stays | Inquiry received | x, November 14, 2026",
+      headline: "h", lead: ["l"], sheetTitle: "t", received: [], legalLine: "L",
+    });
+    expect(m.html).not.toContain("Times New Roman");
   });
 });

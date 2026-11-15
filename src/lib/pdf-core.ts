@@ -217,7 +217,7 @@ function drawSection(d: Draw, f: Fonts, sec: PdfSection) {
   for (const b of sec.blocks) drawBlock(d, f, b);
 }
 
-export async function renderPdf(m: PdfModel): Promise<Uint8Array> {
+export async function renderPdf(model: PdfModel): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
   const f: Fonts = {
     body: await doc.embedFont(StandardFonts.TimesRoman),
@@ -225,6 +225,15 @@ export async function renderPdf(m: PdfModel): Promise<Uint8Array> {
     italic: await doc.embedFont(StandardFonts.TimesRomanItalic),
     ui: await doc.embedFont(StandardFonts.Helvetica),
   };
+  // A standard font draws Western European text only, and drawing anything else throws. A signer
+  // typing a name in another script must not turn their own signed copy into a failure, so a
+  // character the font cannot draw becomes "?" in this file. The agreement on the page is unchanged.
+  const drawable = new Set(f.body.getCharacterSet());
+  const m: PdfModel = JSON.parse(JSON.stringify(model), (_k, v) =>
+    typeof v === "string"
+      ? Array.from(v, (c) => (drawable.has(c.codePointAt(0) ?? 0) || /\s/.test(c) ? c : "?")).join("")
+      : v
+  );
   const d = makeDraw(doc, f);
 
   /* ---- masthead ---- */

@@ -208,16 +208,27 @@ describe("signer email: The Specimen", () => {
         expect(html).not.toContain("tel:");
         expect(html).not.toContain("719 555 0100");
       });
-      it("carries book a call as an inline link in the footer, not a button", () => {
-        const links = [...html.matchAll(/<a [^>]*href="https:\/\/jakejjlee\.com\/meet"[^>]*>book a call<\/a>/g)];
+      it("carries the booking address alone in its own paragraph under a colon, not a button", () => {
+        const links = [...html.matchAll(/<a [^>]*href="https:\/\/jakejjlee\.com\/meet"[^>]*>[^<]*<\/a>/g)];
         expect(links).toHaveLength(1);
         const tag = links[0][0];
         expect(tag).not.toMatch(/display:\s*(inline-)?block/);
         expect(tag).not.toMatch(/padding/);
         expect(tag).not.toMatch(/border-radius/);
         expect(tag).toMatch(/text-decoration:underline/);
-        // Sits inside the sentence "Reply to this email and it reaches ... Or book a call."
-        expect(html).toMatch(/Reply to this email and it reaches Sun Mountain Stays\. Or <a [^>]*>book a call<\/a>\./);
+        // The ask sentence ends in a colon; the address is the only thing in its own <p>.
+        expect(html).toMatch(/Reply to this email and it reaches Sun Mountain Stays\. To talk anything through, pick a time here:<\/p>/);
+        expect(html).toMatch(/<p [^>]*><a [^>]*href="https:\/\/jakejjlee\.com\/meet"[^>]*>https:\/\/jakejjlee\.com\/meet<\/a><\/p>/);
+      });
+      it("puts the booking address alone on its own line in the plain text", () => {
+        const text = buildSignerEmail(s.a, s.mike, pick(s), { copyUrl: "https://example.com/c", attached: true }).text;
+        const lines = text.split("\n");
+        const i = lines.indexOf("https://jakejjlee.com/meet");
+        expect(i).toBeGreaterThan(1);
+        expect(lines[i - 1]).toBe("");
+        expect(lines[i + 1]).toBe("");
+        expect(lines[i - 2]).toMatch(/pick a time here:$/);
+        expect(text.match(/jakejjlee\.com\/meet/g)).toHaveLength(1);
       });
       it("has exactly one button, and it is not book a call", () => {
         const buttons = [...html.matchAll(/<a [^>]*height:56px;line-height:56px[^>]*>([^<]*)<\/a>/g)];
@@ -423,7 +434,7 @@ describe("the operator alert and the form receipt wear the same Specimen", () =>
       sheetTitle: "Your inquiry", caption: "For your records, here is what you sent:",
       received: [{ label: "Reason", value: "Full-Service Management" }],
       reference: { label: "Reference", value: "INQ-261114-7K3QX" },
-      after: ["To choose a time to talk, book a call with me here: [jakejjlee.com/meet](https://jakejjlee.com/meet)"],
+      after: ["To choose a time to talk, book a call with me here:", "[https://jakejjlee.com/meet](https://jakejjlee.com/meet)"],
       signoff: { name: "Jake Lee", title: "Founder, Palisade Stays" },
       legalLine: "Palisade Stays LLC.",
     });
@@ -431,7 +442,13 @@ describe("the operator alert and the form receipt wear the same Specimen", () =>
     expect(m.html).toContain("Received");
     expect(m.html).not.toContain("Signature needed");
     expect(m.text).toContain("Reference: INQ-261114-7K3QX");
-    expect(m.text).toContain("book a call with me here: https://jakejjlee.com/meet");
+    const lines = m.text.split("\n");
+    const i = lines.indexOf("https://jakejjlee.com/meet");
+    expect(i).toBeGreaterThan(1);
+    expect(lines[i - 1]).toBe("");
+    expect(lines[i + 1]).toBe("");
+    expect(lines[i - 2]).toBe("To choose a time to talk, book a call with me here:");
+    expect(lintSignerEmail(m)).toEqual([]);
   });
 
   it("a Times New Roman stack is repaired, never shipped", () => {

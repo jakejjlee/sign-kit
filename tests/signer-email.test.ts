@@ -326,7 +326,8 @@ describe("deliverSignedCopy sends The Specimen to the signer and to the business
     sent.length = 0;
     process.env.RESEND_API_KEY = "re_test_mock";
     process.env.LEAD_FROM_EMAIL = "Sun Mountain Stays <hello@sunmountainstays.com>";
-    process.env.LEAD_TO_EMAIL = "ops@example.com";
+    process.env.AGREEMENT_ALERT_EMAIL = "ops@example.com";
+    process.env.LEAD_TO_EMAIL = "leads-only@example.com";
   });
 
   it("signer gets the Specimen with the PDF; the business inbox gets the Specimen alert", async () => {
@@ -537,5 +538,37 @@ describe("the Specimen survives Gmail on a phone", () => {
     expect(e.text).not.toContain("pick a time");
     expect(e.html).toContain("Reply to this email and it reaches Palisade Stays.");
     expect(lintSignerEmail(e)).toEqual([]);
+  });
+});
+
+describe("the signing alert inbox (2026-11-23: a dead fallback swallowed 19 lease alerts)", () => {
+  it("never uses the site lead address; falls back to the brand's own inbox", async () => {
+    const { operatorInbox } = await import("../src/lib/notify");
+    const keep = { alert: process.env.AGREEMENT_ALERT_EMAIL, lead: process.env.LEAD_TO_EMAIL };
+    try {
+      delete process.env.AGREEMENT_ALERT_EMAIL;
+      process.env.LEAD_TO_EMAIL = "leads-only@example.com";
+      expect(operatorInbox("hello@sunmountainstays.com")).toBe("hello@sunmountainstays.com");
+      process.env.AGREEMENT_ALERT_EMAIL = "alerts@example.com";
+      expect(operatorInbox("hello@sunmountainstays.com")).toBe("alerts@example.com");
+    } finally {
+      if (keep.alert === undefined) delete process.env.AGREEMENT_ALERT_EMAIL;
+      else process.env.AGREEMENT_ALERT_EMAIL = keep.alert;
+      if (keep.lead === undefined) delete process.env.LEAD_TO_EMAIL;
+      else process.env.LEAD_TO_EMAIL = keep.lead;
+    }
+  });
+
+  it("no source file names an address the standard lists as dead", async () => {
+    const { readdirSync, readFileSync, statSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    const dead = ["jake@palisadestays.com"];
+    const walk = (d: string): string[] =>
+      readdirSync(d).flatMap((f) => {
+        const p = join(d, f);
+        return statSync(p).isDirectory() ? walk(p) : /\.(ts|tsx|mjs|js)$/.test(f) ? [p] : [];
+      });
+    const hits = walk("src").filter((p) => dead.some((a) => readFileSync(p, "utf8").includes(a)));
+    expect(hits).toEqual([]);
   });
 });

@@ -90,7 +90,10 @@ export function deliveryConfig() {
   return {
     configured: apiKey,
     from: from || "not set",
-    operator: process.env.LEAD_TO_EMAIL || "not set",
+    // Signing alerts never reuse the site lead address (LEAD_TO_EMAIL): it belongs to the lead forms and
+    // may point anywhere (2026-11-23: a dead fallback swallowed 19 lease alerts). Standard:
+    // ~/.claude/docs/signing-and-forms-mail-standard.md section 2.
+    operator: operatorInbox(),
     // Resend's shared sender only delivers to the account owner, so a signer
     // would silently never receive their copy.
     canReachSigners: apiKey && !sharedSender,
@@ -158,7 +161,7 @@ export async function deliverSignedCopy(
 
   const resend = new Resend(apiKey);
   const from = fromHeader(a.brand.name, cfg.from === "not set" ? "onboarding@resend.dev" : cfg.from);
-  const operator = process.env.LEAD_TO_EMAIL || a.brand.email;
+  const operator = operatorInbox(a.brand.email);
   const executed = isFullyExecuted(a, ex);
 
   /** Null when it went out; otherwise the reason, in words. Never throws. */
@@ -232,4 +235,14 @@ export async function deliverSignedCopy(
     operatorNotice: operatorProblem === null,
     detail: notes.length ? notes.join("; ") : "Copies sent.",
   };
+}
+
+/**
+ * The inbox that gets the signing alert: AGREEMENT_ALERT_EMAIL when set, otherwise the inbox of the
+ * business that is party to the document (its brand email). Never LEAD_TO_EMAIL, never a guessed
+ * fallback. Every address used here must be on the verified list in
+ * ~/.claude/docs/signing-and-forms-mail-standard.md (proven to land in a mailbox Jake reads).
+ */
+export function operatorInbox(brandEmail?: string): string {
+  return process.env.AGREEMENT_ALERT_EMAIL?.trim() || brandEmail?.trim() || "not set";
 }

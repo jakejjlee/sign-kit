@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Agreement } from "../src/content/types";
 import { makeRecord, type Execution, type SignatureRecord } from "../src/lib/execution";
 import { buildSignerEmail, contrast, signerPalette } from "../src/lib/signer-email";
-import { DEFAULT_FACES, lintSignerEmail, renderOperatorEmail, renderReceiptEmail } from "../src/lib/signer-email-core";
+import { DEFAULT_FACES, lintSignerEmail, makePalette, renderOperatorEmail, renderReceiptEmail, renderSignerEmail } from "../src/lib/signer-email-core";
 
 const sent: Record<string, unknown>[] = [];
 /** Lets a test make the signer's own send hang forever, like a stalled mail service. */
@@ -458,5 +458,84 @@ describe("the operator alert and the form receipt wear the same Specimen", () =>
       headline: "h", lead: ["l"], sheetTitle: "t", received: [], legalLine: "L",
     });
     expect(m.html).not.toContain("Times New Roman");
+  });
+});
+
+/**
+ * 2026-11-23, Jake: the emails "look so janky and wonky on mobile". The Gmail iPhone app and Gmail web
+ * strip the <style> block, every class and a list of CSS; these hold the layout to what survives.
+ */
+describe("the Specimen survives Gmail on a phone", () => {
+  const all = () => {
+    const { a, mike, waiting, executed } = states();
+    return [
+      { name: "waiting", ...buildSignerEmail(a, mike, waiting, { copyUrl: "https://example.com/a" }) },
+      { name: "executed", ...buildSignerEmail(a, mike, executed, { copyUrl: "https://example.com/a", attached: true, attachmentName: "a.pdf" }) },
+    ];
+  };
+  const gmail = (html: string) =>
+    html
+      .replace(/<head>[\s\S]*?<\/head>/i, "")
+      .replace(/<!--[\s\S]*?-->/g, "")
+      .replace(/\sclass="[^"]*"/g, "");
+
+  it("lays out without the <style> block or any class: no media query, no class in the body", () => {
+    for (const e of all()) {
+      expect(e.html).not.toMatch(/@media/);
+      expect(gmail(e.html)).not.toMatch(/\sclass="/);
+    }
+  });
+  it("caps the column with a table Gmail keeps, never a div", () => {
+    for (const e of all()) {
+      const body = gmail(e.html);
+      expect(body).toMatch(/<table\b[^>]*style="[^"]*max-width:600px/);
+      expect(body).not.toMatch(/<div\b[^>]*max-width/);
+    }
+  });
+  it("keeps side margins as percentages, so a 320px phone is not squeezed", () => {
+    for (const e of all()) {
+      const fixed = [...gmail(e.html).matchAll(/padding:\s*\d+px\s+(\d+)px/g)].map((m) => Number(m[1]));
+      expect(fixed.every((x) => x <= 24)).toBe(true);
+      expect(e.html).toMatch(/padding:\d+px [\d.]+%/);
+    }
+  });
+  it("puts the status stamp on its own row, so the document title gets the full width", () => {
+    for (const e of all()) expect(e.html).not.toMatch(/<td valign="top" align="right" width="116">/);
+  });
+  it("lint catches each thing Gmail drops", () => {
+    const base = all()[0];
+    const plant = (extra: string) => lintSignerEmail({ ...base, html: base.html.replace("</body>", `${extra}</body>`) });
+    expect(plant('<div style="display:flex">x</div>').join()).toMatch(/flex or grid/);
+    expect(plant('<svg width="2"></svg>').join()).toMatch(/SVG/);
+    expect(plant('<div style="max-width:300px">x</div>').join()).toMatch(/column cap is on a div/);
+    expect(plant('<img src="http://x.test/a.png" width="20" alt="a" style="height:auto">').join()).toMatch(/not an absolute https/);
+    expect(plant('<img src="https://x.test/a.png" alt="a" style="height:auto">').join()).toMatch(/no width attribute/);
+    expect(plant("<p>&#10003; done</p>").join()).toMatch(/symbol glyph/);
+    expect(plant('<p class="x">x</p>').join()).toMatch(/a class in the body/);
+    expect(plant('<td style="padding:10px 32px">x</td>').join()).toMatch(/side padding over 24px/);
+  });
+  it("an empty booking address drops the booking line entirely", () => {
+    const model = {
+      palette: makePalette({ paper: "#ffffff", ground: "#f4f3f1", rule: "#d5cdc3", band: "#21463d" }),
+      faces: DEFAULT_FACES,
+      brandName: "Palisade Stays",
+      docTitle: "Residential Lease",
+      subjectPlace: "11 Example Avenue",
+      place: "11 Example Avenue",
+      signedBy: "A Person",
+      signedWhen: "November 23, 2026, 9:27 AM EST",
+      waiting: [],
+      completeDetail: "Every party has signed.",
+      completion: { title: "t", detail: "d" },
+      note: [],
+      terms: [{ label: "Property", value: "11 Example Avenue" }],
+      bookUrl: "",
+      legalLine: "Palisade Stays.",
+    };
+    const e = renderSignerEmail(model);
+    expect(e.html).not.toContain("pick a time");
+    expect(e.text).not.toContain("pick a time");
+    expect(e.html).toContain("Reply to this email and it reaches Palisade Stays.");
+    expect(lintSignerEmail(e)).toEqual([]);
   });
 });

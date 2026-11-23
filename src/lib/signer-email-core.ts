@@ -352,7 +352,7 @@ function stripLinks(text: string): { text: string; urls: string[] } {
 
 function button(href: string, label: string, c: Colors, sans: string): string {
   const safe = esc(href);
-  return `<!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${safe}" style="height:56px;v-text-anchor:middle;width:544px" arcsize="10%" fillcolor="${c.deep}" stroke="f"><w:anchorlock/><center style="color:${c.onDeep};font-family:Arial,sans-serif;font-size:17px;font-weight:bold">${esc(label)}</center></v:roundrect><![endif]-->
+  return `<!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${safe}" style="height:56px;v-text-anchor:middle;width:536px" arcsize="10%" fillcolor="${c.deep}" stroke="f"><w:anchorlock/><center style="color:${c.onDeep};font-family:Arial,sans-serif;font-size:17px;font-weight:bold">${esc(label)}</center></v:roundrect><![endif]-->
 <!--[if !mso]><!--><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="${c.deep}" style="background:${c.deep};border-radius:6px"><a href="${safe}" style="display:block;height:56px;line-height:56px;padding:0 16px;font-family:${sans};font-size:17px;font-weight:600;color:${c.onDeep};text-align:center;text-decoration:none">${esc(label)}</a></td></tr></table><!--<![endif]-->`;
 }
 
@@ -409,7 +409,7 @@ export function renderSpecimen(m: SpecimenModel): BuiltEmail {
   const stamp = `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="${c.tint}" style="background:${c.tint};border-radius:4px;padding:5px 10px;font-family:${sans};font-size:13px;line-height:16px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:${c.accent};white-space:nowrap">${esc(m.status)}</td></tr></table>`;
 
   const sheetHtml = `${T(
-    `<tr><td bgcolor="${c.paper}" style="background:${c.paper};border:1px solid ${c.tint2};padding:28px ${side(30, 544)} 28px">
+    `<tr><td bgcolor="${c.paper}" style="background:${c.paper};border:1px solid ${c.tint2};padding:28px ${side(30, 536)} 28px">
 ${T(`<tr><td style="padding:0 0 12px">${stamp}</td></tr><tr><td valign="top" style="font-family:${serif};font-size:25px;line-height:31px;color:${c.ink};word-wrap:break-word">${esc(sheet.title)}</td></tr>${sheet.place ? `<tr><td style="padding:4px 0 0;font-family:${sans};font-size:15px;line-height:22px;color:${c.muted}">${sheet.place.split("\n").map(esc).join("<br>")}</td></tr>` : ""}${sheet.caption ? `<tr><td style="padding:4px 0 0;font-family:${sans};font-size:15px;line-height:22px;color:${c.muted}">${esc(sheet.caption)}</td></tr>` : ""}${sp(18)}`)}
 ${rows ? T(rows, 'style="border-collapse:collapse"') : ""}
 ${sheet.signatures?.length ? T(sigs) : ""}
@@ -422,7 +422,7 @@ ${sheet.signatures?.length ? T(sigs) : ""}
     )
     .join("")}`;
 
-  const body = T(`<tr><td bgcolor="${c.ground}" style="background:${c.ground};padding:36px ${side(28)} 34px;border-top:4px solid ${c.gold}">
+  const body = T(`<tr><td bgcolor="${c.ground}" style="background:${c.ground};padding:36px ${side(32)} 34px;border-top:4px solid ${c.gold}">
 ${head}
 <h1 style="margin:28px 0 0;font-family:${serif};font-size:31px;line-height:37px;font-weight:400;color:${c.ink};text-align:center">${esc(m.headline)}</h1>
 ${m.lead.map((t, i) => para(t, c, sans, { color: c.mutedOnGround, align: "center", mt: i ? 10 : 12 })).join("")}

@@ -11,8 +11,8 @@ import {
 } from "./execution";
 import { shortFingerprint } from "./fingerprint";
 import { pdfFilename, renderAgreementPdf } from "./pdf";
-import { buildSignerEmail, signerPalette, type SignerEmailOptions } from "./signer-email";
-import { DEFAULT_FACES, renderOperatorEmail } from "./signer-email-core";
+import { buildSignerEmail, signerFaces, signerPalette, type SignerEmailOptions } from "./signer-email";
+import { renderOperatorEmail } from "./signer-email-core";
 
 /**
  * Getting the signed document to the people who need it.
@@ -40,32 +40,33 @@ export type DeliveryResult = {
 };
 
 /**
- * The notice to the business inbox when someone signs: the same Specimen as the signer's email, so
- * the person reading it sees who signed, when, who is still to sign and the record, at a glance.
- * The subject follows the one convention: "<place> | <document> | Signed by <name>, <date>".
+ * The notice to the business inbox when someone signs: the same Certificate as the signer's email, so
+ * the person reading it sees who signed and when, every signer's state, and the record, at a glance.
+ * The subject follows the one convention: "<place> | <document> | Signed by <name>, <date>", or
+ * "Fully signed, <name> last, <date>" when this signature completes it.
  */
-function operatorEmail(
+export function buildOperatorEmail(
   a: Agreement,
   rec: SignatureRecord,
   ex: Execution,
-  opts: { attached?: boolean; copyUrl?: string } = {}
+  opts: { attached?: boolean; attachmentName?: string; copyUrl?: string } = {}
 ) {
   const executed = isFullyExecuted(a, ex);
   const waiting = outstandingParties(a, ex).map((p) => ({ name: p.legalName, role: p.role }));
+  const stamp = (s: string) => s.replace(/(\d{1,2}:\d{2}):\d{2}/, "$1");
   const record: { label: string; value: string }[] = [];
   if (rec.typed && rec.typed !== rec.legalName) record.push({ label: "Typed", value: rec.typed });
   record.push(
     { label: "Their email", value: rec.email ?? "not given" },
     { label: "From", value: rec.ip ?? "not recorded" },
-    { label: "Version", value: longDate(rec.version) },
-    { label: "Fingerprint", value: shortFingerprint(rec.fingerprint ?? "none") }
+    { label: "Version", value: longDate(rec.version) }
   );
   const note: string[] = [];
-  if (opts.attached) note.push(executed ? "The executed PDF is attached." : "The PDF is attached, as it stands with the signatures so far.");
+  if (opts.attached && !opts.attachmentName) note.push(executed ? "The signed PDF is attached." : "The PDF is attached, as it stands with the signatures so far.");
   note.push("The signature record is filed in the agreements folder on the shared drive. This email is the notification, not the record.");
   return renderOperatorEmail({
     palette: signerPalette(a),
-    faces: DEFAULT_FACES,
+    faces: signerFaces(a),
     brandName: a.brand.name,
     logo: a.brand.logo,
     fontsHref: a.brand.fontsHref,
@@ -73,9 +74,19 @@ function operatorEmail(
     subjectPlace: a.subtitle,
     place: a.subtitle ?? a.title,
     signedBy: rec.legalName,
-    signedWhen: rec.signedAtLocal.replace(/(\d{1,2}:\d{2}):\d{2}/, "$1"),
+    signedRole: a.parties.find((p) => p.id === rec.party)?.role,
+    signedWhen: stamp(rec.signedAtLocal),
+    others: a.parties
+      .filter((p) => p.id !== rec.party && ex.signatures[p.id])
+      .map((p) => ({ name: p.legalName, role: p.role, when: stamp(ex.signatures[p.id]?.signedAtLocal ?? "") })),
+    order: a.parties.map((p) => p.legalName),
     waiting,
-    record: record.map((r) => ({ label: r.label, value: r.value })),
+    record,
+    documentId: rec.fingerprint ? shortFingerprint(rec.fingerprint) : undefined,
+    attachment:
+      opts.attached && opts.attachmentName
+        ? { name: opts.attachmentName, note: executed ? "Signed by every party, attached" : "As signed so far, attached" }
+        : undefined,
     button: opts.copyUrl ? { url: opts.copyUrl } : undefined,
     note,
     legalLine: `${a.brand.name}, ${a.brand.role}.`,
@@ -206,7 +217,11 @@ export async function deliverSignedCopy(
     return { who, problem };
   });
 
-  const op = operatorEmail(a, rec, ex, { attached: Boolean(attachments), copyUrl: signerOpts.copyUrl });
+  const op = buildOperatorEmail(a, rec, ex, {
+    attached: Boolean(attachments),
+    attachmentName: attachments?.[0]?.filename,
+    copyUrl: signerOpts.copyUrl,
+  });
   const operatorJob = deliver(operator, rec.email ?? undefined, op).then((problem) => {
     if (problem) console.error(`[sign-kit] operator notice to ${operator} failed: ${problem}`);
     return problem;

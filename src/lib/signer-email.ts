@@ -6,6 +6,7 @@ import {
   DEFAULT_FACES,
   type BuiltEmail,
   type EmailModel,
+  type Faces,
   FALLBACK,
   type Palette,
   isHex,
@@ -14,9 +15,9 @@ import {
 } from "./signer-email-core";
 
 /**
- * The signer's confirmation email, direction d3, "The Track". The design itself
- * lives in signer-email-core.ts and is shared with the Sun Mountain Stays site;
- * this file only describes a kit Agreement to it.
+ * The signer's confirmation email, The Certificate (round 3 pick, 2026-11-23). The
+ * design itself lives in signer-email-core.ts and is shared with every site; this
+ * file only describes a kit Agreement to it.
  *
  * No phone number appears anywhere on this email. Contact is the reply.
  */
@@ -41,7 +42,11 @@ export type SignerEmailOptions = {
   nextStep?: { what: string; when: string };
 };
 
-const FACES = DEFAULT_FACES;
+/** The brand's own faces where it names them, the kit's defaults otherwise. */
+export function signerFaces(a: Agreement): Faces {
+  const f = a.brand.faces;
+  return f ? { ...DEFAULT_FACES, ...f } : DEFAULT_FACES;
+}
 
 function token(a: Agreement, k: BrandToken): string | undefined {
   const v = a.brand.tokens?.[k];
@@ -84,8 +89,7 @@ export function buildSignerEmail(
 
   const note: string[] = [];
   if (opts.attached) {
-    const name = opts.attachmentName ? `${opts.attachmentName} is attached` : "The PDF is attached";
-    note.push(executed ? `${name}.` : `${name}, as it stands with the signatures so far.`);
+    if (!opts.attachmentName) note.push(executed ? "The signed PDF is attached." : "The PDF is attached, as it stands with the signatures so far.");
   } else if (opts.copyUrl) {
     note.push("The PDF could not be attached to this message. Use the button above to open your copy.");
   } else {
@@ -94,7 +98,7 @@ export function buildSignerEmail(
 
   const model: EmailModel = {
     palette: signerPalette(a),
-    faces: FACES,
+    faces: signerFaces(a),
     logo: a.brand.logo,
     fontsHref: a.brand.fontsHref,
     brandName: a.brand.name,
@@ -121,8 +125,14 @@ export function buildSignerEmail(
     button: opts.copyUrl ? { url: opts.copyUrl } : undefined,
     note,
     terms: a.letter.summary.map((r) => ({ label: r.label, value: r.value })),
-    fineprint: [`Version ${longDate(a.version)}.`, ...(rec.fingerprint ? [`Reference ${shortFingerprint(rec.fingerprint)}.`] : [])],
-    bookUrl: BOOK_A_CALL_URL,
+    fineprint: [`Version ${longDate(a.version)}.`],
+    attachment:
+      opts.attached && opts.attachmentName
+        ? { name: opts.attachmentName, note: executed ? "Signed by every party, attached" : "As signed so far, attached" }
+        : undefined,
+    documentId: rec.fingerprint ? shortFingerprint(rec.fingerprint) : undefined,
+    order: a.parties.map((p) => p.legalName),
+    bookUrl: a.brand.bookUrl ?? BOOK_A_CALL_URL,
     legalLine: `${a.brand.name}, ${a.brand.role}.`,
   };
   return renderSignerEmail(model);

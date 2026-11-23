@@ -53,6 +53,10 @@ export type Brand = {
   logo?: { src: string; width: number; height: number; alt: string; markOnly?: boolean };
   /** Hosted web font stylesheet for the business's faces (the emails fall back to Georgia and Arial). */
   fontsHref?: string;
+  /** The business's own faces for its emails, as CSS stacks. Omitted ones use the kit's defaults. */
+  faces?: { serif?: string; sans?: string; wordmark?: string; mono?: string };
+  /** The booking page under the email footer. Empty drops the booking line; omitted uses Jake's. */
+  bookUrl?: string;
 };
 
 export type BrandToken =

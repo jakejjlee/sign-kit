@@ -1,6 +1,6 @@
 {
   "name": "@iserlabs/sign-kit",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "description": "One signing system, many agreements. The document is data; the machinery is here.",
@@ -9,6 +9,11 @@
       "types": "./src/index.ts",
       "import": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./mail": {
+      "types": "./src/lib/signer-email-core.ts",
+      "import": "./src/lib/signer-email-core.ts",
+      "default": "./src/lib/signer-email-core.ts"
     },
     "./content/types": {
       "types": "./src/content/types.ts",

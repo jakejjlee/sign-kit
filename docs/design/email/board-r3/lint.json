@@ -1,0 +1,119 @@
+{
+  "board": {
+    "d0-waiting": [
+      "subject is not Place | Document | what happened"
+    ],
+    "d0-complete": [
+      "subject is not Place | Document | what happened"
+    ],
+    "d0-operator": [
+      "subject is not Place | Document | what happened",
+      "phone auto-linking is not switched off",
+      "the page does not declare itself light-only",
+      "the preheader is not padded",
+      "a time that can break across lines",
+      "the column cap is on a div (the cap must sit on a table)",
+      "no 600px column cap on a table"
+    ],
+    "d0-receipt": [],
+    "d0p-waiting": [],
+    "d0p-complete": [],
+    "d0p-operator": [],
+    "d0p-receipt": [],
+    "d1-waiting": [],
+    "d1-complete": [],
+    "d1-operator": [],
+    "d1-receipt": [],
+    "d2-waiting": [],
+    "d2-complete": [],
+    "d2-operator": [],
+    "d2-receipt": [],
+    "d3-waiting": [],
+    "d3-complete": [],
+    "d3-operator": [],
+    "d3-receipt": []
+  },
+  "otherBrands": {},
+  "meta": {
+    "d0-waiting": {
+      "subject": "Signed, waiting on Victoria Donovan: Lease, 11 Bluebill Ave Unit 201",
+      "bytes": 11715
+    },
+    "d0-complete": {
+      "subject": "Signed: Lease, 11 Bluebill Ave Unit 201",
+      "bytes": 11738
+    },
+    "d0-operator": {
+      "subject": "Victoria Donovan signed: Lease, 11 Bluebill Ave Unit 201",
+      "bytes": 453
+    },
+    "d0-receipt": {
+      "subject": "Owner Hosted Homes | Inquiry received | Dana Whitfield, November 23, 2026",
+      "bytes": 9724
+    },
+    "d0p-waiting": {
+      "subject": "11 Bluebill Ave Unit 201 | Residential Lease | Signed by Michael Donovan, November 23, 2026",
+      "bytes": 11798
+    },
+    "d0p-complete": {
+      "subject": "11 Bluebill Ave Unit 201 | Residential Lease | Fully signed, November 23, 2026",
+      "bytes": 11948
+    },
+    "d0p-operator": {
+      "subject": "11 Bluebill Ave Unit 201 | Residential Lease | Victoria Donovan signed, fully signed, November 23, 2026",
+      "bytes": 11419
+    },
+    "d0p-receipt": {
+      "subject": "Owner Hosted Homes | Your inquiry | Received November 23, 2026",
+      "bytes": 10131
+    },
+    "d1-waiting": {
+      "subject": "11 Bluebill Ave Unit 201 | Residential Lease | Signed by Michael Donovan, November 23, 2026",
+      "bytes": 11674
+    },
+    "d1-complete": {
+      "subject": "11 Bluebill Ave Unit 201 | Residential Lease | Fully signed, November 23, 2026",
+      "bytes": 12024
+    },
+    "d1-operator": {
+      "subject": "11 Bluebill Ave Unit 201 | Residential Lease | Victoria Donovan signed, fully signed, November 23, 2026",
+      "bytes": 10359
+    },
+    "d1-receipt": {
+      "subject": "Owner Hosted Homes | Your inquiry | Received November 23, 2026",
+      "bytes": 8968
+    },
+    "d2-waiting": {
+      "subject": "11 Bluebill Ave Unit 201 | Residential Lease | Signed by Michael Donovan, November 23, 2026",
+      "bytes": 13879
+    },
+    "d2-complete": {
+      "subject": "11 Bluebill Ave Unit 201 | Residential Lease | Fully signed, November 23, 2026",
+      "bytes": 15065
+    },
+    "d2-operator": {
+      "subject": "11 Bluebill Ave Unit 201 | Residential Lease | Victoria Donovan signed, fully signed, November 23, 2026",
+      "bytes": 14587
+    },
+    "d2-receipt": {
+      "subject": "Owner Hosted Homes | Your inquiry | Received November 23, 2026",
+      "bytes": 9448
+    },
+    "d3-waiting": {
+      "subject": "11 Bluebill Ave Unit 201 | Residential Lease | Signed by Michael Donovan, November 23, 2026",
+      "bytes": 12327
+    },
+    "d3-complete": {
+      "subject": "11 Bluebill Ave Unit 201 | Residential Lease | Fully signed, November 23, 2026",
+      "bytes": 12689
+    },
+    "d3-operator": {
+      "subject": "11 Bluebill Ave Unit 201 | Residential Lease | Victoria Donovan signed, fully signed, November 23, 2026",
+      "bytes": 10741
+    },
+    "d3-receipt": {
+      "subject": "Owner Hosted Homes | Your inquiry | Received November 23, 2026",
+      "bytes": 10415
+    }
+  }
+}

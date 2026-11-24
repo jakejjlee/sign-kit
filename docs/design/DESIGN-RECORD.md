@@ -167,3 +167,12 @@ Cranbrook (Michael Williams, 309 Cranbrook Circle) is 10% of Net Revenue flat wi
 fee, the November version signed on 2026-11-11 (Jake, 2026-11-14). The sun-mountain-stays registry
 still carries an older September record (15%, 10% on 30-plus nights, $400 onboarding) that Jake has
 to have corrected there.
+
+## 2026-11-23, round 3: The Certificate replaces the Specimen
+Jake's ask: "make sure the email templates are DIALED. HIGHLY professional and legit", after the
+Donovan lease alerts were lost to a dead inbox. Board round 3 (0 live, 0+ Specimen done properly,
+1 The Counterpart, 2 The Certificate, 3 The Notice; 4 emails x 2 widths each, 40 of 40 renders).
+PICKED: 2 The Certificate (DocuSign completion mail / Stripe receipt: one status line, each signer
+with status and time, the signed PDF as a file row, a document ID). Rejected: 0+, 1, 3; the Track
+(round 1) stays rejected. The Specimen's mail mechanics (tables, inline styles, 600 cap, VML,
+light-only, preheader, plain-text twin, no phone numbers) carry over unchanged.

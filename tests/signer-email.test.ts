@@ -79,7 +79,7 @@ function fontSizes(html: string): number[] {
   return [...html.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g)].map((m) => Number(m[1]));
 }
 
-describe("signer email: The Specimen", () => {
+describe("signer email: The Certificate", () => {
   it("fully executed: subject, heading, signer, date, button, no waiting language", () => {
     const { a, mike, executed } = states();
     const m = buildSignerEmail(a, mike, executed, {
@@ -87,16 +87,21 @@ describe("signer email: The Specimen", () => {
       attached: true, attachmentName: "cranbrook-executed.pdf",
     });
     expect(m.subject).toBe("309 Cranbrook Circle, Colorado Springs, Colorado | Management Agreement | Fully signed, November 11, 2026");
-    expect(m.html).toContain("Your agreement is signed and complete.");
+    // The heading carries the name and the time, with its zone.
+    expect(m.html).toContain("Michael Williams signed at 6:59\u00a0PM\u00a0MST.</h1>");
+    expect(m.text).toContain("Michael Williams signed at 6:59 PM MST.");
     expect(m.html).toContain("Every party has signed.");
-    expect(m.html).toContain("Michael Williams");
     expect(m.html).toContain("Jake Lee");
-    expect(m.html).toContain("Complete");
+    expect(m.html).toContain(">Completed<");
+    expect(m.html).toContain("2 of 2 signed");
     expect(m.html).toContain("November 11, 2026");
     expect(m.html).toContain("Open your signed copy");
-    expect(m.html).toContain("cranbrook-executed.pdf is attached.");
-    expect(m.html).not.toContain("Signature needed");
-    expect(m.html).not.toContain("Has not signed yet");
+    // The attachment is a file row with its name, never a claim without the file.
+    expect(m.html).toContain(">cranbrook-executed.pdf</p>");
+    expect(m.text).toContain("cranbrook-executed.pdf: Signed by every party, attached");
+    expect(m.html).toContain(">abcdef0123456789</td>");
+    expect(m.html).not.toContain("Waiting");
+    expect(m.html).not.toContain("Not signed yet");
   });
 
   it("waiting: subject, heading, and the outstanding party is named", () => {
@@ -104,12 +109,13 @@ describe("signer email: The Specimen", () => {
     const m = buildSignerEmail(a, mike, waiting, { attached: true });
     // The state leads the subject, so a phone list that cuts at about 40 characters still shows it.
     expect(m.subject).toBe("309 Cranbrook Circle, Colorado Springs, Colorado | Management Agreement | Signed by Michael Williams, November 11, 2026");
-    expect(m.html).toContain("Your signature is recorded.");
-    expect(m.html).toContain("Signed 1 of 2");
-    expect(m.html).toContain("Signature needed");
-    expect(m.html).toContain("Jake Lee, Manager. Has not signed yet");
+    expect(m.html).toContain("Michael Williams signed at 6:59\u00a0PM\u00a0MST.</h1>");
+    expect(m.html).toContain("Waiting on Jake Lee");
+    expect(m.html).toContain("1 of 2 signed");
+    expect(m.html).toContain("Not signed yet");
+    expect(m.text).toContain("Jake Lee, Manager: has not signed yet");
     expect(m.html).toContain("The manager still needs to sign");
-    expect(m.html).not.toContain("Your agreement is signed and complete.");
+    expect(m.html).not.toContain(">Completed<");
   });
 
   it("names every outstanding party when more than one is missing", () => {
@@ -122,9 +128,10 @@ describe("signer email: The Specimen", () => {
     });
     const mike = rec(a, "owner", "Michael Williams");
     const m = buildSignerEmail(a, mike, { signatures: { owner: mike } });
-    expect(m.html).toContain("Ann Lee, Co-owner. Has not signed yet");
-    expect(m.html).toContain("Bo Lee, Manager. Has not signed yet");
-    expect(m.html).toContain("Signed 1 of 3");
+    expect(m.text).toContain("Ann Lee, Co-owner: has not signed yet");
+    expect(m.text).toContain("Bo Lee, Manager: has not signed yet");
+    expect(m.html).toContain("Waiting on Ann Lee and Bo Lee");
+    expect(m.html).toContain("1 of 3 signed");
   });
 
   it("reads three or more parties as a list, one role word per role, with the right verb", () => {
@@ -139,7 +146,7 @@ describe("signer email: The Specimen", () => {
     const mike = rec(a, "owner", "Michael Williams");
     const m = buildSignerEmail(a, mike, { signatures: { owner: mike } });
     expect(m.html).toContain("The co-owner and manager still need to sign");
-    expect(m.html).toContain("Cy Lee, Manager. Has not signed yet");
+    expect(m.text).toContain("Cy Lee, Manager: has not signed yet");
     expect(m.subject).toContain(" | Signed by Michael Williams, ");
   });
 
@@ -248,8 +255,8 @@ describe("signer email: The Specimen", () => {
         expect(html).not.toContain("Times New Roman");
       });
       it("wears the brand's own colors", () => {
-        expect(html).toContain("#0d2318"); // accentText becomes the button and the signed name
-        expect(html).toContain("#e0b866"); // accent is the gold rule
+        expect(html).toContain("#0d2318"); // accentText becomes the button and the Completed state
+        if (label === "waiting") expect(html).toContain("#e0b866"); // accent is the Waiting dot
         expect(html).toContain("#faf7f0"); // paper (the sheet)
         expect(html).toContain("#f3ede1"); // ground
       });
@@ -321,7 +328,7 @@ describe("signer email: The Specimen", () => {
   });
 });
 
-describe("deliverSignedCopy sends The Specimen to the signer and to the business inbox", () => {
+describe("deliverSignedCopy sends The Certificate to the signer and to the business inbox", () => {
   beforeEach(() => {
     sent.length = 0;
     process.env.RESEND_API_KEY = "re_test_mock";
@@ -330,7 +337,7 @@ describe("deliverSignedCopy sends The Specimen to the signer and to the business
     process.env.LEAD_TO_EMAIL = "leads-only@example.com";
   });
 
-  it("signer gets the Specimen with the PDF; the business inbox gets the Specimen alert", async () => {
+  it("signer gets the Certificate with the PDF; the business inbox gets the Certificate alert", async () => {
     const { deliverSignedCopy } = await import("../src/lib/notify");
     const { a, mike, executed } = states();
     const res = await deliverSignedCopy(a, mike, executed, { copyUrl: "https://example.com/c" });
@@ -340,17 +347,21 @@ describe("deliverSignedCopy sends The Specimen to the signer and to the business
     expect(sent).toHaveLength(3);
     const signer = sent.find((m) => m.to === "mike@example.com") as Record<string, unknown>;
     const operator = sent.find((m) => m.to === "ops@example.com") as Record<string, unknown>;
-    expect(String(signer.html)).toContain("Your agreement is signed and complete.");
-    expect(String(signer.html)).toContain("unit-2-executed.pdf is attached.");
+    expect(String(signer.html)).toContain(">Completed<");
+    expect(String(signer.html)).toContain(">unit-2-executed.pdf</p>");
     expect(String(signer.html)).not.toContain("tel:");
     expect(String(signer.text)).toContain("Michael Williams, Owner: signed");
     expect(signer.from).toBe("Sun Mountain Stays <hello@sunmountainstays.com>");
     expect(signer.attachments).toHaveLength(1);
-    expect(String(operator.subject)).toBe("309 Cranbrook Circle, Colorado Springs, Colorado | Management Agreement | Fully signed, November 11, 2026");
-    expect(String(operator.html)).toContain("Michael Williams signed. It is complete.");
+    expect(String(operator.subject)).toBe(
+      "309 Cranbrook Circle, Colorado Springs, Colorado | Management Agreement | Fully signed, Michael Williams last, November 11, 2026"
+    );
+    expect(String(operator.text)).toContain("Michael Williams signed at 6:59 PM MST.");
+    expect(String(operator.html)).toContain("Completed. Nothing waits on you.");
     expect(String(operator.html)).toContain("Signature record");
-    expect(String(operator.html)).toContain("Open the signed agreement");
-    expect(String(operator.text)).toContain("Every party has signed. The executed agreement is attached.");
+    expect(String(operator.html)).toContain(">unit-2-executed.pdf</p>");
+    expect(String(operator.text)).toContain("Every party has signed. The signed PDF is attached.");
+    expect(String(operator.text)).toMatch(/Jake Lee, Manager: signed November 11, 2026,? (at )?6:59 PM MST/);
   });
 
   it("an earlier signer gets the completed copy when the last party signs, and only if they left an address", async () => {
@@ -403,7 +414,7 @@ describe("searchable names", () => {
   });
 });
 
-describe("the operator alert and the form receipt wear the same Specimen", () => {
+describe("the operator alert and the form receipt wear the same Certificate", () => {
   const palette = signerPalette(agreement());
   const faces = DEFAULT_FACES;
 
@@ -419,9 +430,10 @@ describe("the operator alert and the form receipt wear the same Specimen", () =>
       legalLine: "Sun Mountain Stays LLC",
     });
     expect(m.subject).toBe("309 Cranbrook Circle | Management Agreement | Signed by Michael Williams, November 11, 2026");
-    expect(m.html).toContain("Michael Williams signed.");
+    expect(m.text).toContain("Michael Williams signed at 6:59 PM MST.");
     expect(m.html).toContain("Jake Lee has not signed yet.");
-    expect(m.html).toContain("Signature needed");
+    expect(m.html).toContain("Waiting on Jake Lee");
+    expect(m.html).toContain("Not signed yet");
     expect(m.html).toContain("Open the signed agreement");
     expect(lintSignerEmail(m)).toEqual([]);
   });
@@ -441,7 +453,8 @@ describe("the operator alert and the form receipt wear the same Specimen", () =>
     });
     expect(m.html).toContain("INQ-261114-7K3QX");
     expect(m.html).toContain("Received");
-    expect(m.html).not.toContain("Signature needed");
+    expect(m.html).not.toContain("Not signed yet");
+    expect(m.html).not.toContain("Signers");
     expect(m.text).toContain("Reference: INQ-261114-7K3QX");
     const lines = m.text.split("\n");
     const i = lines.indexOf("https://jakejjlee.com/meet");
@@ -466,7 +479,7 @@ describe("the operator alert and the form receipt wear the same Specimen", () =>
  * 2026-11-23, Jake: the emails "look so janky and wonky on mobile". The Gmail iPhone app and Gmail web
  * strip the <style> block, every class and a list of CSS; these hold the layout to what survives.
  */
-describe("the Specimen survives Gmail on a phone", () => {
+describe("the Certificate survives Gmail on a phone", () => {
   const all = () => {
     const { a, mike, waiting, executed } = states();
     return [

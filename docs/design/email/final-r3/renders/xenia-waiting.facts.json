@@ -1,0 +1,26 @@
+{
+  "brand": "Xenia",
+  "job": "Signer, waiting on another signer",
+  "subject": "58 Sample Street, Columbus, Ohio | Operations Agreement | Signed by Sample Owner, November 23, 2026",
+  "facts": [
+    "Operations Agreement",
+    "58 Sample Street, Columbus, Ohio",
+    "Sample Owner signed at 11:20 AM EST.",
+    "November 23, 2026",
+    "Sample Owner",
+    "Jake Lee",
+    "Owner",
+    "Xenia",
+    "11:20 AM EST",
+    "Service",
+    "Remote operations desk",
+    "Start date",
+    "December 1, 2026",
+    "e47a19c3b5d20f86",
+    "https://xenia.host/client/sample/operations-agreement",
+    "Waiting on Jake Lee",
+    "signed yet"
+  ],
+  "missingHtml": [],
+  "missingText": []
+}

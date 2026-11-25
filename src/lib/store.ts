@@ -81,25 +81,63 @@ async function driveRead(agreement: Agreement): Promise<Execution> {
   return { signatures };
 }
 
-async function driveWrite(rec: SignatureRecord): Promise<WriteResult> {
-  const drive = await driveClient();
-  const name = fileNameFor(rec.agreementId, rec.party);
+type DriveLike = Awaited<ReturnType<typeof driveClient>>;
 
-  const existing = await drive.files.list({
-    q: `'${FOLDER_ID}' in parents and name = '${name}' and trashed = false`,
-    fields: "files(id)",
-    supportsAllDrives: true,
-    includeItemsFromAllDrives: true,
-    pageSize: 1,
-  });
+async function driveWrite(rec: SignatureRecord): Promise<WriteResult> {
+  return driveWriteWith(await driveClient(), FOLDER_ID as string, rec);
+}
+
+/**
+ * Write-once against Drive, which has no atomic create-if-absent.
+ *
+ * List-then-create alone lets two simultaneous requests both see nothing and
+ * both create. So after creating, list again: if a record for this party that
+ * was created earlier than ours exists, ours is the duplicate, and the caller is
+ * told "already signed" so no second email goes out. Reads already take the
+ * earliest record, so the stored truth never splits. Ties on time break on file
+ * id so both racers pick the same winner.
+ */
+export async function driveWriteWith(drive: DriveLike, folderId: string, rec: SignatureRecord): Promise<WriteResult> {
+  const name = fileNameFor(rec.agreementId, rec.party);
+  const listByName = () =>
+    drive.files.list({
+      q: `'${folderId}' in parents and name = '${name}' and trashed = false`,
+      fields: "files(id, createdTime)",
+      orderBy: "createdTime",
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true,
+      pageSize: 10,
+    });
+
+  const existing = await listByName();
   if ((existing.data.files ?? []).length > 0) return { ok: false, reason: "already-signed" };
 
-  await drive.files.create({
-    requestBody: { name, parents: [FOLDER_ID as string], mimeType: "application/json" },
+  const created = await drive.files.create({
+    requestBody: { name, parents: [folderId], mimeType: "application/json" },
     media: { mimeType: "application/json", body: JSON.stringify(rec, null, 2) },
     fields: "id",
     supportsAllDrives: true,
   });
+  const mine = created.data.id;
+
+  const after = await listByName();
+  const files = [...(after.data.files ?? [])].sort((x, y) =>
+    `${x.createdTime ?? ""}|${x.id ?? ""}`.localeCompare(`${y.createdTime ?? ""}|${y.id ?? ""}`)
+  );
+  const winner = files[0]?.id;
+  if (mine && winner && winner !== mine) {
+    // Ours is the duplicate. Move it out of the way (best effort; it cannot be deleted).
+    try {
+      await drive.files.update({
+        fileId: mine,
+        requestBody: { name: `ZZ-duplicate-${name}` },
+        supportsAllDrives: true,
+      });
+    } catch {
+      // Reads take the earliest record, so a leftover duplicate changes nothing.
+    }
+    return { ok: false, reason: "already-signed" };
+  }
   return { ok: true };
 }
 

@@ -4,14 +4,15 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import s from "./agreement.module.css";
+import { classifySignResponse, fieldAria } from "./sign-response";
 
 /**
  * Taking the signature.
  *
  * Ported from the Bluebill panel, where every behavior here exists because
  * something went wrong without it. The ones worth naming: a failure renders at
- * the tap rather than off screen, a 409 is treated as success because already
- * signed is what the signer wanted, and a write that succeeded while the
+ * the tap rather than off screen, a 409 is treated as success only when the
+ * server says alreadySigned (a closed gate is never a success), and a write that succeeded while the
  * read-back failed is never reported as a failure to sign.
  */
 
@@ -68,6 +69,7 @@ export function SignPanel({
   const [consent, setConsent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorField, setErrorField] = useState<string | undefined>(undefined);
   const [justSigned, setJustSigned] = useState<string | null>(null);
   const [needsReload, setNeedsReload] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -120,10 +122,11 @@ export function SignPanel({
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setErrorField(undefined);
 
-    if (!selected) { setError("Please choose who is signing."); firstRadio.current?.focus(); return; }
-    if (!typed.trim()) { setError("Please type your full legal name to sign."); typedRef.current?.focus(); return; }
-    if (!email.trim()) { setError("Please add an email address so we can send you your copy."); emailRef.current?.focus(); return; }
+    if (!selected) { setError("Please choose who is signing."); setErrorField("party"); firstRadio.current?.focus(); return; }
+    if (!typed.trim()) { setError("Please type your full legal name to sign."); setErrorField("typed"); typedRef.current?.focus(); return; }
+    if (!email.trim()) { setError("Please add an email address so we can send you your copy."); setErrorField("email"); emailRef.current?.focus(); return; }
     if (!accepted) { setError("Please confirm you have everything attached to this agreement."); acceptRef.current?.focus(); return; }
     if (!consent) { setError("Please agree to sign this agreement electronically."); consentRef.current?.focus(); return; }
 
@@ -160,15 +163,17 @@ export function SignPanel({
         return;
       }
 
-      if (res.status === 409 || data.alreadySigned) {
-        // Not an error. It is already done, which is what they wanted.
+      const outcome = classifySignResponse(res.status, data);
+      if (outcome.kind === "already-signed") {
+        // Not an error. The server says it is already on file, which is what they wanted.
         setError(null);
         setJustSigned(selected.legalName);
         setNeedsReload(true);
         return;
       }
-      if (!res.ok || !data.ok) {
-        setError(data.error ?? "Something went wrong. Please try again.");
+      if (outcome.kind === "error") {
+        setError(outcome.message);
+        setErrorField(outcome.field);
         return;
       }
 
@@ -300,12 +305,12 @@ export function SignPanel({
         <label className={s.label} htmlFor="sk-typed">Type your full legal name to sign</label>
         <input
           id="sk-typed" ref={typedRef}
-          className={`${s.input} ${error ? s.inputError : ""}`}
+          className={`${s.input} ${error && errorField === "typed" ? s.inputError : ""}`}
           value={typed} onChange={(e) => setTyped(e.target.value)}
           placeholder={selected ? selected.legalName : "Choose who is signing first"}
           autoComplete="name" autoCapitalize="words" spellCheck={false}
-          required aria-required="true" aria-invalid={error ? true : undefined}
-          aria-describedby={`sk-typed-hint${error ? " sk-error" : ""}`}
+          required aria-required="true"
+          {...fieldAria("typed", errorField, error, "sk-typed-hint")}
         />
         <span className={s.hint} id="sk-typed-hint">
           {selected
@@ -318,10 +323,11 @@ export function SignPanel({
         <label className={s.label} htmlFor="sk-email">Your email address</label>
         <input
           id="sk-email" ref={emailRef} type="email" inputMode="email"
-          className={s.inputPlain}
+          className={`${s.inputPlain} ${error && errorField === "email" ? s.inputError : ""}`}
           value={email} onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com" autoComplete="email" spellCheck={false}
-          required aria-required="true" aria-describedby="sk-email-hint"
+          required aria-required="true"
+          {...fieldAria("email", errorField, error, "sk-email-hint")}
         />
         <span className={s.hint} id="sk-email-hint">
           {canEmailSigner

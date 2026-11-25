@@ -254,16 +254,31 @@ function BlockBody({ block }: { block: Block }) {
 }
 
 /** Rendered instead of the panel when a party who signs first has not. */
-export function SigningClosed({ reason, phone, phoneHref, pdfHref }: {
+export function SigningClosed({ reason, phone, phoneHref, pdfHref, code }: {
   reason: string; phone: string; phoneHref: string; pdfHref: string;
+  /** The gate's reason code. A placeholder is a reading copy, not a fault. */
+  code?: string;
 }) {
   return (
     <div className={s.closed}>
-      <h2 className={s.closedTitle}>Not ready for signature yet</h2>
+      <h2 className={s.closedTitle}>{code === "placeholder" ? "Ready to read" : "Not ready for signature yet"}</h2>
       <p className={s.closedBody}>{reason}</p>
       <div className={s.actions}>
         <a className={`${s.btn} ${s.btnQuiet}`} href={pdfHref}>Download a copy to review</a>
         <a className={`${s.btn} ${s.btnQuiet}`} href={phoneHref}>Call {phone}</a>
+      </div>
+    </div>
+  );
+}
+
+/** Shown to a party who has already signed while others still have to: never the form. */
+export function SignedWaiting({ line, pdfHref }: { line: string; pdfHref: string }) {
+  return (
+    <div className={s.panel}>
+      <h2 className={s.panelTitle}>Your signature is on file</h2>
+      <p className={s.panelIntro}>{line}</p>
+      <div className={s.actions}>
+        <a className={`${s.btn} ${s.btnPrimary}`} href={pdfHref}>Download your copy</a>
       </div>
     </div>
   );

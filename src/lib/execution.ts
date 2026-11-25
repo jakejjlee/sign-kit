@@ -92,6 +92,17 @@ export type SignValidation =
 
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
+/**
+ * Caps on every free-text field, applied before anything is written. The store
+ * cannot delete, so an oversized value is permanent, and it is echoed into the
+ * operator's email. 254 is the longest address SMTP allows.
+ */
+export const MAX_EMAIL = 254;
+export const MAX_TYPED = 200;
+const MAX_CLAUSE = 200;
+const MAX_INITIALS = 12;
+const MAX_STAMP = 64;
+
 /** "Susan  BERMAN" matches "Susan Berman". "S. Berman" does not. */
 function normalize(s: string): string {
   return s.trim().toLowerCase().replace(/\s+/g, " ");
@@ -111,12 +122,18 @@ export function validateSignature(
   input: SignInput,
   signingAs?: string
 ): SignValidation {
+  // A link signs for one party. Say so in its own party's name, and never echo
+  // the other party's name to whoever is holding this link.
+  const own = signingAs ? agreement.parties.find((p) => p.id === signingAs) : undefined;
+  const wrongParty = own
+    ? `This link signs for ${own.legalName} only.`
+    : "That signer is not named on this agreement.";
   const party = agreement.parties.find((p) => p.id === input.party);
   if (!party) {
-    return { ok: false, field: "party", message: "That signer is not named on this agreement." };
+    return { ok: false, field: "party", message: wrongParty };
   }
   if (signingAs && signingAs !== party.id) {
-    return { ok: false, field: "party", message: "That signer is not named on this agreement." };
+    return { ok: false, field: "party", message: wrongParty };
   }
   if (!party.legalName.trim()) {
     return {
@@ -129,6 +146,9 @@ export function validateSignature(
   const typed = (input.typed || "").trim().replace(/\s+/g, " ");
   if (!typed) {
     return { ok: false, field: "typed", message: "Please type your full name to sign." };
+  }
+  if (typed.length > MAX_TYPED) {
+    return { ok: false, field: "typed", message: "That name is too long. Please type it exactly as it appears on the agreement." };
   }
   if (normalize(typed) !== normalize(party.legalName)) {
     // Deliberately does NOT repeat the legal name. This endpoint is reachable
@@ -157,6 +177,9 @@ export function validateSignature(
   }
 
   const email = (input.email || "").trim();
+  if (email.length > MAX_EMAIL) {
+    return { ok: false, field: "email", message: "That email address is too long. Please use a shorter one." };
+  }
   if (!EMAIL.test(email)) {
     return {
       ok: false,
@@ -171,9 +194,9 @@ export function validateSignature(
   const initials = (input.initials ?? []).filter(
     (i) =>
       i &&
-      typeof i.clause === "string" && i.clause.trim().length > 0 &&
-      typeof i.initials === "string" && i.initials.trim().length > 0 &&
-      typeof i.at === "string" && i.at.trim().length > 0
+      typeof i.clause === "string" && i.clause.trim().length > 0 && i.clause.length <= MAX_CLAUSE &&
+      typeof i.initials === "string" && i.initials.trim().length > 0 && i.initials.length <= MAX_INITIALS &&
+      typeof i.at === "string" && i.at.trim().length > 0 && i.at.length <= MAX_STAMP
   );
   return {
     ok: true,
@@ -234,9 +257,36 @@ export function outstandingParties(agreement: Agreement, ex: Execution): Party[]
   return namedParties(agreement).filter((p) => !current[p.id]);
 }
 
+export type GateCode = "store" | "unreadable" | "placeholder" | "unnamed" | "waiting";
+
 export type Gate =
   | { open: true }
-  | { open: false; reason: string };
+  | { open: false; reason: string; code: GateCode };
+
+/**
+ * The first unfilled placeholder left in the text a signer would be bound to,
+ * or null. "[BLANK" is a hand-marked blank; "{{" is a template key that was
+ * never filled. A signature against either binds a person to text that is about
+ * to change, and a change means a new version and a second signature.
+ */
+export function unfilledPlaceholder(agreement: Agreement): string | null {
+  const text = JSON.stringify({
+    title: agreement.title,
+    subtitle: agreement.subtitle,
+    letter: agreement.letter,
+    body: agreement.body,
+    attachments: agreement.attachments,
+    money: agreement.money,
+    amendment: agreement.amendment,
+  });
+  const at = Math.min(
+    ...["[BLANK", "{{"].map((m) => {
+      const i = text.indexOf(m);
+      return i < 0 ? Infinity : i;
+    })
+  );
+  return Number.isFinite(at) ? text.slice(at, at + 60) : null;
+}
 
 /**
  * May anyone sign right now?
@@ -274,6 +324,7 @@ export function signingGate(
       reason:
         "This agreement is not open for signature yet. It is a setup problem on our side, not " +
         "anything to do with you, and nothing you do here would be recorded until it is fixed.",
+      code: "store",
     };
   }
 
@@ -288,6 +339,17 @@ export function signingGate(
         "The signature record cannot be read right now, so signing is held rather than risked " +
         "against a state we cannot see. The agreement itself is unaffected and is readable " +
         "below. Try again shortly.",
+      code: "unreadable",
+    };
+  }
+
+  // Never open signing against text that still has a blank in it. The page
+  // still shows the whole agreement to read; only the signing step waits.
+  if (unfilledPlaceholder(agreement)) {
+    return {
+      open: false,
+      reason: "Ready to read. Signing opens once the details marked BLANK are filled in.",
+      code: "placeholder",
     };
   }
 
@@ -299,6 +361,7 @@ export function signingGate(
       reason:
         `This agreement has no ${roles} named yet, so there is nobody for it to bind. ` +
         `Once we agree who that is, their name goes on it and this page opens for signature.`,
+      code: "unnamed",
     };
   }
 
@@ -318,6 +381,7 @@ export function signingGate(
       reason:
         `${who} has not signed this version yet. Signing opens as soon as they do, and you ` +
         `will be signing exactly the version shown on this page. Nothing is owed in the meantime.`,
+      code: "waiting",
     };
   }
 

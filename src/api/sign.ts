@@ -77,7 +77,9 @@ export function createSignHandler(opts: {
 
     const gate = signingGate(agreement, ex, signingAs ?? body.party, storeKind() !== "none");
     if (!gate.open) {
-      return json({ error: gate.reason, field: "form" }, 409);
+      // 503, never 409. The panel reads 409 plus alreadySigned as "done"; a closed
+      // gate means nothing was stored, so it must read as a failure to every client.
+      return json({ error: gate.reason, field: "form", gate: gate.code }, 503);
     }
 
     const check = validateSignature(agreement, body, signingAs);

@@ -56,3 +56,13 @@ TypeScript source.
 The signing endpoint, the Drive record store, the PDF renderer and the delivery mails
 still live in `clients/bluebill` and are ported next. Until they land, a consuming repo
 can render an agreement and cannot collect a signature.
+
+## Rules the kit enforces (signing polish, 2026-11-24)
+
+- A 409 is "already signed" only when the response carries `alreadySigned`. A closed gate answers 503.
+- Signing stays closed while the text holds `[BLANK` or `{{`; the page still shows the agreement to read.
+- `panelStateFor` decides what a link's page shows: complete, signed and waiting, closed, or the form.
+- `deliverSignedCopy` takes `copyUrl` as a function of the party, so each email holds only its own link.
+- The health route is 404 without `AGREEMENT_OPS_KEY` (never a signing token) and 503 until mail can reach signers from a sender on the brand domain.
+- Drive writes re-list after create and defer to an earlier record.
+- Email is capped at 254 and the typed name at 200 before any permanent write.

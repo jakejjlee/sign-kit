@@ -93,11 +93,26 @@ export function buildOperatorEmail(
   });
 }
 
-/** Can this environment actually deliver? Reported by the health route. */
-export function deliveryConfig() {
+/** The bare address inside "Name <a@b.com>". */
+function addressOf(from: string): string {
+  const m = from.match(/<([^>]+)>/);
+  return (m ? m[1] : from).trim().toLowerCase();
+}
+
+/**
+ * Can this environment actually deliver? Reported by the health route.
+ *
+ * Pass the brand's own email and the sender must also be on that domain: a
+ * verified sender for some other brand would send, and land in spam or bounce.
+ */
+export function deliveryConfig(brandEmail?: string) {
   const apiKey = Boolean(process.env.RESEND_API_KEY);
   const from = process.env.AGREEMENT_FROM_EMAIL || process.env.LEAD_FROM_EMAIL || "";
-  const sharedSender = !from || from.includes("resend.dev");
+  const brandDomain = brandEmail?.split("@")[1]?.trim().toLowerCase();
+  const senderDomain = addressOf(from).split("@")[1] ?? "";
+  const offBrand =
+    Boolean(brandDomain) && senderDomain !== brandDomain && !senderDomain.endsWith(`.${brandDomain}`);
+  const sharedSender = !from || from.includes("resend.dev") || offBrand;
   return {
     configured: apiKey,
     from: from || "not set",
@@ -111,7 +126,7 @@ export function deliveryConfig() {
     note: !apiKey
       ? "RESEND_API_KEY is not set. No copies will be emailed to anyone."
       : sharedSender
-        ? "No verified sender is set, so mail would go from Resend's shared test address, which only delivers to the Resend account owner. A signer will NOT receive their copy. Set AGREEMENT_FROM_EMAIL to a verified sender."
+        ? "No verified sender on the brand's own domain is set, so mail would go from Resend's shared test address or another brand's address. A signer will NOT reliably receive their copy. Set AGREEMENT_FROM_EMAIL to a verified sender on the brand's domain."
         : "Configured to deliver to signers.",
   };
 }
@@ -143,10 +158,26 @@ export async function deliverSignedCopy(
   rec: SignatureRecord,
   ex: Execution,
   /** Where the signer's button goes and any real next date. Both optional. */
-  signerOpts: Pick<SignerEmailOptions, "copyUrl" | "nextStep"> = {}
+  signerOpts: {
+    /**
+     * Where each signer's button goes. A function gets the party id so every
+     * recipient is handed only their own private link; a string is for a single
+     * link that is safe for everyone to hold.
+     */
+    copyUrl?: string | ((party: string) => string | undefined);
+    nextStep?: SignerEmailOptions["nextStep"];
+  } = {}
 ): Promise<DeliveryResult> {
   const apiKey = process.env.RESEND_API_KEY;
-  const cfg = deliveryConfig();
+  const cfg = deliveryConfig(a.brand.email);
+  const urlFor = (party: string) =>
+    typeof signerOpts.copyUrl === "function" ? signerOpts.copyUrl(party) : signerOpts.copyUrl;
+  if (!cfg.canReachSigners) {
+    // Loud on purpose. "Signed, and nobody was told" must never be silent.
+    console.error(
+      `[sign-kit] CANNOT REACH SIGNERS: ${cfg.note} (signature by ${rec.party} is filed; check AGREEMENT_FROM_EMAIL and RESEND_API_KEY.)`
+    );
+  }
   if (!apiKey) {
     return {
       signerCopy: false,
@@ -208,7 +239,8 @@ export async function deliverSignedCopy(
   const signerJobs = recipients.map(async (who) => {
     if (!who.email) return { who, problem: "no address was given for the signer" };
     const mail = buildSignerEmail(a, who, ex, {
-      ...signerOpts,
+      nextStep: signerOpts.nextStep,
+      copyUrl: urlFor(who.party),
       attached: Boolean(attachments),
       attachmentName: attachments?.[0]?.filename,
     });
@@ -220,7 +252,7 @@ export async function deliverSignedCopy(
   const op = buildOperatorEmail(a, rec, ex, {
     attached: Boolean(attachments),
     attachmentName: attachments?.[0]?.filename,
-    copyUrl: signerOpts.copyUrl,
+    copyUrl: urlFor(rec.party),
   });
   const operatorJob = deliver(operator, rec.email ?? undefined, op).then((problem) => {
     if (problem) console.error(`[sign-kit] operator notice to ${operator} failed: ${problem}`);

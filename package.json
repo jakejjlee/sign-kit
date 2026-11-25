@@ -91,6 +91,16 @@
       "import": "./src/lib/signer-email-core.ts",
       "default": "./src/lib/signer-email-core.ts"
     },
+    "./lib/panel-state": {
+      "types": "./src/lib/panel-state.ts",
+      "import": "./src/lib/panel-state.ts",
+      "default": "./src/lib/panel-state.ts"
+    },
+    "./surfaces/sign-response": {
+      "types": "./src/surfaces/sign-response.ts",
+      "import": "./src/surfaces/sign-response.ts",
+      "default": "./src/surfaces/sign-response.ts"
+    },
     "./lib/pdf-core": {
       "types": "./src/lib/pdf-core.ts",
       "import": "./src/lib/pdf-core.ts",

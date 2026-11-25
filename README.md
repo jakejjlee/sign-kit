@@ -7,6 +7,13 @@ here, and a consuming repo supplies only the agreement itself plus its own brand
 tokens. A Palisade lease and a Sun Mountain lease are the same instrument in
 different clothes.
 
+**Before drafting any new agreement, read `~/.claude/docs/client-agreement-standard.md`** (set
+2026-11-24 from the Phil Berger polish run): what the text must carry, what this kit now enforces
+(signing stays closed while a `[BLANK` or `{{` remains, a failed store never shows a confirmation,
+a signed party sees a waiting panel, each email carries only its own link, health needs a real
+sender and an ops key that is never a signing token, capped free-text fields), and the checks
+before a link goes out.
+
 ## Why it exists
 
 The Bluebill agreement was built inside one property. It works, it has been signed
